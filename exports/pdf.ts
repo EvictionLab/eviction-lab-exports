@@ -15,8 +15,8 @@ export default async (event, context, callback): Promise<void> => {
   const s3 = new S3();
 
   const htmlRes = await s3.getObject({
-    Bucket: process.env.ASSET_BUCKET,
-    Key: '/assets/custom_report.html'
+    Bucket: process.env.asset_bucket,
+    Key: 'assets/custom_report.html'
   }).promise();
 
   const pdfStr = await chromeless
@@ -26,7 +26,7 @@ export default async (event, context, callback): Promise<void> => {
   await chrome.kill();
 
   const s3Config = {
-    Bucket: process.env.EXPORT_BUCKET,
+    Bucket: process.env.export_bucket,
     Key: 'test.pdf',
     Body: fs.readFileSync(pdfStr),
     ACL: 'public-read'

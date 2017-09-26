@@ -4,8 +4,8 @@ provider:
   name: aws
   runtime: nodejs6.10
   environment:
-    - ASSET_BUCKET: ${env:ASSET_BUCKET}
-    - EXPORT_BUCKET: ${env:EXPORT_BUCKET}
+    asset_bucket: eviction-lab-exports
+    export_bucket: eviction-lab-exports
 
   iamRoleStatements:
     - Effect: "Allow"
@@ -19,6 +19,20 @@ functions:
     events:
       - http:
           path: /pdf
+          method: get
+  docx:
+    timeout: 300
+    handler: exports/docx.default
+    events:
+      - http:
+          path: /docx
+          method: get
+  pptx:
+    timeout: 300
+    handler: exports/pptx.default
+    events:
+      - http:
+          path: /pptx
           method: get
 
 plugins:

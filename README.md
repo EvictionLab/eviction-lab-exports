@@ -5,5 +5,5 @@ Serverless services for generating exports from Eviction Lab data
 ## Deployment
 
 ```
-npm deploy
+npm run deploy
 ```

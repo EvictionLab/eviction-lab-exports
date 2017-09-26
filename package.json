@@ -5,7 +5,7 @@
   "author": "Eviction Lab",
   "license": "MIT",
   "scripts": {
-    "deploy": "source .env && aws s3 cp assets s3://$ASSET_BUCKET/assets --recursive --acl=public-read && sls deploy"
+    "deploy": "aws s3 cp assets s3://$ASSET_BUCKET/assets --recursive --acl=public-read && sls deploy"
   },
   "dependencies": {
     "@serverless-chrome/lambda": "^1.0.0-5",
