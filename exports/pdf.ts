@@ -3,49 +3,55 @@ import * as launchChrome from '@serverless-chrome/lambda';
 import { S3 } from 'aws-sdk';
 import { Chromeless } from 'chromeless';
 import * as Handlebars from 'handlebars';
+import { Export } from './export';
+import { Feature } from '../data/feature';
+import { FixtureFeatures } from '../data/fixture';
+
+class PdfExport extends Export {
+  fileExt = 'pdf';
+  templateKey = 'assets/report.html';
+
+  constructor(features: Array<Feature>) {
+    super(features);
+    this.key = this.createKey(features);
+  };
+
+  async createFile(): Promise<Buffer> {
+    const s3 = new S3();
+    const chrome = await launchChrome({
+      flags: ['--window-size=1280x1696', '--hide-scrollbars'],
+    });
+    const chromeless = new Chromeless({
+      launchChrome: false
+    });
+
+    const htmlRes = await s3.getObject({
+      Bucket: this.assetBucket,
+      Key: this.templateKey
+    }).promise();
+
+    const template = Handlebars.compile(htmlRes.Body.toString());
+    const compiledData = template({ features: this.features });
+
+    const pdfStr = await chromeless
+      .setHtml(compiledData)
+      .pdf({ displayHeaderFooter: false, landscape: false });
+
+    await chrome.kill();
+    return fs.readFileSync(pdfStr)
+  }
+}
 
 export default async (event, context, callback): Promise<void> => {
-  const chrome = await launchChrome({
-    flags: ['--window-size=1280x1696', '--hide-scrollbars'],
-  });
+  const pdfExport = new PdfExport(FixtureFeatures);
+  const pdfBuffer = await pdfExport.createFile();
 
-  const chromeless = new Chromeless({
-    launchChrome: false
-  });
-
-  const s3 = new S3();
-
-  const htmlRes = await s3.getObject({
-    Bucket: process.env.asset_bucket,
-    Key: 'assets/report.html'
-  }).promise();
-  const template = Handlebars.compile(htmlRes.Body.toString());
-  const compiledData = template({
-    geography: "Pennsylvania",
-    compare_geo: [
-      { name: "New York", rate: 10 },
-      { name: "Chicago", rate: 12 }
-    ]
-  });
-
-  const pdfStr = await chromeless
-    .setHtml(compiledData)
-    .pdf({ displayHeaderFooter: false, landscape: false });
-
-  await chrome.kill();
-
-  const s3Config = {
-    Bucket: process.env.export_bucket,
-    Key: 'test.pdf',
-    Body: fs.readFileSync(pdfStr),
-    ACL: 'public-read'
-  };
-  const s3Obj = await s3.putObject(s3Config).promise();
+  pdfExport.uploadFile(pdfBuffer);
   
   callback(null, {
     statusCode: 200,
     body: JSON.stringify({
-      path: `https://s3.amazonaws.com/${s3Config.Bucket}/${s3Config.Key}`
+      path: `https://s3.amazonaws.com/${pdfExport.exportBucket}/${pdfExport.key}`
     })
   });
 }

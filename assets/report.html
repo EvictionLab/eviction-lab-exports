@@ -25,7 +25,7 @@
 <body lang="en-US" text="#00000a" link="#0000ff" dir="ltr">
 <p class="western" align="center" style="margin-bottom: 0in; line-height: 100%">
 <font size="4" style="font-size: 14pt"><b>&shy;Understanding Eviction
-in {{geography}}</b></font></p>
+in {{ features.0.name }}</b></font></p>
 <p class="western" align="center" style="margin-bottom: 0in; line-height: 100%">
 <br/>
 
@@ -76,15 +76,15 @@ is how [City / county / state]’s eviction rate compares to other
 <p class="western" style="margin-bottom: 0in; line-height: 100%"><br/>
 
 </p>
-<p class="western" style="margin-bottom: 0in; line-height: 100%"><b>{{geography}}				Eviction
+<p class="western" style="margin-bottom: 0in; line-height: 100%"><b>{{ features.0.name }}				Eviction
 Rate </b>
 </p>
 <p class="western" style="margin-bottom: 0in; line-height: 100%"><br/>
 
 </p>
 <p class="western" style="margin-bottom: 0in; line-height: 100%"><b>{{#each
-compare_geo}}</b></p>
-<p class="western" style="margin-bottom: 0in; line-height: 100%">{{name}}						{{rate}}</p>
+features }}</b></p>
+<p class="western" style="margin-bottom: 0in; line-height: 100%">{{name}}						{{eviction_rate}}</p>
 <p class="western" style="margin-bottom: 0in; line-height: 100%">{{/each}}</p>
 <p class="western" style="margin-bottom: 0in; line-height: 100%"><br/>
 
