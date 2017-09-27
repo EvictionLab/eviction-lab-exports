@@ -5,12 +5,15 @@
   "author": "Eviction Lab",
   "license": "MIT",
   "scripts": {
-    "deploy": "aws s3 cp assets s3://$ASSET_BUCKET/assets --recursive --acl=public-read && sls deploy"
+    "deploy": "aws s3 cp assets s3://eviction-lab-exports/assets --recursive --acl=public-read && sls deploy"
   },
   "dependencies": {
     "@serverless-chrome/lambda": "^1.0.0-5",
+    "@types/handlebars": "^4.0.36",
     "aws-sdk": "^2.122.0",
-    "chromeless": "^1.3.0"
+    "chromeless": "^1.3.0",
+    "handlebars": "^4.0.10",
+    "jszip": "^3.1.4"
   },
   "devDependencies": {
     "@types/node": "^8.0.31",

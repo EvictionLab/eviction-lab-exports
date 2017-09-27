@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as launchChrome from '@serverless-chrome/lambda';
 import { S3 } from 'aws-sdk';
 import { Chromeless } from 'chromeless';
+import * as Handlebars from 'handlebars';
 
 export default async (event, context, callback): Promise<void> => {
   const chrome = await launchChrome({
@@ -18,9 +19,11 @@ export default async (event, context, callback): Promise<void> => {
     Bucket: process.env.asset_bucket,
     Key: 'assets/custom_report.html'
   }).promise();
+  const template = Handlebars.compile(htmlRes.Body.toString());
+  const compiledData = template({"geography": "Pennsylvania"});
 
   const pdfStr = await chromeless
-    .setHtml(htmlRes.Body.toString())
+    .setHtml(compiledData)
     .pdf({ displayHeaderFooter: false, landscape: false });
 
   await chrome.kill();
