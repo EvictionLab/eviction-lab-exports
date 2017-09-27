@@ -7,7 +7,7 @@ import { Export } from './export';
 import { Feature } from '../data/feature';
 import { FixtureFeatures } from '../data/fixture';
 
-class PdfExport extends Export {
+export class PdfExport extends Export {
   fileExt = 'pdf';
   templateKey = 'assets/report.html';
 
@@ -42,7 +42,7 @@ class PdfExport extends Export {
   }
 }
 
-export default async (event, context, callback): Promise<void> => {
+export async function handler(event, context, callback): Promise<void> {
   const pdfExport = new PdfExport(FixtureFeatures);
   const pdfBuffer = await pdfExport.createFile();
 

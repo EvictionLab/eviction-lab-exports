@@ -5,7 +5,7 @@ import { Export } from './export';
 import { Feature } from '../data/feature';
 import { FixtureFeatures } from '../data/fixture';
 
-class XlsxExport extends Export {
+export class XlsxExport extends Export {
   fileExt = 'xlsx';
 
   constructor(features: Array<Feature>) {
@@ -22,7 +22,7 @@ class XlsxExport extends Export {
   }
 }
 
-export default async (event, context, callback): Promise<void> => {
+export async function handler(event, context, callback): Promise<void> {
   const xlsxExport = new XlsxExport(FixtureFeatures);
   const xlsxBuffer = await xlsxExport.createFile();
 

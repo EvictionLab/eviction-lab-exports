@@ -6,7 +6,7 @@ import { Feature } from '../data/feature';
 import { FixtureFeatures } from '../data/fixture';
 import { Export } from './export';
 
-class DocxExport extends Export {
+export class DocxExport extends Export {
   fileExt = 'docx';
   templateKey = 'assets/report.docx';
 
@@ -34,7 +34,7 @@ class DocxExport extends Export {
   }
 }
 
-export default async (event, context, callback): Promise<void> => {
+export async function handler(event, context, callback): Promise<void> {
   const docxExport = new DocxExport(FixtureFeatures);
   const docxBuffer = await docxExport.createFile();
 

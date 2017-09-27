@@ -15,28 +15,28 @@ provider:
 functions:
   pdf:
     timeout: 300
-    handler: exports/pdf.default
+    handler: exports/pdf.handler
     events:
       - http:
           path: /pdf
           method: get
   docx:
     timeout: 300
-    handler: exports/docx.default
+    handler: exports/docx.handler
     events:
       - http:
           path: /docx
           method: get
   xlsx:
     timeout: 300
-    handler: exports/xlsx.default
+    handler: exports/xlsx.handler
     events:
       - http:
           path: /xlsx
           method: get
   pptx:
     timeout: 300
-    handler: exports/pptx.default
+    handler: exports/pptx.handler
     events:
       - http:
           path: /pptx
