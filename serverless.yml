@@ -27,6 +27,13 @@ functions:
       - http:
           path: /docx
           method: get
+  xlsx:
+    timeout: 300
+    handler: exports/xlsx.default
+    events:
+      - http:
+          path: /xlsx
+          method: get
   pptx:
     timeout: 300
     handler: exports/pptx.default
