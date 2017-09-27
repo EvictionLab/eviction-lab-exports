@@ -17,10 +17,16 @@ export default async (event, context, callback): Promise<void> => {
 
   const htmlRes = await s3.getObject({
     Bucket: process.env.asset_bucket,
-    Key: 'assets/custom_report.html'
+    Key: 'assets/report.html'
   }).promise();
   const template = Handlebars.compile(htmlRes.Body.toString());
-  const compiledData = template({"geography": "Pennsylvania"});
+  const compiledData = template({
+    geography: "Pennsylvania",
+    compare_geo: [
+      { name: "New York", rate: 10 },
+      { name: "Chicago", rate: 12 }
+    ]
+  });
 
   const pdfStr = await chromeless
     .setHtml(compiledData)

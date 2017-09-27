@@ -1,40 +1,33 @@
 import * as fs from 'fs';
-import * as launchChrome from '@serverless-chrome/lambda';
 import { S3 } from 'aws-sdk';
-import { Chromeless } from 'chromeless';
 import * as Handlebars from 'handlebars';
 import * as JSZip from 'jszip';
 
 export default async (event, context, callback): Promise<void> => {
-  const chrome = await launchChrome({
-    flags: ['--window-size=1280x1696', '--hide-scrollbars'],
-  });
-
-  const chromeless = new Chromeless({
-    launchChrome: false
-  });
-
   const s3 = new S3();
+  const jsZip = new JSZip();
 
-  const htmlRes = await s3.getObject({
+  const docxRes = await s3.getObject({
     Bucket: process.env.asset_bucket,
-    Key: 'assets/custom_report.html'
+    Key: 'assets/report.docx'
   }).promise();
-  const template = Handlebars.compile(htmlRes.Body.toString());
-  const compiledData = template({ "geography": "Pennsylvania" });
 
-  /* TODO: Create .docx from JSZip */
-
-  const pdfStr = await chromeless
-    .setHtml(compiledData)
-    .pdf({ displayHeaderFooter: false, landscape: false });
-
-  await chrome.kill();
+  const zip = await jsZip.loadAsync(docxRes.Body);
+  const docxFile = await zip.file('word/document.xml').async('string');
+  const template = Handlebars.compile(docxFile);
+  const compiledData = template({
+    geography: "Pennsylvania",
+    compare_geo: [
+      { name: "New York", rate: 10 },
+      { name: "Chicago", rate: 12 }
+    ]
+  });
+  zip.file('word/document.xml', compiledData);
 
   const s3Config = {
     Bucket: process.env.export_bucket,
-    Key: 'test.pdf',
-    Body: fs.readFileSync(pdfStr),
+    Key: 'test.docx',
+    Body: await zip.generateAsync({type: 'nodebuffer'}),
     ACL: 'public-read'
   };
   const s3Obj = await s3.putObject(s3Config).promise();
@@ -42,7 +35,7 @@ export default async (event, context, callback): Promise<void> => {
   callback(null, {
     statusCode: 200,
     body: JSON.stringify({
-      message: '.docx'
+      path: `https://s3.amazonaws.com/${s3Config.Bucket}/${s3Config.Key}`
     })
   });
 }
