@@ -4,6 +4,7 @@ import * as Handlebars from 'handlebars';
 import * as JSZip from 'jszip';
 import { Feature } from '../data/feature';
 import { Export } from './export';
+import { handler } from './handler';
 
 export class DocxExport extends Export {
   fileExt = 'docx';
@@ -33,20 +34,6 @@ export class DocxExport extends Export {
   }
 }
 
-export async function handler(event, context, callback): Promise<void> {
-  const postFeatures: Array<Feature> = JSON.parse(event.body).features;
-  const docxExport = new DocxExport(postFeatures);
-  const keyExists = await docxExport.keyExists();
-  
-  if (!keyExists) {
-    const docxBuffer = await docxExport.createFile();
-    docxExport.uploadFile(docxBuffer);
-  }
-
-  callback(null, {
-    statusCode: 200,
-    body: JSON.stringify({
-      path: `https://s3.amazonaws.com/${docxExport.exportBucket}/${docxExport.key}`
-    })
-  });
+export async function fileHandler(event, context, callback): Promise<void> {
+  return await handler(DocxExport, event, context, callback);
 }
