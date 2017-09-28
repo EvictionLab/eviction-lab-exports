@@ -44,9 +44,12 @@ export class PdfExport extends Export {
 
 export async function handler(event, context, callback): Promise<void> {
   const pdfExport = new PdfExport(FixtureFeatures);
-  const pdfBuffer = await pdfExport.createFile();
+  const keyExists = await pdfExport.keyExists();
 
-  pdfExport.uploadFile(pdfBuffer);
+  if (!keyExists) {
+    const pdfBuffer = await pdfExport.createFile();
+    pdfExport.uploadFile(pdfBuffer);
+  }
   
   callback(null, {
     statusCode: 200,

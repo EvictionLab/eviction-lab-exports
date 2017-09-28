@@ -24,9 +24,12 @@ export class XlsxExport extends Export {
 
 export async function handler(event, context, callback): Promise<void> {
   const xlsxExport = new XlsxExport(FixtureFeatures);
-  const xlsxBuffer = await xlsxExport.createFile();
+  const keyExists = await xlsxExport.keyExists();
 
-  xlsxExport.uploadFile(xlsxBuffer);
+  if (!keyExists) {
+    const xlsxBuffer = await xlsxExport.createFile();
+    xlsxExport.uploadFile(xlsxBuffer);
+  }
 
   callback(null, {
     statusCode: 200,

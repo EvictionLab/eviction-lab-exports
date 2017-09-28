@@ -36,9 +36,12 @@ export class DocxExport extends Export {
 
 export async function handler(event, context, callback): Promise<void> {
   const docxExport = new DocxExport(FixtureFeatures);
-  const docxBuffer = await docxExport.createFile();
-
-  docxExport.uploadFile(docxBuffer);
+  const keyExists = await docxExport.keyExists();
+  
+  if (!keyExists) {
+    const docxBuffer = await docxExport.createFile();
+    docxExport.uploadFile(docxBuffer);
+  }
 
   callback(null, {
     statusCode: 200,
