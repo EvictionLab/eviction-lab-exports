@@ -27,6 +27,21 @@ export abstract class Export {
     }
 
     /**
+     * Returns true if key exists, otherwise false
+     */
+    async keyExists(): Promise<boolean> {
+        try {
+            const awsObj = await s3.headObject({
+                Bucket: this.exportBucket,
+                Key: this.key
+            }).promise();
+            return true;
+        } catch(err) {
+            return false;
+        }
+    }
+
+    /**
      * Abstract method for creating a file that each subclass must
      * implement. Returns a buffer
      */

@@ -15,32 +15,32 @@ provider:
 functions:
   pdf:
     timeout: 300
-    handler: exports/pdf.handler
+    handler: exports/pdf.fileHandler
     events:
       - http:
           path: /pdf
-          method: get
+          method: post
   docx:
     timeout: 300
-    handler: exports/docx.handler
+    handler: exports/docx.fileHandler
     events:
       - http:
           path: /docx
-          method: get
+          method: post
   xlsx:
     timeout: 300
-    handler: exports/xlsx.handler
+    handler: exports/xlsx.fileHandler
     events:
       - http:
           path: /xlsx
-          method: get
+          method: post
   pptx:
     timeout: 300
-    handler: exports/pptx.handler
+    handler: exports/pptx.fileHandler
     events:
       - http:
           path: /pptx
-          method: get
+          method: post
 
 plugins:
   - serverless-plugin-typescript

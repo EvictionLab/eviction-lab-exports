@@ -5,7 +5,7 @@ import { Chromeless } from 'chromeless';
 import * as Handlebars from 'handlebars';
 import { Export } from './export';
 import { Feature } from '../data/feature';
-import { FixtureFeatures } from '../data/fixture';
+import { handler } from './handler';
 
 export class PdfExport extends Export {
   fileExt = 'pdf';
@@ -42,16 +42,6 @@ export class PdfExport extends Export {
   }
 }
 
-export async function handler(event, context, callback): Promise<void> {
-  const pdfExport = new PdfExport(FixtureFeatures);
-  const pdfBuffer = await pdfExport.createFile();
-
-  pdfExport.uploadFile(pdfBuffer);
-  
-  callback(null, {
-    statusCode: 200,
-    body: JSON.stringify({
-      path: `https://s3.amazonaws.com/${pdfExport.exportBucket}/${pdfExport.key}`
-    })
-  });
+export async function fileHandler(event, context, callback): Promise<void> {
+  return await handler(PdfExport, event, context, callback);
 }

@@ -3,7 +3,7 @@ import * as XLSX from 'xlsx';
 import { S3 } from 'aws-sdk';
 import { Export } from './export';
 import { Feature } from '../data/feature';
-import { FixtureFeatures } from '../data/fixture';
+import { handler } from './handler';
 
 export class XlsxExport extends Export {
   fileExt = 'xlsx';
@@ -22,16 +22,6 @@ export class XlsxExport extends Export {
   }
 }
 
-export async function handler(event, context, callback): Promise<void> {
-  const xlsxExport = new XlsxExport(FixtureFeatures);
-  const xlsxBuffer = await xlsxExport.createFile();
-
-  xlsxExport.uploadFile(xlsxBuffer);
-
-  callback(null, {
-    statusCode: 200,
-    body: JSON.stringify({
-      path: `https://s3.amazonaws.com/${xlsxExport.exportBucket}/${xlsxExport.key}`
-    })
-  });
+export async function fileHandler(event, context, callback): Promise<void> {
+  return await handler(XlsxExport, event, context, callback);
 }
