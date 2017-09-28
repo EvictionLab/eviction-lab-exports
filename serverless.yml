@@ -41,6 +41,13 @@ functions:
       - http:
           path: /pptx
           method: post
+  png:
+    timeout: 300
+    handler: exports/png.fileHandler
+    events:
+      - http:
+          path: /png
+          method: get
 
 plugins:
   - serverless-plugin-typescript

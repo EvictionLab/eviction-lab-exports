@@ -2,6 +2,7 @@ const fs = require('fs');
 const request = require('request');
 const abaculus = require('@mapbox/abaculus');
 const mapnik = require('mapnik');
+import { S3 } from 'aws-sdk';
 
 /* 
 WORK IN PROGRESS  
@@ -20,7 +21,7 @@ function getTiles(z, x, y, callback) {
             vt.addDataSync(body);
             const tileSize = vt.tileSize;
             const map = new mapnik.Map(tileSize, tileSize);
-            map.loadSync('style.xml');
+            map.loadSync('assets/style.xml');
             return vt.render(map, new mapnik.Image(256, 256), function (err, image) {
                 if (err) throw err;
                 return image.encode('png', function(err, buffer) {
@@ -48,4 +49,30 @@ function main() {
     });
 }
 
-main();
+// main();
+
+export async function fileHandler(event, context, callback): Promise<void> {
+    const s3 = new S3();
+
+    await abaculus(params, function (err, image, headers) {
+        if (err) {
+            console.log(err);
+            return err;
+        }
+        fs.writeFileSync('test.png', image);
+    });
+
+    await s3.putObject({
+        Bucket: process.env['export_bucket'],
+        Key: 'test.png',
+        Body: fs.readFileSync('test.png'),
+        ACL: 'public-read'
+    }).promise();
+
+    callback(null, {
+        statusCode: 200,
+        body: JSON.stringify({
+            message: '.png'
+        })
+    });
+}
