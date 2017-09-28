@@ -3,7 +3,6 @@ import * as XLSX from 'xlsx';
 import { S3 } from 'aws-sdk';
 import { Export } from './export';
 import { Feature } from '../data/feature';
-import { FixtureFeatures } from '../data/fixture';
 
 export class XlsxExport extends Export {
   fileExt = 'xlsx';
@@ -23,7 +22,8 @@ export class XlsxExport extends Export {
 }
 
 export async function handler(event, context, callback): Promise<void> {
-  const xlsxExport = new XlsxExport(FixtureFeatures);
+  const postFeatures: Array<Feature> = JSON.parse(event.body).features;
+  const xlsxExport = new XlsxExport(postFeatures);
   const keyExists = await xlsxExport.keyExists();
 
   if (!keyExists) {

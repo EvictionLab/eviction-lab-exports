@@ -5,7 +5,6 @@ import { Chromeless } from 'chromeless';
 import * as Handlebars from 'handlebars';
 import { Export } from './export';
 import { Feature } from '../data/feature';
-import { FixtureFeatures } from '../data/fixture';
 
 export class PdfExport extends Export {
   fileExt = 'pdf';
@@ -43,7 +42,8 @@ export class PdfExport extends Export {
 }
 
 export async function handler(event, context, callback): Promise<void> {
-  const pdfExport = new PdfExport(FixtureFeatures);
+  const postFeatures: Array<Feature> = JSON.parse(event.body).features;
+  const pdfExport = new PdfExport(postFeatures);
   const keyExists = await pdfExport.keyExists();
 
   if (!keyExists) {

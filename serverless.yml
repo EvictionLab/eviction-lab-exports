@@ -19,28 +19,28 @@ functions:
     events:
       - http:
           path: /pdf
-          method: get
+          method: post
   docx:
     timeout: 300
     handler: exports/docx.handler
     events:
       - http:
           path: /docx
-          method: get
+          method: post
   xlsx:
     timeout: 300
     handler: exports/xlsx.handler
     events:
       - http:
           path: /xlsx
-          method: get
+          method: post
   pptx:
     timeout: 300
     handler: exports/pptx.handler
     events:
       - http:
           path: /pptx
-          method: get
+          method: post
 
 plugins:
   - serverless-plugin-typescript

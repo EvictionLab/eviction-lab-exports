@@ -3,7 +3,6 @@ import { S3 } from 'aws-sdk';
 import * as Handlebars from 'handlebars';
 import * as JSZip from 'jszip';
 import { Feature } from '../data/feature';
-import { FixtureFeatures } from '../data/fixture';
 import { Export } from './export';
 
 export class DocxExport extends Export {
@@ -35,7 +34,8 @@ export class DocxExport extends Export {
 }
 
 export async function handler(event, context, callback): Promise<void> {
-  const docxExport = new DocxExport(FixtureFeatures);
+  const postFeatures: Array<Feature> = JSON.parse(event.body).features;
+  const docxExport = new DocxExport(postFeatures);
   const keyExists = await docxExport.keyExists();
   
   if (!keyExists) {
