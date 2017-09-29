@@ -12,8 +12,21 @@ provider:
       Action: "s3:*"
       Resource: "arn:aws:s3:::eviction-lab-exports/*"
 
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline
+  - serverless-plugin-chrome
+
 functions:
   pdf:
+    package:
+      include:
+        - node_modules/@serverless-chrome/**
+        - node_modules/chrome-launcher/**
+        - node_modules/chrome-remote-interface/**
+        - node_modules/chromeless/**
+      exclude:
+        - ""
     timeout: 300
     handler: exports/pdf.fileHandler
     events:
@@ -23,6 +36,12 @@ functions:
   docx:
     timeout: 300
     handler: exports/docx.fileHandler
+    package:
+      exclude:
+        - node_modules/@serverless-chrome/**
+        - node_modules/chrome-launcher/**
+        - node_modules/chrome-remote-interface/**
+        - node_modules/chromeless/**
     events:
       - http:
           path: /docx
@@ -30,6 +49,12 @@ functions:
   xlsx:
     timeout: 300
     handler: exports/xlsx.fileHandler
+    package:
+      exclude:
+        - node_modules/@serverless-chrome/**
+        - node_modules/chrome-launcher/**
+        - node_modules/chrome-remote-interface/**
+        - node_modules/chromeless/**
     events:
       - http:
           path: /xlsx
@@ -37,12 +62,13 @@ functions:
   pptx:
     timeout: 300
     handler: exports/pptx.fileHandler
+    package:
+      exclude:
+        - node_modules/@serverless-chrome/**
+        - node_modules/chrome-launcher/**
+        - node_modules/chrome-remote-interface/**
+        - node_modules/chromeless/**
     events:
       - http:
           path: /pptx
           method: post
-
-plugins:
-  - serverless-plugin-typescript
-  - serverless-plugin-chrome
-  - serverless-offline

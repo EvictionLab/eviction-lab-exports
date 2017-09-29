@@ -38,7 +38,7 @@ export class PdfExport extends Export {
       .pdf({ displayHeaderFooter: false, landscape: false });
 
     await chrome.kill();
-    return fs.readFileSync(pdfStr)
+    return fs.readFileSync(pdfStr);
   }
 }
 
