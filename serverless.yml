@@ -15,59 +15,44 @@ provider:
 plugins:
   - serverless-plugin-typescript
   - serverless-offline
-  - serverless-plugin-chrome
+
+package:
+  individually: true
+  exclude:
+    - node_modules/**
+  include:
+    - node_modules/aws-sdk/**
 
 functions:
-  pdf:
+  docx:
     package:
       include:
-        - node_modules/@serverless-chrome/**
-        - node_modules/chrome-launcher/**
-        - node_modules/chrome-remote-interface/**
-        - node_modules/chromeless/**
-      exclude:
-        - ""
+        - node_modules/handlebars/**
+        - node_modules/pako/**
+        - node_modules/core-js/**
+        - node_modules/jszip/**
     timeout: 300
-    handler: exports/pdf.fileHandler
-    events:
-      - http:
-          path: /pdf
-          method: post
-  docx:
-    timeout: 300
-    handler: exports/docx.fileHandler
-    package:
-      exclude:
-        - node_modules/@serverless-chrome/**
-        - node_modules/chrome-launcher/**
-        - node_modules/chrome-remote-interface/**
-        - node_modules/chromeless/**
+    handler: src/exports/docx.fileHandler
     events:
       - http:
           path: /docx
           method: post
   xlsx:
-    timeout: 300
-    handler: exports/xlsx.fileHandler
     package:
-      exclude:
-        - node_modules/@serverless-chrome/**
-        - node_modules/chrome-launcher/**
-        - node_modules/chrome-remote-interface/**
-        - node_modules/chromeless/**
+      include:
+        - node_modules/xlsx/**
+    timeout: 300
+    handler: src/exports/xlsx.fileHandler
     events:
       - http:
           path: /xlsx
           method: post
   pptx:
-    timeout: 300
-    handler: exports/pptx.fileHandler
     package:
-      exclude:
-        - node_modules/@serverless-chrome/**
-        - node_modules/chrome-launcher/**
-        - node_modules/chrome-remote-interface/**
-        - node_modules/chromeless/**
+      include:
+        - node_modules/pptxgenjs/**
+    timeout: 300
+    handler: src/exports/pptx.fileHandler
     events:
       - http:
           path: /pptx

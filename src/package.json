@@ -1,0 +1,23 @@
+{
+  "name": "eviction-lab-exports-pdf",
+  "description": "Generate PDF export for Eviction Lab in Serverless Lambda function",
+  "version": "0.0.1",
+  "author": "Eviction Lab",
+  "license": "MIT",
+  "scripts": {
+    "deploy": "aws s3 cp ../assets s3://eviction-lab-exports/assets --recursive --acl=public-read && sls deploy"
+  },
+  "dependencies": {
+    "@types/handlebars": "^4.0.36",
+    "aws-sdk": "^2.122.0",
+    "handlebars": "^4.0.10",
+    "chromeless": "^1.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^8.0.31",
+    "serverless": "^1.23.0",
+    "serverless-offline": "^3.16.0",
+    "serverless-plugin-chrome": "^1.0.0-11",
+    "serverless-plugin-typescript": "^1.1.3"
+  }
+}

@@ -1,0 +1,27 @@
+service: eviction-lab-exports-pdf
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  environment:
+    asset_bucket: eviction-lab-exports
+    export_bucket: eviction-lab-exports
+
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action: "s3:*"
+      Resource: "arn:aws:s3:::eviction-lab-exports/*"
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-plugin-chrome
+  - serverless-offline
+
+functions:
+  pdf:
+    timeout: 300
+    handler: pdf/pdf.fileHandler
+    events:
+      - http:
+          path: /pdf
+          method: post
