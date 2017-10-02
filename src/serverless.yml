@@ -16,6 +16,7 @@ plugins:
   - serverless-plugin-typescript
   - serverless-plugin-chrome
   - serverless-offline
+  - serverless-domain-manager
 
 functions:
   pdf:
@@ -23,5 +24,13 @@ functions:
     handler: pdf/pdf.fileHandler
     events:
       - http:
-          path: /pdf
+          path: /
           method: post
+
+custom:
+  customDomain:
+    domainName: 'exports.evictionlab.org'
+    certificateName: '*.evictionlab.org'
+    basePath: 'pdf'
+    stage: ${self:provider.stage}
+    createRoute53Record: true

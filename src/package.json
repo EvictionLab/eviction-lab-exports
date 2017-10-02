@@ -16,6 +16,7 @@
   "devDependencies": {
     "@types/node": "^8.0.31",
     "serverless": "^1.23.0",
+    "serverless-domain-manager": "^1.1.12",
     "serverless-offline": "^3.16.0",
     "serverless-plugin-chrome": "^1.0.0-11",
     "serverless-plugin-typescript": "^1.1.3"
