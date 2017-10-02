@@ -15,6 +15,7 @@ provider:
 plugins:
   - serverless-plugin-typescript
   - serverless-offline
+  - serverless-domain-manager
 
 package:
   individually: true
@@ -57,3 +58,11 @@ functions:
       - http:
           path: /pptx
           method: post
+
+custom:
+  customDomain:
+    domainName: 'exports.evictionlab.org'
+    certificateName: '*.evictionlab.org'
+    basePath: 'format'
+    stage: ${self:provider.stage}
+    createRoute53Record: true
