@@ -1,9 +1,10 @@
 import * as fs from 'fs';
+import { RequestData } from '../data/requestData';
 import { Feature } from '../data/feature';
 
 export async function handler(exportClass, event, context, callback): Promise<void> {
-    const postFeatures: Array<Feature> = JSON.parse(event.body).features;
-    const fileExport = new exportClass(postFeatures);
+    const postData: Array<Feature> = JSON.parse(event.body);
+    const fileExport = new exportClass(postData);
     const keyExists = await fileExport.keyExists();
 
     if (!keyExists) {

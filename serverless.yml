@@ -6,6 +6,7 @@ provider:
   environment:
     asset_bucket: eviction-lab-exports
     export_bucket: eviction-lab-exports
+    pdf_path: false
 
   iamRoleStatements:
     - Effect: "Allow"
@@ -57,6 +58,24 @@ functions:
     events:
       - http:
           path: /pptx
+          method: post
+  zip:
+    package:
+      include:
+        - node_modules/handlebars/**
+        - node_modules/pako/**
+        - node_modules/core-js/**
+        - node_modules/jszip/**
+        - node_modules/xlsx/**
+        - node_modules/pptxgenjs/**
+        - node_modules/follow-redirects/**
+        - node_modules/is-buffer/**
+        - node_modules/axios/**
+    timeout: 300
+    handler: src/exports/zip.fileHandler
+    events:
+      - http:
+          path: /zip
           method: post
 
 custom:

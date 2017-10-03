@@ -2,15 +2,15 @@ import * as fs from 'fs';
 import * as XLSX from 'xlsx';
 import { S3 } from 'aws-sdk';
 import { Export } from './export';
-import { Feature } from '../data/feature';
+import { RequestData } from '../data/requestData';
 import { handler } from './handler';
 
 export class XlsxExport extends Export {
   fileExt = 'xlsx';
 
-  constructor(features: Array<Feature>) {
-    super(features);
-    this.key = this.createKey(features);
+  constructor(requestData: RequestData) {
+    super(requestData);
+    this.key = this.createKey(requestData);
   };
 
   async createFile(): Promise<Buffer> {
