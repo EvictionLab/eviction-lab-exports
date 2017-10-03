@@ -48,6 +48,7 @@ export class ZipExport extends Export {
         const zip = new JSZip();
 
         const requestData: RequestData = { features: this.features };
+        const zipFolder = zip.folder('eviction_lab_export');
         for (let format of this.formats) {
             if (formatMap.hasOwnProperty(format)) {
                 let fileBuffer: Buffer;
@@ -68,7 +69,7 @@ export class ZipExport extends Export {
                 else {
                     fileBuffer = await fileExport.createFile();
                 }
-                zip.file(`${this.keyPrefix}.${format}`, fileBuffer);
+                zipFolder.file(`${this.keyPrefix}.${format}`, fileBuffer);
             }
         }
 

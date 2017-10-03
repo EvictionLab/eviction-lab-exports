@@ -68,6 +68,8 @@ functions:
         - node_modules/jszip/**
         - node_modules/xlsx/**
         - node_modules/pptxgenjs/**
+        - node_modules/ms/**
+        - node_modules/debug/**
         - node_modules/follow-redirects/**
         - node_modules/is-buffer/**
         - node_modules/axios/**
