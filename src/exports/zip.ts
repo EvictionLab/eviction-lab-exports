@@ -73,7 +73,7 @@ export class ZipExport extends Export {
             }
         }
 
-        return zip.generateAsync({ type: 'nodebuffer' });
+        return zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
     }
 }
 
