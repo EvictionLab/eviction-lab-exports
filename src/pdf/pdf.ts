@@ -3,17 +3,17 @@ import * as launchChrome from '@serverless-chrome/lambda';
 import { S3 } from 'aws-sdk';
 import { Chromeless } from 'chromeless';
 import * as Handlebars from 'handlebars';
-import { Export } from './export';
-import { Feature } from '../data/feature';
-import { handler } from './handler';
+import { RequestData } from '../data/requestData';
+import { Export } from '../exports/export';
+import { handler } from '../exports/handler';
 
 export class PdfExport extends Export {
   fileExt = 'pdf';
   templateKey = 'assets/report.html';
 
-  constructor(features: Array<Feature>) {
-    super(features);
-    this.key = this.createKey(features);
+  constructor(requestData: RequestData) {
+    super(requestData);
+    this.key = this.createKey(requestData);
   };
 
   async createFile(): Promise<Buffer> {
@@ -38,7 +38,7 @@ export class PdfExport extends Export {
       .pdf({ displayHeaderFooter: false, landscape: false });
 
     await chrome.kill();
-    return fs.readFileSync(pdfStr)
+    return fs.readFileSync(pdfStr);
   }
 }
 

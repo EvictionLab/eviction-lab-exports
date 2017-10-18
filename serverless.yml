@@ -6,43 +6,71 @@ provider:
   environment:
     asset_bucket: eviction-lab-exports
     export_bucket: eviction-lab-exports
+    pdf_path: https://exports.evictionlab.org/pdf
 
   iamRoleStatements:
     - Effect: "Allow"
       Action: "s3:*"
       Resource: "arn:aws:s3:::eviction-lab-exports/*"
 
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline
+  - serverless-domain-manager
+
+package:
+  individually: true
+  exclude:
+    - node_modules/**
+  include:
+    - node_modules/aws-sdk/**
+
 functions:
-  pdf:
-    timeout: 300
-    handler: exports/pdf.fileHandler
-    events:
-      - http:
-          path: /pdf
-          method: post
-  docx:
-    timeout: 300
-    handler: exports/docx.fileHandler
-    events:
-      - http:
-          path: /docx
-          method: post
   xlsx:
+    package:
+      include:
+        - node_modules/xlsx/**
     timeout: 300
-    handler: exports/xlsx.fileHandler
+    handler: src/exports/xlsx.fileHandler
     events:
       - http:
           path: /xlsx
           method: post
   pptx:
+    package:
+      include:
+        - node_modules/pptxgenjs/**
     timeout: 300
-    handler: exports/pptx.fileHandler
+    handler: src/exports/pptx.fileHandler
     events:
       - http:
           path: /pptx
           method: post
+  zip:
+    package:
+      include:
+        - node_modules/handlebars/**
+        - node_modules/pako/**
+        - node_modules/core-js/**
+        - node_modules/jszip/**
+        - node_modules/xlsx/**
+        - node_modules/pptxgenjs/**
+        - node_modules/ms/**
+        - node_modules/debug/**
+        - node_modules/follow-redirects/**
+        - node_modules/is-buffer/**
+        - node_modules/axios/**
+    timeout: 300
+    handler: src/exports/zip.fileHandler
+    events:
+      - http:
+          path: /zip
+          method: post
 
-plugins:
-  - serverless-plugin-typescript
-  - serverless-plugin-chrome
-  - serverless-offline
+custom:
+  customDomain:
+    domainName: 'exports.evictionlab.org'
+    certificateName: '*.evictionlab.org'
+    basePath: 'format'
+    stage: ${self:provider.stage}
+    createRoute53Record: true
