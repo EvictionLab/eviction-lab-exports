@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import { S3 } from 'aws-sdk';
 import * as Handlebars from 'handlebars';
 import * as JSZip from 'jszip';
-import { Feature } from '../data/feature';
+import { RequestData } from '../data/requestData';
 import { Export } from './export';
 import { handler } from './handler';
 
@@ -10,9 +10,9 @@ export class DocxExport extends Export {
   fileExt = 'docx';
   templateKey = 'assets/report.docx';
 
-  constructor(features: Array<Feature>) {
-    super(features);
-    this.key = this.createKey(features);
+  constructor(requestData: RequestData) {
+    super(requestData);
+    this.key = this.createKey(requestData);
   };
 
   async createFile(): Promise<Buffer> {

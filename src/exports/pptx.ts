@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import { RequestData } from '../data/requestData';
 import { Feature } from '../data/feature';
 import { Export } from './export';
 import { handler } from './handler';
@@ -31,9 +32,9 @@ export class PptxExport extends Export {
   };
   bulletParams = { x: 0.54, y: 1.64, w: 9, h: 4.95, color: '000000', margin: 1 };
 
-  constructor(features: Array<Feature>) {
-    super(features);
-    this.key = this.createKey(features);
+  constructor(requestData: RequestData) {
+    super(requestData);
+    this.key = this.createKey(requestData);
     // Recreating each time to avoid appending to previous buffer based on this issue:
     // https://github.com/gitbrent/PptxGenJS/issues/38#issuecomment-279001048
     delete require.cache[require.resolve('pptxgenjs')];
