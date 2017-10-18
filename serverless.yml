@@ -6,7 +6,7 @@ provider:
   environment:
     asset_bucket: eviction-lab-exports
     export_bucket: eviction-lab-exports
-    pdf_path: false
+    pdf_path: https://exports.evictionlab.org/pdf
 
   iamRoleStatements:
     - Effect: "Allow"

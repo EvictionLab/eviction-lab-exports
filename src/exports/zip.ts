@@ -9,11 +9,26 @@ import { PptxExport } from './pptx';
 import { XlsxExport } from './xlsx';
 import { handler } from './handler';
 
+/**
+ * Stubbing PdfExport functionality for checking keyExists
+ */
+class PdfStub extends Export {
+    fileExt = 'pdf';
+    templateKey = 'assets/report.html';
+
+    constructor(requestData: RequestData) {
+        super(requestData);
+        this.key = this.createKey(requestData);
+    };
+
+    async createFile(): Promise<Buffer> { return new Buffer(''); };
+}
+
 const formatMap = {
     'docx': DocxExport,
     'pptx': PptxExport,
     'xlsx': XlsxExport,
-    'pdf': null
+    'pdf': PdfStub
 };
 
 export class ZipExport extends Export {
@@ -63,7 +78,7 @@ export class ZipExport extends Export {
                 }
                 else if (format === 'pdf' && process.env['pdf_path']) {
                     const pdfRes = await axios.post(process.env['pdf_path'], requestData);
-                    const pdfData = await axios.get(pdfRes.data['path']);
+                    const pdfData = await axios.get(pdfRes.data['path'], { responseType: 'arraybuffer' });
                     fileBuffer = pdfData.data;
                 }
                 else {
