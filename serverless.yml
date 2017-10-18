@@ -26,19 +26,6 @@ package:
     - node_modules/aws-sdk/**
 
 functions:
-  docx:
-    package:
-      include:
-        - node_modules/handlebars/**
-        - node_modules/pako/**
-        - node_modules/core-js/**
-        - node_modules/jszip/**
-    timeout: 300
-    handler: src/exports/docx.fileHandler
-    events:
-      - http:
-          path: /docx
-          method: post
   xlsx:
     package:
       include:
