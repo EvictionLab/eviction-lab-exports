@@ -9,7 +9,7 @@ import { handler } from '../exports/handler';
 
 export class PdfExport extends Export {
   fileExt = 'pdf';
-  templateKey = 'assets/report.html';
+  get templateKey() { return `assets/${this.lang}/report.html`; }
 
   constructor(requestData: RequestData) {
     super(requestData);
