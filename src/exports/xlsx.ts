@@ -14,7 +14,7 @@ export class XlsxExport extends Export {
   };
 
   async createFile(): Promise<Buffer> {
-    const worksheet = XLSX.utils.json_to_sheet(this.features);
+    const worksheet = XLSX.utils.json_to_sheet(this.features.map(f => f.properties));
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
 

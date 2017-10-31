@@ -46,7 +46,7 @@ export class PptxExport extends Export {
 
     const titleSlide = this.pptx.addNewSlide({ bkgd: '6B8890' });
 
-    titleSlide.addText(`UNDERSTANDING EVICTION IN ${feature.name}`, {
+    titleSlide.addText(`UNDERSTANDING EVICTION IN ${feature.properties.name}`, {
       align: 'center',
       x: 1.21,
       y: 2.61,
@@ -92,7 +92,7 @@ export class PptxExport extends Export {
           options: { bullet: true }
         },
         {
-          text: `Below is a graph of estimated eviction rates in ${feature.name} over the last six years`,
+          text: `Below is a graph of estimated eviction rates in ${feature.properties.name} over the last six years`,
           options: { bullet: true }
         }
       ],

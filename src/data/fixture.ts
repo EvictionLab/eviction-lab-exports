@@ -2,21 +2,24 @@ import { Feature } from './feature';
 
 export const FixtureFeatures: Array<Feature> = [
     {
-        GEOID: '42',
-        name: 'Pennsylvania',
-        year: 2015,
-        eviction_rate: 10
+        properties: {
+            GEOID: '42',
+            name: 'Pennsylvania',
+            'er-10': 10
+        }
     },
     {
-        GEOID: '36',
-        name: 'New York',
-        year: 2015,
-        eviction_rate: 11
+        properties: {
+            GEOID: '36',
+            name: 'New York',
+            'er-10': 11
+        }
     },
     {
-        GEOID: '17',
-        name: 'Illinois',
-        year: 2015,
-        eviction_rate: 12
+        properties: {
+            GEOID: '17',
+            name: 'Illinois',
+            'er-10': 12
+        }
     }
 ];

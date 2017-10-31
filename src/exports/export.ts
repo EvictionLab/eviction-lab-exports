@@ -8,6 +8,7 @@ const s3 = new S3();
 export abstract class Export {
     abstract fileExt: string;
     features: Array<Feature>;
+    years: Array<number>;
     lang: string;
     key: string;
     templateKey: string | undefined;
@@ -16,6 +17,7 @@ export abstract class Export {
 
     constructor(requestData: RequestData) {
         this.features = requestData.features;
+        this.years = requestData.years;
         this.lang = requestData.lang;
         this.key = this.createKey(requestData);
     };
@@ -25,8 +27,8 @@ export abstract class Export {
      * @param requestData Array of at least 1 Feature
      */
     createKey(requestData: RequestData): string {
-        const idPath = requestData.features.map(f => f.GEOID).join('/');
-        return `${this.lang}/${requestData.features[0].year}/${idPath}/eviction_lab_export.${this.fileExt}`;
+        const idPath = requestData.features.map(f => f.properties.GEOID).join('/');
+        return `${this.lang}/${this.years[0]}-${this.years[1]}/${idPath}/eviction_lab_export.${this.fileExt}`;
     }
 
     /**
