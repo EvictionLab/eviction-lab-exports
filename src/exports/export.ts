@@ -59,7 +59,8 @@ export abstract class Export {
             Bucket: this.exportBucket,
             Key: this.key,
             Body: fileBuffer,
-            ACL: 'public-read'
+            ACL: 'public-read',
+            ContentDisposition: 'attachment'
         }).promise();
     }
 }
