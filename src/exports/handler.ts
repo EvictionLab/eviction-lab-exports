@@ -14,6 +14,7 @@ export async function handler(exportClass, event, context, callback): Promise<vo
 
     callback(null, {
         statusCode: 200,
+        headers: { 'Access-Control-Allow-Origin': "*" },
         body: JSON.stringify({
             path: `https://s3.amazonaws.com/${fileExport.exportBucket}/${fileExport.key}`
         })

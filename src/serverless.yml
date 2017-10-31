@@ -26,6 +26,7 @@ functions:
       - http:
           path: /
           method: post
+          cors: true
 
 custom:
   customDomain:

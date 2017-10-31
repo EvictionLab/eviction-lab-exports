@@ -4,21 +4,21 @@ export const FixtureFeatures: Array<Feature> = [
     {
         properties: {
             GEOID: '42',
-            name: 'Pennsylvania',
+            n: 'Pennsylvania',
             'er-10': 10
         }
     },
     {
         properties: {
             GEOID: '36',
-            name: 'New York',
+            n: 'New York',
             'er-10': 11
         }
     },
     {
         properties: {
             GEOID: '17',
-            name: 'Illinois',
+            n: 'Illinois',
             'er-10': 12
         }
     }
