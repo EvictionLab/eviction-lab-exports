@@ -2,7 +2,7 @@ export interface Feature {
     [index: string]: any;
     properties: {
         GEOID: string;
-        name: string;
+        n: string;
         [index: string]: any;
     }
 }

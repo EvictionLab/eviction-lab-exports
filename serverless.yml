@@ -36,6 +36,7 @@ functions:
       - http:
           path: /xlsx
           method: post
+          cors: true
   pptx:
     package:
       include:
@@ -46,6 +47,7 @@ functions:
       - http:
           path: /pptx
           method: post
+          cors: true
   zip:
     package:
       include:
@@ -66,6 +68,7 @@ functions:
       - http:
           path: /zip
           method: post
+          cors: true
 
 custom:
   customDomain:
