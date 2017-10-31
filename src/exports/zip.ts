@@ -46,9 +46,9 @@ export class ZipExport extends Export {
      * @param formats Array of format strings (i.e. pdf, xlsx)
      */
     createKey(requestData: RequestData): string {
-        const idPath = requestData.features.map(f => f.GEOID).join('/');
+        const idPath = requestData.features.map(f => f.properties.GEOID).join('/');
         const formatPath = requestData.formats.sort().join('/');
-        return `${requestData.features[0].year}/${idPath}/${formatPath}/eviction_lab_export.${this.fileExt}`;
+        return `${this.years[0]}-${this.years[1]}/${idPath}/${formatPath}/eviction_lab_export.${this.fileExt}`;
     }
 
     /**
@@ -60,7 +60,7 @@ export class ZipExport extends Export {
         const s3 = new S3();
         const zip = new JSZip();
 
-        const requestData: RequestData = { features: this.features };
+        const requestData: RequestData = { lang: this.lang, years: this.years, features: this.features };
         const zipFolder = zip.folder('eviction_lab_export');
         for (let format of this.formats) {
             if (formatMap.hasOwnProperty(format)) {
