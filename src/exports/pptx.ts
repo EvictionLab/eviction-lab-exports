@@ -30,7 +30,7 @@ export class PptxExport extends Export {
     font_size: 28,
     isTextBox: true
   };
-  bulletParams = { x: 0.54, y: 1.8, w: 9, h: 2.5, color: '000000', margin: 1 };
+  bulletParams = { x: 0.54, y: 1.7, w: 9, h: 2.5, color: '000000', margin: 1 };
 
   constructor(requestData: RequestData) {
     super(requestData);
