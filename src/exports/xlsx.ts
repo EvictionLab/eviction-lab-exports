@@ -33,18 +33,20 @@ export class XlsxExport extends Export {
   }
 
   formatFeatures(features: Array<Feature>): Object[] {
-    // Get all years suffixes and property keys from first feature
-    const suffixes = Object.keys(features[0].properties)
+    // Get all unique year suffixes and property keys from first feature
+    let suffixes = Object.keys(features[0].properties)
       .filter(k => k.split('-').length > 1)
       .map(k => k.split('-').slice(-1)[0]);
-    const propKeys = Object.keys(features[0].properties)
+    let propKeys = Object.keys(features[0].properties)
       .filter(k => k.split('-').length > 1)
       .map(k => k.split('-').slice(0, -1).join('-'));
     
+    suffixes = suffixes.filter((item, pos) => suffixes.indexOf(item) === pos);
+    propKeys = propKeys.filter((item, pos) => propKeys.indexOf(item) === pos);
     const featArr = [];
 
     // Iterate over features and years, then flatten the array
-    return [].concat.apply([], this.features.map(f => {
+    return [].concat.apply([], features.map(f => {
       return suffixes.map(s => {
         const feat = {
           GEOID: f.properties.GEOID,

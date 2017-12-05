@@ -14,7 +14,7 @@ export const ColMap: Object = {
     'pa': 'pct-asian',
     'pnp': 'pct-nh-pi',
     'pm': 'pct-multiple',
-    'po': 'po',
+    'po': 'pct-other',
     'e': 'evictions',
     'ef': 'eviction-filings',
     'ahs': 'average-household-size',
