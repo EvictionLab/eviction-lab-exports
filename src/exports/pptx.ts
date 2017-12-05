@@ -11,7 +11,7 @@ export class PptxExport extends Export {
   sourceParams = { font_size: 12, align: 'c', x: 0.55, y: 7.06, w: 8.91, h: 0.33 }
   chartParams = {
     x: 1.56,
-    y: 2.8,
+    y: 3.3,
     h: 3.37,
     w: 7.09,
     valAxisLabelFormatCode: '#%',
@@ -30,7 +30,7 @@ export class PptxExport extends Export {
     font_size: 28,
     isTextBox: true
   };
-  bulletParams = { x: 0.54, y: 1.64, w: 9, h: 4.95, color: '000000', margin: 1 };
+  bulletParams = { x: 0.54, y: 1.8, w: 9, h: 2.5, color: '000000', margin: 1 };
 
   constructor(requestData: RequestData) {
     super(requestData);
