@@ -5,6 +5,7 @@ import { Export } from './export';
 import { RequestData } from '../data/requestData';
 import { handler } from './handler';
 import { Feature } from '../data/feature';
+import { ColMap } from '../data/col_map';
 
 export class XlsxExport extends Export {
   fileExt = 'xlsx';
@@ -47,12 +48,12 @@ export class XlsxExport extends Export {
       return suffixes.map(s => {
         const feat = {
           GEOID: f.properties.GEOID,
-          n: f.properties.n,
-          pl: f.properties.pl,
+          name: f.properties.n,
+          'parent-location': f.properties.pl,
           year: this.getYearFromSuffix(s)
         };
         propKeys.forEach(pk => {
-          feat[pk] = f.properties[`${pk}-${s}`];
+          feat[ColMap[pk]] = f.properties[`${pk}-${s}`];
         });
         return feat;
       })
