@@ -4,6 +4,7 @@ import { S3 } from 'aws-sdk';
 import { Export } from './export';
 import { RequestData } from '../data/requestData';
 import { handler } from './handler';
+import { Feature } from '../data/feature';
 
 export class XlsxExport extends Export {
   fileExt = 'xlsx';
@@ -14,11 +15,48 @@ export class XlsxExport extends Export {
   };
 
   async createFile(): Promise<Buffer> {
-    const worksheet = XLSX.utils.json_to_sheet(this.features.map(f => f.properties));
+    const worksheet = XLSX.utils.json_to_sheet(this.formatFeatures(this.features));
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
 
     return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+  }
+
+  getYearFromSuffix(suffix: string): number {
+    // If first number in suffix is less than 4, in 2000s, otherwise 1900s
+    if (+suffix[0] < 4) {
+      return +('20' + suffix);
+    } else {
+      return +('19' + suffix);
+    }
+  }
+
+  formatFeatures(features: Array<Feature>): Object[] {
+    // Get all years suffixes and property keys from first feature
+    const suffixes = Object.keys(features[0].properties)
+      .filter(k => k.split('-').length > 1)
+      .map(k => k.split('-').slice(-1)[0]);
+    const propKeys = Object.keys(features[0].properties)
+      .filter(k => k.split('-').length > 1)
+      .map(k => k.split('-').slice(0, -1).join('-'));
+    
+    const featArr = [];
+
+    // Iterate over features and years, then flatten the array
+    return [].concat.apply([], this.features.map(f => {
+      return suffixes.map(s => {
+        const feat = {
+          GEOID: f.properties.GEOID,
+          n: f.properties.n,
+          pl: f.properties.pl,
+          year: this.getYearFromSuffix(s)
+        };
+        propKeys.forEach(pk => {
+          feat[pk] = f.properties[`${pk}-${s}`];
+        });
+        return feat;
+      })
+    }));
   }
 }
 
