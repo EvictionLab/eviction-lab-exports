@@ -3,6 +3,10 @@ import { RequestData } from '../data/requestData';
 import { Feature } from '../data/feature';
 import { Export } from './export';
 import { handler } from './handler';
+import * as Canvas from 'canvas-aws-prebuilt';
+// Need to use original canvas for local development
+// import * as Canvas from 'canvas';
+import { scaleLinear, scaleBand } from 'd3-scale';
 
 export class PptxExport extends Export {
   pptx;
@@ -97,36 +101,176 @@ export class PptxExport extends Export {
     slideOne.addText(this.sourceText, { ...this.sourceParams, color: '000000' });
   }
 
+  createBarChart(features: Feature[]): any {
+    const year = this.years[this.years.length - 1];
+
+    const width = 600;
+    const height = 600;
+    const canvas = new Canvas(width, height);
+    const context = canvas.getContext('2d');
+
+    const x = scaleBand()
+      .rangeRound([0, width])
+      .padding(0.1);
+
+    const y = scaleLinear()
+      .rangeRound([height, 0]);
+
+    x.domain(features.map(f => f.properties.n));;
+    y.domain(features.map(f => f.properties[`er-${year.toString().slice(2)}`]));
+
+    const yTicksCount = 5;
+    const yTicks = y.ticks(yTicksCount);
+
+    context.beginPath();
+    x.domain().forEach(d => {
+      context.moveTo(x(d) + x.bandwidth() / 2, height);
+      context.lineTo(x(d) + x.bandwidth() / 2, height + 6);
+    });
+    context.strokeStyle = 'black';
+    context.stroke();
+
+    context.textAlign = "center";
+    context.textBaseline = "top";
+    x.domain().forEach(function (d) {
+      context.fillText(d, x(d) + x.bandwidth() / 2, height + 6);
+    });
+
+    context.beginPath();
+    yTicks.forEach(function (d) {
+      context.moveTo(0, y(d) + 0.5);
+      context.lineTo(-6, y(d) + 0.5);
+    });
+    context.strokeStyle = "black";
+    context.stroke();
+
+    context.textAlign = "right";
+    context.textBaseline = "middle";
+    yTicks.forEach(function (d) {
+      context.fillText(d, -9, y(d));
+    });
+
+    context.beginPath();
+    context.moveTo(-6.5, 0 + 0.5);
+    context.lineTo(0.5, 0 + 0.5);
+    context.lineTo(0.5, height + 0.5);
+    context.lineTo(-6.5, height + 0.5);
+    context.strokeStyle = "black";
+    context.stroke();
+
+    context.save();
+    context.rotate(-Math.PI / 2);
+    context.textAlign = "right";
+    context.textBaseline = "top";
+    context.font = "bold 16px sans-serif";
+    context.fillText("Eviction Rate", -10, 10);
+    context.restore();
+
+    // context.fillStyle = "steelblue";
+    features.forEach((f, i) => {
+      context.fillStyle = '#' + this.colors[i];
+      context.fillRect(
+        x(f.properties.n),
+        y(f.properties[`er-${year.toString().slice(2)}`]),
+        x.bandwidth(),
+        height - y(f.properties[`er-${year.toString().slice(2)}`])
+      );
+    });
+
+    return canvas.toDataURL();
+  }
+
+  createLineChart(features: Feature[]): any {
+    const year = this.years[this.years.length - 1];
+
+    const width = 600;
+    const height = 600;
+    const canvas = new Canvas(width, height);
+    const context = canvas.getContext('2d');
+
+    const x = scaleBand()
+      .rangeRound([0, width])
+      .padding(0.1);
+
+    const y = scaleLinear()
+      .rangeRound([height, 0]);
+
+    x.domain(features.map(f => f.properties.n));;
+    y.domain(features.map(f => f.properties[`er-${year.toString().slice(2)}`]));
+
+    const yTicksCount = 5;
+    const yTicks = y.ticks(yTicksCount);
+
+    context.beginPath();
+    x.domain().forEach(d => {
+      context.moveTo(x(d) + x.bandwidth() / 2, height);
+      context.lineTo(x(d) + x.bandwidth() / 2, height + 6);
+    });
+    context.strokeStyle = 'black';
+    context.stroke();
+
+    context.textAlign = "center";
+    context.textBaseline = "top";
+    x.domain().forEach(function (d) {
+      context.fillText(d, x(d) + x.bandwidth() / 2, height + 6);
+    });
+
+    context.beginPath();
+    yTicks.forEach(function (d) {
+      context.moveTo(0, y(d) + 0.5);
+      context.lineTo(-6, y(d) + 0.5);
+    });
+    context.strokeStyle = "black";
+    context.stroke();
+
+    context.textAlign = "right";
+    context.textBaseline = "middle";
+    yTicks.forEach(function (d) {
+      context.fillText(d, -9, y(d));
+    });
+
+    context.beginPath();
+    context.moveTo(-6.5, 0 + 0.5);
+    context.lineTo(0.5, 0 + 0.5);
+    context.lineTo(0.5, height + 0.5);
+    context.lineTo(-6.5, height + 0.5);
+    context.strokeStyle = "black";
+    context.stroke();
+
+    context.save();
+    context.rotate(-Math.PI / 2);
+    context.textAlign = "right";
+    context.textBaseline = "top";
+    context.font = "bold 16px sans-serif";
+    context.fillText("Eviction Rate", -10, 10);
+    context.restore();
+
+    context.fillStyle = "steelblue";
+    features.forEach(function (f) {
+      context.fillRect(x(f.properties.n), y(f.properties[`er-${year.toString().slice(2)}`]), x.bandwidth(), height - y(f.properties[`er-${year.toString().slice(2)}`]));
+    });
+
+    return canvas.toDataURL();
+  }
+
   createDataSlides(features: Feature[]): void {
+    const year = this.years[this.years.length - 1];
     if (features.length > 1) {
       // Create comparison if more than one feature provided
       const barChartSlide = this.pptx.addNewSlide({ bkgd: 'ffffff' });
-      const year = this.years[this.years.length - 1];
 
       barChartSlide.addText(`Eviction Rates in ${year}`, this.titleParams);
-      barChartSlide.addChart(this.pptx.charts.BAR, [{
-        name: 'Eviction Rates',
-        labels: features.map(f => f.properties.n),
-        values: features.map(f => f.properties[`er-${year.toString().slice(2)}`])
-      }], {
-        ...this.chartParams, valAxisTitle: 'Eviction Rate', showTitle: false,
-        barGapWidthPct: 80, barDir: 'col' });
+
+      const barChartCanvas = this.createBarChart(features);
+      barChartSlide.addImage({ data: barChartCanvas, x: 1.25, y: 1.5, w: 5, h: 5, });
     }
 
     // Create line chart
     const lineChartSlide = this.pptx.addNewSlide({ bkgd: 'ffffff' });
     const years = this.makeYearArr(this.years).map(y => y.toString());
 
-    lineChartSlide.addText('Eviction Rates Over Time', this.titleParams);
-
-    const lineChartData = features.map(f => {
-      return {
-        name: f.properties.n,
-        labels: years,
-        values: years.map(y => f.properties[`er-${y.slice(2)}`])
-      };
-    });
-    lineChartSlide.addChart(this.pptx.charts.LINE, lineChartData, this.chartParams);
+    const lineChartCanvas = this.createLineChart(features);
+    lineChartSlide.addImage({ data: lineChartCanvas, x: 1.25, y: 1.5, w: 5, h: 5, });
 
     // Create general stats slide
   }
