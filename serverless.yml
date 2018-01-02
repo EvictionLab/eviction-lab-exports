@@ -61,6 +61,8 @@ functions:
         - node_modules/d3-time/**
         - node_modules/d3-time-format/**
         - node_modules/d3-scale/**
+        - node_modules/d3-path/**
+        - node_modules/d3-shape/**
         - node_modules/nan/**
         - node_modules/css-font-size-keywords/**
         - node_modules/css-font-stretch-keywords/**

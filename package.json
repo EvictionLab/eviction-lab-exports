@@ -15,6 +15,7 @@
     "canvas": "^1.6.9",
     "canvas-aws-prebuilt": "^2.0.2",
     "d3-scale": "^1.0.7",
+    "d3-shape": "^1.2.0",
     "handlebars": "^4.0.10",
     "jszip": "^3.1.4",
     "pptxgenjs": "^1.8.0",

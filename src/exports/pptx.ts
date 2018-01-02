@@ -7,6 +7,7 @@ import * as Canvas from 'canvas-aws-prebuilt';
 // Need to use original canvas for local development
 // import * as Canvas from 'canvas';
 import { scaleLinear, scaleBand } from 'd3-scale';
+import { line } from 'd3-shape';
 
 export class PptxExport extends Export {
   pptx;
@@ -104,20 +105,25 @@ export class PptxExport extends Export {
   createBarChart(features: Feature[]): any {
     const year = this.years[this.years.length - 1];
 
-    const width = 600;
-    const height = 600;
-    const canvas = new Canvas(width, height);
+    const margin = {top: 20, left: 50, right: 20, bottom: 50};
+    const fullWidth = 1000;
+    const fullHeight = 600;
+    const width = fullWidth - margin.left - margin.right;
+    const height = fullHeight - margin.top - margin.bottom;
+    const canvas = new Canvas(fullWidth, fullHeight);
     const context = canvas.getContext('2d');
+    context.translate(margin.left, margin.top);
 
     const x = scaleBand()
       .rangeRound([0, width])
-      .padding(0.1);
+      .padding(0.3);
 
     const y = scaleLinear()
       .rangeRound([height, 0]);
 
-    x.domain(features.map(f => f.properties.n));;
-    y.domain(features.map(f => f.properties[`er-${year.toString().slice(2)}`]));
+    x.domain(features.map(f => f.properties.n));
+    const maxY = Math.max(...features.map(f => f.properties[`er-${year.toString().slice(2)}`]));
+    y.domain([0, maxY]);
 
     const yTicksCount = 5;
     const yTicks = y.ticks(yTicksCount);
@@ -132,12 +138,13 @@ export class PptxExport extends Export {
 
     context.textAlign = "center";
     context.textBaseline = "top";
-    x.domain().forEach(function (d) {
+    context.font = "18px Helvetica";
+    x.domain().forEach((d) => {
       context.fillText(d, x(d) + x.bandwidth() / 2, height + 6);
     });
 
     context.beginPath();
-    yTicks.forEach(function (d) {
+    yTicks.forEach((d) => {
       context.moveTo(0, y(d) + 0.5);
       context.lineTo(-6, y(d) + 0.5);
     });
@@ -146,6 +153,7 @@ export class PptxExport extends Export {
 
     context.textAlign = "right";
     context.textBaseline = "middle";
+    context.font = "16px Helvetica";
     yTicks.forEach(function (d) {
       context.fillText(d, -9, y(d));
     });
@@ -162,11 +170,10 @@ export class PptxExport extends Export {
     context.rotate(-Math.PI / 2);
     context.textAlign = "right";
     context.textBaseline = "top";
-    context.font = "bold 16px sans-serif";
+    context.font = "20px Helvetica";
     context.fillText("Eviction Rate", -10, 10);
     context.restore();
 
-    // context.fillStyle = "steelblue";
     features.forEach((f, i) => {
       context.fillStyle = '#' + this.colors[i];
       context.fillRect(
@@ -181,42 +188,53 @@ export class PptxExport extends Export {
   }
 
   createLineChart(features: Feature[]): any {
-    const year = this.years[this.years.length - 1];
-
-    const width = 600;
-    const height = 600;
-    const canvas = new Canvas(width, height);
+    const yearArr = this.makeYearArr(this.years);
+    const margin = { top: 20, left: 50, right: 20, bottom: 50 };
+    const fullWidth = 1000;
+    const fullHeight = 600;
+    const width = fullWidth - margin.left - margin.right;
+    const height = fullHeight - margin.top - margin.bottom;
+    const canvas = new Canvas(fullWidth, fullHeight);
     const context = canvas.getContext('2d');
+    context.translate(margin.left, margin.top);
 
-    const x = scaleBand()
-      .rangeRound([0, width])
-      .padding(0.1);
+    const x = scaleLinear()
+      .rangeRound([0, width]);
 
     const y = scaleLinear()
       .rangeRound([height, 0]);
 
-    x.domain(features.map(f => f.properties.n));;
-    y.domain(features.map(f => f.properties[`er-${year.toString().slice(2)}`]));
+    x.domain([yearArr[0], yearArr[yearArr.length - 1]]);
+    const maxY = Math.max(...features.map(f => {
+      return Math.max(...yearArr.map(y => {
+        return f.properties[`er-${y.toString().slice(2)}`] || 0;
+      }));
+    }));
+    y.domain([0, maxY]);
 
+    const tickSize = 16;
+    const xTicksCount = yearArr.length - 1;
+    const xTicks = x.ticks(xTicksCount);
     const yTicksCount = 5;
     const yTicks = y.ticks(yTicksCount);
 
     context.beginPath();
-    x.domain().forEach(d => {
-      context.moveTo(x(d) + x.bandwidth() / 2, height);
-      context.lineTo(x(d) + x.bandwidth() / 2, height + 6);
+    xTicks.forEach(d => {
+      context.moveTo(x(d), height);
+      context.lineTo(x(d), height + tickSize);
     });
-    context.strokeStyle = 'black';
+    context.strokeStyle = "black";
     context.stroke();
 
     context.textAlign = "center";
     context.textBaseline = "top";
-    x.domain().forEach(function (d) {
-      context.fillText(d, x(d) + x.bandwidth() / 2, height + 6);
+    context.font = "16px Helvetica";
+    xTicks.forEach(d => {
+      context.fillText(d, x(d), height + tickSize);
     });
 
     context.beginPath();
-    yTicks.forEach(function (d) {
+    yTicks.forEach(d => {
       context.moveTo(0, y(d) + 0.5);
       context.lineTo(-6, y(d) + 0.5);
     });
@@ -225,7 +243,8 @@ export class PptxExport extends Export {
 
     context.textAlign = "right";
     context.textBaseline = "middle";
-    yTicks.forEach(function (d) {
+    context.font = "16px Helvetica";
+    yTicks.forEach(d => {
       context.fillText(d, -9, y(d));
     });
 
@@ -241,13 +260,24 @@ export class PptxExport extends Export {
     context.rotate(-Math.PI / 2);
     context.textAlign = "right";
     context.textBaseline = "top";
-    context.font = "bold 16px sans-serif";
+    context.font = "20px Helvetica";
     context.fillText("Eviction Rate", -10, 10);
     context.restore();
 
-    context.fillStyle = "steelblue";
-    features.forEach(function (f) {
-      context.fillRect(x(f.properties.n), y(f.properties[`er-${year.toString().slice(2)}`]), x.bandwidth(), height - y(f.properties[`er-${year.toString().slice(2)}`]));
+    const lineChart = line()
+      .x(d => x(d.year))
+      .y(d => y(d.val))
+      .context(context);
+
+    features.forEach((f, i) => {
+      context.beginPath();
+      const data = yearArr.map(y => {
+        return { year: y, val: f.properties[`er-${y.toString().slice(2)}`] };
+      });
+      lineChart(data);
+      context.lineWidth = 3;
+      context.strokeStyle = '#' + this.colors[i];
+      context.stroke();
     });
 
     return canvas.toDataURL();
@@ -262,7 +292,7 @@ export class PptxExport extends Export {
       barChartSlide.addText(`Eviction Rates in ${year}`, this.titleParams);
 
       const barChartCanvas = this.createBarChart(features);
-      barChartSlide.addImage({ data: barChartCanvas, x: 1.25, y: 1.5, w: 5, h: 5, });
+      barChartSlide.addImage({ data: barChartCanvas, x: 1.25, y: 1.5, w: 8, h: 4.8, });
     }
 
     // Create line chart
@@ -270,7 +300,7 @@ export class PptxExport extends Export {
     const years = this.makeYearArr(this.years).map(y => y.toString());
 
     const lineChartCanvas = this.createLineChart(features);
-    lineChartSlide.addImage({ data: lineChartCanvas, x: 1.25, y: 1.5, w: 5, h: 5, });
+    lineChartSlide.addImage({ data: lineChartCanvas, x: 1.25, y: 1.5, w: 8, h: 4.8, });
 
     // Create general stats slide
   }
