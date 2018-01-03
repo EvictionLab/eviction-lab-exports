@@ -12,7 +12,6 @@
     "@types/handlebars": "^4.0.36",
     "aws-sdk": "^2.122.0",
     "axios": "^0.16.2",
-    "canvas": "^1.6.9",
     "canvas-aws-prebuilt": "^2.0.2",
     "d3-scale": "^1.0.7",
     "d3-shape": "^1.2.0",
