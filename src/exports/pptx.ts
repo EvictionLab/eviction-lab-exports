@@ -105,7 +105,7 @@ export class PptxExport extends Export {
   createBarChart(features: Feature[]): any {
     const year = this.years[this.years.length - 1];
 
-    const margin = {top: 20, left: 50, right: 20, bottom: 50};
+    const margin = {top: 20, left: 80, right: 20, bottom: 50};
     const fullWidth = 1000;
     const fullHeight = 600;
     const width = fullWidth - margin.left - margin.right;
@@ -131,16 +131,16 @@ export class PptxExport extends Export {
     context.beginPath();
     x.domain().forEach(d => {
       context.moveTo(x(d) + x.bandwidth() / 2, height);
-      context.lineTo(x(d) + x.bandwidth() / 2, height + 6);
+      context.lineTo(x(d) + x.bandwidth() / 2, height + 8);
     });
     context.strokeStyle = 'black';
     context.stroke();
 
     context.textAlign = "center";
     context.textBaseline = "top";
-    context.font = "18px Helvetica";
+    context.font = "22px Helvetica";
     x.domain().forEach((d) => {
-      context.fillText(d, x(d) + x.bandwidth() / 2, height + 6);
+      context.fillText(d, x(d) + x.bandwidth() / 2, height + 12);
     });
 
     context.beginPath();
@@ -153,25 +153,17 @@ export class PptxExport extends Export {
 
     context.textAlign = "right";
     context.textBaseline = "middle";
-    context.font = "16px Helvetica";
+    context.font = "20px Helvetica";
     yTicks.forEach(function (d) {
-      context.fillText(d, -9, y(d));
+      context.fillText(d, -15, y(d));
     });
-
-    context.beginPath();
-    context.moveTo(-6.5, 0 + 0.5);
-    context.lineTo(0.5, 0 + 0.5);
-    context.lineTo(0.5, height + 0.5);
-    context.lineTo(-6.5, height + 0.5);
-    context.strokeStyle = "black";
-    context.stroke();
 
     context.save();
     context.rotate(-Math.PI / 2);
     context.textAlign = "right";
     context.textBaseline = "top";
-    context.font = "20px Helvetica";
-    context.fillText("Eviction Rate", -10, 10);
+    context.font = "24px Helvetica";
+    context.fillText("Eviction Rate", -150, -70);
     context.restore();
 
     features.forEach((f, i) => {
@@ -189,7 +181,7 @@ export class PptxExport extends Export {
 
   createLineChart(features: Feature[]): any {
     const yearArr = this.makeYearArr(this.years);
-    const margin = { top: 20, left: 50, right: 20, bottom: 50 };
+    const margin = { top: 20, left: 80, right: 50, bottom: 50 };
     const fullWidth = 1000;
     const fullHeight = 600;
     const width = fullWidth - margin.left - margin.right;
@@ -228,9 +220,9 @@ export class PptxExport extends Export {
 
     context.textAlign = "center";
     context.textBaseline = "top";
-    context.font = "16px Helvetica";
+    context.font = "22px Helvetica";
     xTicks.forEach(d => {
-      context.fillText(d, x(d), height + tickSize);
+      context.fillText(d, x(d), height + tickSize + 10);
     });
 
     context.beginPath();
@@ -243,25 +235,17 @@ export class PptxExport extends Export {
 
     context.textAlign = "right";
     context.textBaseline = "middle";
-    context.font = "16px Helvetica";
+    context.font = "20px Helvetica";
     yTicks.forEach(d => {
-      context.fillText(d, -9, y(d));
+      context.fillText(d, -15, y(d));
     });
-
-    context.beginPath();
-    context.moveTo(-6.5, 0 + 0.5);
-    context.lineTo(0.5, 0 + 0.5);
-    context.lineTo(0.5, height + 0.5);
-    context.lineTo(-6.5, height + 0.5);
-    context.strokeStyle = "black";
-    context.stroke();
 
     context.save();
     context.rotate(-Math.PI / 2);
     context.textAlign = "right";
     context.textBaseline = "top";
-    context.font = "20px Helvetica";
-    context.fillText("Eviction Rate", -10, 10);
+    context.font = "24px Helvetica";
+    context.fillText("Eviction Rate", -150, -70);
     context.restore();
 
     const lineChart = line()
@@ -275,7 +259,7 @@ export class PptxExport extends Export {
         return { year: y, val: f.properties[`er-${y.toString().slice(2)}`] };
       });
       lineChart(data);
-      context.lineWidth = 3;
+      context.lineWidth = 6;
       context.strokeStyle = '#' + this.colors[i];
       context.stroke();
     });
@@ -288,21 +272,22 @@ export class PptxExport extends Export {
     if (features.length > 1) {
       // Create comparison if more than one feature provided
       const barChartSlide = this.pptx.addNewSlide({ bkgd: 'ffffff' });
-
       barChartSlide.addText(`Eviction Rates in ${year}`, this.titleParams);
 
       const barChartCanvas = this.createBarChart(features);
-      barChartSlide.addImage({ data: barChartCanvas, x: 1.25, y: 1.5, w: 8, h: 4.8, });
+      barChartSlide.addImage({ data: barChartCanvas, x: 1, y: 1.5, w: 8, h: 4.8, });
     }
 
     // Create line chart
     const lineChartSlide = this.pptx.addNewSlide({ bkgd: 'ffffff' });
+    lineChartSlide.addText(`Eviction Rates Over Time`, this.titleParams);
+
     const years = this.makeYearArr(this.years).map(y => y.toString());
 
     const lineChartCanvas = this.createLineChart(features);
-    lineChartSlide.addImage({ data: lineChartCanvas, x: 1.25, y: 1.5, w: 8, h: 4.8, });
+    lineChartSlide.addImage({ data: lineChartCanvas, x: 1, y: 1.5, w: 8, h: 4.8, });
 
-    // Create general stats slide
+    // TODO: Create general stats slide
   }
 
   async saveWrapper(): Promise<any> {
