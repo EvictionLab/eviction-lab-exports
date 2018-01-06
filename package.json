@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@types/node": "^8.0.31",
-    "serverless": "^1.25.0",
+    "serverless": "^1.24.0",
     "serverless-domain-manager": "^1.1.25",
     "serverless-offline": "^3.16.0",
     "serverless-plugin-typescript": "^1.1.5"
