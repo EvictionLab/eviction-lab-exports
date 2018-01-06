@@ -30,6 +30,28 @@ export class PptxExport extends Export {
     x: 1.25, y: 1.5, w: 7.5, h: 5, chartColors: this.colors,
     dataBorder: { pt: 2, color: 'FFFFFF' }, fill: 'ffffff'
   };
+  statTitleParams = {
+    align: 'c', font_size: 24, w: 3, h: 0.5, x: 0.75, y: 1.25
+  };
+  dataProps = {
+    'e': 'Total Evictions',
+    'p': 'Population',
+    'roh': '% Renter-Occupied Households',
+    'pr': 'Poverty Rate',
+    'mgr': 'Median Gross Rent',
+    'mhi': 'Median Household Income',
+    'mpv': 'Median Property Value'
+  }
+  demDataProps = {
+    'paa': 'Black',
+    'pw': 'White',
+    'ph': 'Hispanic/Latinx',
+    'pa': 'Asian',
+    'pai': 'American Indian/Alaska Native',
+    'pnp': 'Native Hawaiian/Pacific Islander',
+    'pm': 'Multiple Races',
+    'po': 'Other Races'
+  }
 
   constructor(requestData: RequestData) {
     super(requestData);
@@ -267,6 +289,30 @@ export class PptxExport extends Export {
     return canvas.toDataURL();
   }
 
+  createDataTable(slide: any, yearSuffix: string, feature: Feature, count: number, idx: number): void {
+    const width = 9 / count;
+    const xVal = 0.5 + (idx * width);
+    slide.addText(feature.properties.n, { ...this.statTitleParams, color: this.colors[idx], w: width, x: xVal });
+    slide.addTable(
+      ['3\nEvictions Per Day', '20\nEviction Rate'],
+      { align: 'c', w: width, h: 0.75, x: xVal, y: 1.8 },
+      { font_size: 12 }
+    );
+    slide.addTable(
+      Object.keys(this.dataProps).map(k => [this.dataProps[k], feature.properties[`${k}-${yearSuffix}`]]),
+      { align: 'l', w: width, h: 2, x: xVal, y: 2.3, rowH: [0.2, 0.2, 0.4, 0.2, 0.2, 0.4, 0.4],
+        colW: [width * 0.66, width * 0.33], valign: 'm' },
+      { font_size: 9 }
+    );
+    slide.addText('Race/Ethnicity', { align: 'c', font_size: 13, h: 0.3, w: width, x: xVal, y: 4.3, bold: true });
+    slide.addTable(
+      Object.keys(this.demDataProps).map(k => [this.demDataProps[k], feature.properties[`${k}-${yearSuffix}`]]),
+      { align: 'l', w: width, h: 2, x: xVal, y: 4.7, rowH: [0.2, 0.2, 0.2, 0.2, 0.4, 0.4, 0.2, 0.2],
+        colW: [width * 0.66, width * 0.33], autoPage: false, valign: 'm' },
+      { font_size: 9 }
+    );
+  }
+
   createDataSlides(features: Feature[]): void {
     const year = this.years[this.years.length - 1];
     if (features.length > 1) {
@@ -287,7 +333,11 @@ export class PptxExport extends Export {
     const lineChartCanvas = this.createLineChart(features);
     lineChartSlide.addImage({ data: lineChartCanvas, x: 1, y: 1.5, w: 8, h: 4.8, });
 
-    // TODO: Create general stats slide
+    // Create general stats slide
+    const statSlide = this.pptx.addNewSlide({ bkgd: 'ffffff' });
+    const yearSuffix = year.toString().slice(2);
+    statSlide.addText('Statistical Comparison', this.titleParams);
+    features.forEach((f, i) => this.createDataTable(statSlide, yearSuffix, f, features.length, i));
   }
 
   async saveWrapper(): Promise<any> {
