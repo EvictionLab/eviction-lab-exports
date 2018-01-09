@@ -4,7 +4,6 @@ import * as JSZip from 'jszip';
 import axios from 'axios';
 import { RequestData } from '../data/requestData';
 import { Export } from './export';
-import { DocxExport } from './docx';
 import { PptxExport } from './pptx';
 import { XlsxExport } from './xlsx';
 import { handler } from './handler';
@@ -25,7 +24,6 @@ class PdfStub extends Export {
 }
 
 const formatMap = {
-    'docx': DocxExport,
     'pptx': PptxExport,
     'xlsx': XlsxExport,
     'pdf': PdfStub
@@ -45,7 +43,7 @@ export class ZipExport extends Export {
     /**
      * Replaces default key creation to account for file formats
      * @param features Array of at least one Feature
-     * @param formats Array of format strings (i.e. docx, pdf, xlsx)
+     * @param formats Array of format strings (i.e. pdf, xlsx)
      */
     createKey(requestData: RequestData): string {
         const idPath = requestData.features.map(f => f.properties.GEOID).join('/');
