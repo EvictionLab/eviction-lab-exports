@@ -108,8 +108,8 @@ export class PptxExport extends Export {
     };
     const screenshotUrl = `${this.screenshotBase}${bbox.n}/${bbox.s}/${bbox.e}/${bbox.w}/` +
       `${feature.properties.layerId}/p-${yearSuffix}/er-${yearSuffix}`;
-    const img = await axios.get(screenshotUrl, { responseType: 'arraybuffer' });
-    return 'image/png;base64,' + new Buffer(img.data, 'binary').toString('base64');
+    const img = await axios.get(screenshotUrl, { responseType: 'arraybuffer' }).catch(err => null);
+    return img !== null ? 'image/png;base64,' + new Buffer(img.data, 'binary').toString('base64') : null;
   }
 
   async createFeatureSlide(feature: Feature, index: number): Promise<void> {
@@ -119,7 +119,9 @@ export class PptxExport extends Export {
     const yearSuffix = year.toString().slice(2);
     const screenshot = await this.getMapScreenshot(feature, yearSuffix);
 
-    featSlide.addImage({ data: screenshot, w: 8, h: 4, y: 0.5, x: 1 });
+    if (screenshot !== null) {
+      featSlide.addImage({ data: screenshot, w: 8, h: 4, y: 0.5, x: 1 });
+    }
 
     featSlide.addText(
       `${feature.properties.n} EXPERIENCED ${feature.properties[`e-${yearSuffix}`]} EVICTIONS IN ${year}`,
@@ -291,6 +293,7 @@ export class PptxExport extends Export {
     const lineChart = line()
       .x(d => x(d.year))
       .y(d => y(d.val))
+      .defined(d => d.val >= 0)
       .context(context);
 
     features.forEach((f, i) => {
