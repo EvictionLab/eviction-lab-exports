@@ -17,7 +17,7 @@ export class PptxExport extends Export {
   sourceText = 'Source: The Eviction Lab at Princeton University: www.evictionlab.org. ' +
    `Data extracted on ${new Date().toISOString().slice(0, 10)}`;
   colors = ['e24000', '434878', '2c897f'];
-  screenshotBase = 'https://exports.evictionlab.org/';
+  screenshotBase = 'https://screenshot.evictionlab.org';
 
   titleParams = {
     align: 'c', font_size: 28, isTextBox: true, w: 9, h: 0.7, x: 0.5, y: 0.5
@@ -106,7 +106,7 @@ export class PptxExport extends Export {
       e: feature.bbox[2],
       w: feature.bbox[0]
     };
-    const screenshotUrl = `${this.screenshotBase}${bbox.n}/${bbox.s}/${bbox.e}/${bbox.w}/` +
+    const screenshotUrl = `${this.screenshotBase}/${bbox.n}/${bbox.s}/${bbox.e}/${bbox.w}/` +
       `${feature.properties.layerId}/p-${yearSuffix}/er-${yearSuffix}`;
     const img = await axios.get(screenshotUrl, { responseType: 'arraybuffer' }).catch(err => null);
     return img !== null ? 'image/png;base64,' + new Buffer(img.data, 'binary').toString('base64') : null;
