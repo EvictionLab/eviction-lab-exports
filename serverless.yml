@@ -79,6 +79,11 @@ functions:
         - node_modules/units-css/**
         - node_modules/canvas-aws-prebuilt/**
         - node_modules/pptxgenjs/**
+        - node_modules/ms/**
+        - node_modules/debug/**
+        - node_modules/follow-redirects/**
+        - node_modules/is-buffer/**
+        - node_modules/axios/**
     timeout: 300
     handler: src/exports/pptx.fileHandler
     events:
@@ -94,6 +99,31 @@ functions:
         - node_modules/core-js/**
         - node_modules/jszip/**
         - node_modules/xlsx/**
+        - node_modules/d3-array/**
+        - node_modules/d3-collection/**
+        - node_modules/d3-color/**
+        - node_modules/d3-format/**
+        - node_modules/d3-interpolate/**
+        - node_modules/d3-time/**
+        - node_modules/d3-time-format/**
+        - node_modules/d3-scale/**
+        - node_modules/d3-path/**
+        - node_modules/d3-shape/**
+        - node_modules/nan/**
+        - node_modules/css-font-size-keywords/**
+        - node_modules/css-font-stretch-keywords/**
+        - node_modules/css-font-style-keywords/**
+        - node_modules/css-font-weight-keywords/**
+        - node_modules/css-global-keywords/**
+        - node_modules/css-list-helpers/**
+        - node_modules/css-system-font-keywords/**
+        - node_modules/tcomb/**
+        - node_modules/unquote/**
+        - node_modules/parse-css-font/**
+        - node_modules/isnumeric/**
+        - node_modules/viewport-dimensions/**
+        - node_modules/units-css/**
+        - node_modules/canvas-aws-prebuilt/**
         - node_modules/pptxgenjs/**
         - node_modules/ms/**
         - node_modules/debug/**
