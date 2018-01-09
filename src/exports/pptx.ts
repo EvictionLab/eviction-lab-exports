@@ -8,6 +8,7 @@ import * as Canvas from 'canvas-aws-prebuilt';
 // import * as Canvas from 'canvas';
 import { scaleLinear, scaleBand } from 'd3-scale';
 import { line } from 'd3-shape';
+import axios from 'axios';
 
 export class PptxExport extends Export {
   pptx;
@@ -16,6 +17,7 @@ export class PptxExport extends Export {
   sourceText = 'Source: The Eviction Lab at Princeton University: www.evictionlab.org. ' +
    `Data extracted on ${new Date().toISOString().slice(0, 10)}`;
   colors = ['e24000', '434878', '2c897f'];
+  screenshotBase = 'https://exports.evictionlab.org/';
 
   titleParams = {
     align: 'c', font_size: 28, isTextBox: true, w: 9, h: 0.7, x: 0.5, y: 0.5
@@ -97,18 +99,34 @@ export class PptxExport extends Export {
     titleSlide.addText(this.sourceText, { ...this.sourceParams, color: 'ffffff' });
   }
 
-  createFeatureSlides(feature: Feature, index: number): void {
-    const slideOne = this.pptx.addNewSlide({ bkgd: 'ffffff' });
+  async getMapScreenshot(feature: Feature, yearSuffix: string) {
+    const bbox = {
+      n: feature.bbox[3],
+      s: feature.bbox[1],
+      e: feature.bbox[2],
+      w: feature.bbox[0]
+    };
+    const screenshotUrl = `${this.screenshotBase}${bbox.n}/${bbox.s}/${bbox.e}/${bbox.w}/` +
+      `${feature.properties.layerId}/p-${yearSuffix}/er-${yearSuffix}`;
+    const img = await axios.get(screenshotUrl, { responseType: 'arraybuffer' });
+    return 'image/png;base64,' + new Buffer(img.data, 'binary').toString('base64');
+  }
+
+  async createFeatureSlide(feature: Feature, index: number): Promise<void> {
+    const featSlide = this.pptx.addNewSlide({ bkgd: 'ffffff' });
     const year = this.years[this.years.length - 1];
     const daysInYear = year % 4 === 0 ? 366 : 365;
-    const yearSuffix = year.toString().slice(2)
+    const yearSuffix = year.toString().slice(2);
+    const screenshot = await this.getMapScreenshot(feature, yearSuffix);
 
-    slideOne.addText(
+    featSlide.addImage({ data: screenshot, w: 8, h: 4, y: 0.5, x: 1 });
+
+    featSlide.addText(
       `${feature.properties.n} EXPERIENCED ${feature.properties[`e-${yearSuffix}`]} EVICTIONS IN ${year}`,
-      { ...this.titleParams, y: 3.75, color: this.colors[index] }
+      { ...this.titleParams, y: 4.75, color: this.colors[index] }
     );
 
-    slideOne.addText(
+    featSlide.addText(
       [
         {
           text: `This amounts to ${(year / daysInYear).toFixed(2)} of evictions per day`,
@@ -121,7 +139,7 @@ export class PptxExport extends Export {
       ], this.bulletParams
     );
 
-    slideOne.addText(this.sourceText, { ...this.sourceParams, color: '000000' });
+    featSlide.addText(this.sourceText, { ...this.sourceParams, color: '000000' });
   }
 
   createBarChart(features: Feature[]): any {
@@ -227,7 +245,7 @@ export class PptxExport extends Export {
     y.domain([0, maxY]);
 
     const tickSize = 16;
-    const xTicksCount = yearArr.length - 1;
+    const xTicksCount = Math.floor((yearArr.length - 1) / 3);
     const xTicks = x.ticks(xTicksCount);
     const yTicksCount = 5;
     const yTicks = y.ticks(yTicksCount);
@@ -348,7 +366,9 @@ export class PptxExport extends Export {
 
   async createFile(): Promise<Buffer> {
     this.createTitleSlide(this.features);
-    this.features.forEach((f, i) => this.createFeatureSlides(f, i));
+    for (let i = 0; i < this.features.length; ++i) {
+      await this.createFeatureSlide(this.features[i], i);
+    }
     this.createDataSlides(this.features);
     return await this.saveWrapper().then((f) => { return f; });
   }
