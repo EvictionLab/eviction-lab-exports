@@ -60,7 +60,10 @@ export class ZipExport extends Export {
         const s3 = new S3();
         const zip = new JSZip();
 
-        const requestData: RequestData = { lang: this.lang, years: this.years, features: this.features };
+        const requestData: RequestData = {
+            lang: this.lang, year: this.year, years: this.years, features: this.features,
+            dataProp: this.dataProp, bubbleProp: this.bubbleProp
+        };
         const zipFolder = zip.folder('eviction_lab_export');
         for (let format of this.formats) {
             if (formatMap.hasOwnProperty(format)) {

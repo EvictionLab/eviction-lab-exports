@@ -15,6 +15,16 @@ export class XlsxExport extends Export {
     this.key = this.createKey(requestData);
   };
 
+  /**
+   * Generates an S3 key based off of RequestData object
+   * Simplifies because of fewer properties considered
+   * @param requestData Array of at least 1 Feature
+   */
+  createKey(requestData: RequestData): string {
+    const idPath = requestData.features.map(f => f.properties.GEOID).join('/');
+    return `${this.lang}/${idPath}/eviction_lab_export.${this.fileExt}`;
+  }
+
   async createFile(): Promise<Buffer> {
     const worksheet = XLSX.utils.json_to_sheet(this.formatFeatures(this.features));
     const workbook = XLSX.utils.book_new();
