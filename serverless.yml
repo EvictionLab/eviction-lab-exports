@@ -16,7 +16,7 @@ provider:
 plugins:
   - serverless-plugin-typescript
   - serverless-offline
-  - serverless-domain-manager
+  # - serverless-domain-manager
 
 package:
   individually: true
@@ -125,10 +125,10 @@ functions:
           method: post
           cors: true
 
-custom:
-  customDomain:
-    domainName: 'exports.evictionlab.org'
-    certificateName: '*.evictionlab.org'
-    basePath: 'format'
-    stage: ${self:provider.stage}
-    createRoute53Record: true
+# custom:
+#   customDomain:
+#     domainName: 'exports.evictionlab.org'
+#     certificateName: '*.evictionlab.org'
+#     basePath: 'format'
+#     stage: prod
+#     createRoute53Record: true

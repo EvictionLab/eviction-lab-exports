@@ -5,7 +5,8 @@
   "author": "Eviction Lab",
   "license": "MIT",
   "scripts": {
-    "deploy": "aws s3 cp assets s3://eviction-lab-exports/assets --recursive --acl=public-read && sls deploy && cd src && sls deploy",
+    "deploy-dev": "sls deploy --stage dev && cd src && sls deploy --stage dev",
+    "deploy": "aws s3 cp assets s3://eviction-lab-exports/assets --recursive --acl=public-read && sls deploy --stage prod && cd src && sls deploy --stage prod",
     "postinstall": "cd ./node_modules/pptxgenjs && npm install && cd ../.."
   },
   "dependencies": {
