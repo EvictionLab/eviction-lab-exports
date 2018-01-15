@@ -8,17 +8,25 @@ const s3 = new S3();
 export abstract class Export {
     abstract fileExt: string;
     features: Array<Feature>;
+    year: number;
     years: Array<number>;
     lang: string;
     key: string;
+    dataProp: string;
+    bubbleProp: string;
     templateKey: string | undefined;
     assetBucket: string = process.env['asset_bucket'];
     exportBucket: string = process.env['export_bucket'];
 
     constructor(requestData: RequestData) {
         this.features = requestData.features;
+        this.year = requestData.year;
         this.years = requestData.years;
         this.lang = requestData.lang;
+        this.dataProp = requestData.dataProp.split('-')[0];
+        // If 'none' is supplied as eviction prop, default to eviction rate
+        this.bubbleProp = requestData.bubbleProp.startsWith('none') ? 'er' :
+            requestData.bubbleProp.split('-')[0];
         this.key = this.createKey(requestData);
     };
 
@@ -28,7 +36,8 @@ export abstract class Export {
      */
     createKey(requestData: RequestData): string {
         const idPath = requestData.features.map(f => f.properties.GEOID).join('/');
-        return `${this.lang}/${this.years[0]}-${this.years[1]}/${idPath}/eviction_lab_export.${this.fileExt}`;
+        return `${this.lang}/${this.year}/${this.years[0]}-${this.years[1]}/` +
+            `${this.dataProp}/${this.bubbleProp}/${idPath}/eviction_lab_export.${this.fileExt}`;
     }
 
     /**

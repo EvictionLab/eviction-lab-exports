@@ -12,6 +12,7 @@ import axios from 'axios';
 
 export class PptxExport extends Export {
   pptx;
+  evictionText: string;
   fileExt = 'pptx';
 
   sourceText = 'Source: The Eviction Lab at Princeton University: www.evictionlab.org. ' +
@@ -58,6 +59,7 @@ export class PptxExport extends Export {
   constructor(requestData: RequestData) {
     super(requestData);
     this.key = this.createKey(requestData);
+    this.evictionText = this.bubbleProp === 'er' ? 'Eviction' : 'Eviction Filing';
     // Recreating each time to avoid appending to previous buffer based on this issue:
     // https://github.com/gitbrent/PptxGenJS/issues/38#issuecomment-279001048
     delete require.cache[require.resolve('pptxgenjs')];
@@ -107,16 +109,15 @@ export class PptxExport extends Export {
       w: feature.bbox[0]
     };
     const screenshotUrl = `${this.screenshotBase}/${bbox.n}/${bbox.s}/${bbox.e}/${bbox.w}/` +
-      `${feature.properties.layerId}/p-${yearSuffix}/er-${yearSuffix}`;
+      `${feature.properties.layerId}/${this.dataProp}-${yearSuffix}/${this.bubbleProp}-${yearSuffix}`;
     const img = await axios.get(screenshotUrl, { responseType: 'arraybuffer' }).catch(err => null);
     return img !== null ? 'image/png;base64,' + new Buffer(img.data, 'binary').toString('base64') : null;
   }
 
   async createFeatureSlide(feature: Feature, index: number): Promise<void> {
     const featSlide = this.pptx.addNewSlide({ bkgd: 'ffffff' });
-    const year = this.years[this.years.length - 1];
-    const daysInYear = year % 4 === 0 ? 366 : 365;
-    const yearSuffix = year.toString().slice(2);
+    const daysInYear = this.year % 4 === 0 ? 366 : 365;
+    const yearSuffix = this.year.toString().slice(2);
     const screenshot = await this.getMapScreenshot(feature, yearSuffix);
 
     if (screenshot !== null) {
@@ -124,14 +125,14 @@ export class PptxExport extends Export {
     }
 
     featSlide.addText(
-      `${feature.properties.n} EXPERIENCED ${feature.properties[`e-${yearSuffix}`]} EVICTIONS IN ${year}`,
+      `${feature.properties.n} EXPERIENCED ${feature.properties[`e-${yearSuffix}`]} EVICTIONS IN ${this.year}`,
       { ...this.titleParams, y: 4.75, color: this.colors[index] }
     );
 
     featSlide.addText(
       [
         {
-          text: `This amounts to ${(year / daysInYear).toFixed(2)} of evictions per day`,
+          text: `This amounts to ${(feature.properties[`e-${yearSuffix}`] / daysInYear).toFixed(2)} evictions per day`,
           options: { bullet: true }
         },
         {
@@ -145,8 +146,6 @@ export class PptxExport extends Export {
   }
 
   createBarChart(features: Feature[]): any {
-    const year = this.years[this.years.length - 1];
-
     const margin = {top: 20, left: 80, right: 20, bottom: 50};
     const fullWidth = 1000;
     const fullHeight = 600;
@@ -164,7 +163,7 @@ export class PptxExport extends Export {
       .rangeRound([height, 0]);
 
     x.domain(features.map(f => f.properties.n));
-    const maxY = Math.max(...features.map(f => f.properties[`er-${year.toString().slice(2)}`]));
+    const maxY = Math.max(...features.map(f => f.properties[`${this.bubbleProp}-${this.year.toString().slice(2)}`]));
     y.domain([0, maxY]);
 
     const yTicksCount = 5;
@@ -205,16 +204,16 @@ export class PptxExport extends Export {
     context.textAlign = "right";
     context.textBaseline = "top";
     context.font = "24px Helvetica";
-    context.fillText("Eviction Rate", -150, -70);
+    context.fillText(`${this.evictionText} Rate`, -150, -70);
     context.restore();
 
     features.forEach((f, i) => {
       context.fillStyle = '#' + this.colors[i];
       context.fillRect(
         x(f.properties.n),
-        y(f.properties[`er-${year.toString().slice(2)}`]),
+        y(f.properties[`${this.bubbleProp}-${this.year.toString().slice(2)}`]),
         x.bandwidth(),
-        height - y(f.properties[`er-${year.toString().slice(2)}`])
+        height - y(f.properties[`${this.bubbleProp}-${this.year.toString().slice(2)}`])
       );
     });
 
@@ -241,7 +240,7 @@ export class PptxExport extends Export {
     x.domain([yearArr[0], yearArr[yearArr.length - 1]]);
     const maxY = Math.max(...features.map(f => {
       return Math.max(...yearArr.map(y => {
-        return f.properties[`er-${y.toString().slice(2)}`] || 0;
+        return f.properties[`${this.bubbleProp}-${y.toString().slice(2)}`] || 0;
       }));
     }));
     y.domain([0, maxY]);
@@ -287,7 +286,7 @@ export class PptxExport extends Export {
     context.textAlign = "right";
     context.textBaseline = "top";
     context.font = "24px Helvetica";
-    context.fillText("Eviction Rate", -150, -70);
+    context.fillText(`${this.evictionText} Rate`, -150, -70);
     context.restore();
 
     const lineChart = line()
@@ -299,7 +298,7 @@ export class PptxExport extends Export {
     features.forEach((f, i) => {
       context.beginPath();
       const data = yearArr.map(y => {
-        return { year: y, val: f.properties[`er-${y.toString().slice(2)}`] };
+        return { year: y, val: f.properties[`${this.bubbleProp}-${y.toString().slice(2)}`] };
       });
       lineChart(data);
       context.lineWidth = 6;
@@ -313,9 +312,14 @@ export class PptxExport extends Export {
   createDataTable(slide: any, yearSuffix: string, feature: Feature, count: number, idx: number): void {
     const width = 9 / count;
     const xVal = 0.5 + (idx * width);
+    const daysInYear = +yearSuffix % 4 === 0 ? 366 : 365;
     slide.addText(feature.properties.n, { ...this.statTitleParams, color: this.colors[idx], w: width, x: xVal });
     slide.addTable(
-      ['3\nEvictions Per Day', '20\nEviction Rate'],
+      [ 
+        `${(feature.properties[`e-${yearSuffix}`] / daysInYear).toFixed(2)}\nEvictions Per Day`,
+        // `${feature.properties[`${this.bubbleProp}-${yearSuffix}`]}\n${this.evictionText} Rate`
+        `${feature.properties[`er-${yearSuffix}`]}\nEviction Rate`
+      ],
       { align: 'c', w: width, h: 0.75, x: xVal, y: 1.8 },
       { font_size: 12 }
     );
@@ -335,11 +339,10 @@ export class PptxExport extends Export {
   }
 
   createDataSlides(features: Feature[]): void {
-    const year = this.years[this.years.length - 1];
     if (features.length > 1) {
       // Create comparison if more than one feature provided
       const barChartSlide = this.pptx.addNewSlide({ bkgd: 'ffffff' });
-      barChartSlide.addText(`Eviction Rates in ${year}`, this.titleParams);
+      barChartSlide.addText(`${this.evictionText} Rates in ${this.year}`, this.titleParams);
 
       const barChartCanvas = this.createBarChart(features);
       barChartSlide.addImage({ data: barChartCanvas, x: 1, y: 1.5, w: 8, h: 4.8, });
@@ -347,7 +350,7 @@ export class PptxExport extends Export {
 
     // Create line chart
     const lineChartSlide = this.pptx.addNewSlide({ bkgd: 'ffffff' });
-    lineChartSlide.addText(`Eviction Rates Over Time`, this.titleParams);
+    lineChartSlide.addText(`${this.evictionText} Rates Over Time`, this.titleParams);
 
     const years = this.makeYearArr(this.years).map(y => y.toString());
 
@@ -356,7 +359,7 @@ export class PptxExport extends Export {
 
     // Create general stats slide
     const statSlide = this.pptx.addNewSlide({ bkgd: 'ffffff' });
-    const yearSuffix = year.toString().slice(2);
+    const yearSuffix = this.year.toString().slice(2);
     statSlide.addText('Statistical Comparison', this.titleParams);
     features.forEach((f, i) => this.createDataTable(statSlide, yearSuffix, f, features.length, i));
   }
