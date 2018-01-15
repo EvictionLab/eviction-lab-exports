@@ -119,24 +119,29 @@ export class PptxExport extends Export {
     const daysInYear = this.year % 4 === 0 ? 366 : 365;
     const yearSuffix = this.year.toString().slice(2);
     const screenshot = await this.getMapScreenshot(feature, yearSuffix);
+    const evictionTotal = feature.properties[`e-${yearSuffix}`];
+    const evictionRate = feature.properties[`er-${yearSuffix}`];
+    const evictionsPerDay = (feature.properties[`e-${yearSuffix}`] / daysInYear).toFixed(2);
 
     if (screenshot !== null) {
       featSlide.addImage({ data: screenshot, w: 8, h: 4, y: 0.5, x: 1 });
+    } else {
+      featSlide.addShape(this.pptx.shapes.RECTANGLE, { w: 8, h: 4, y: 0.5, x: 1, fill: 'eeeeee' });
     }
 
     featSlide.addText(
-      `${feature.properties.n} EXPERIENCED ${feature.properties[`e-${yearSuffix}`]} EVICTIONS IN ${this.year}`,
+      `${feature.properties.n} experienced ${evictionTotal >= 0 ? evictionTotal : 'Unavailable'} evictions in ${this.year}`,
       { ...this.titleParams, y: 4.75, color: this.colors[index] }
     );
 
     featSlide.addText(
       [
         {
-          text: `This amounts to ${(feature.properties[`e-${yearSuffix}`] / daysInYear).toFixed(2)} evictions per day`,
+          text: `This amounts to ${evictionTotal >= 0 ? evictionsPerDay : 'Unavailable'} evictions per day`,
           options: { bullet: true }
         },
         {
-          text: `The eviction rate was ${feature.properties[`er-${yearSuffix}`]} per 100 renter-occupied households`,
+          text: `The eviction rate was ${evictionRate >= 0 ? evictionRate : 'Unavailable'} per 100 renter-occupied households`,
           options: { bullet: true }
         }
       ], this.bulletParams
@@ -163,7 +168,9 @@ export class PptxExport extends Export {
       .rangeRound([height, 0]);
 
     x.domain(features.map(f => f.properties.n));
-    const maxY = Math.max(...features.map(f => f.properties[`${this.bubbleProp}-${this.year.toString().slice(2)}`]));
+    let maxY = Math.max(...features.map(f => f.properties[`${this.bubbleProp}-${this.year.toString().slice(2)}`]));
+    // Minimum value of 1/1.1
+    maxY = Math.max(maxY, 1 / 1.1);
     y.domain([0, maxY]);
 
     const yTicksCount = 5;
@@ -209,11 +216,16 @@ export class PptxExport extends Export {
 
     features.forEach((f, i) => {
       context.fillStyle = '#' + this.colors[i];
+
+      // Set minimum bar height if null
+      // TODO: Does this still apply for static image?
+      const val = f.properties[`${this.bubbleProp}-${this.year.toString().slice(2)}`];
+      const barDisplayVal = val >= 0.1 ? val : y.domain()[y.domain().length - 1] * 0.005;
       context.fillRect(
         x(f.properties.n),
-        y(f.properties[`${this.bubbleProp}-${this.year.toString().slice(2)}`]),
+        y(barDisplayVal),
         x.bandwidth(),
-        height - y(f.properties[`${this.bubbleProp}-${this.year.toString().slice(2)}`])
+        height - y(barDisplayVal)
       );
     });
 
@@ -316,22 +328,30 @@ export class PptxExport extends Export {
     slide.addText(feature.properties.n, { ...this.statTitleParams, color: this.colors[idx], w: width, x: xVal });
     slide.addTable(
       [ 
-        `${(feature.properties[`e-${yearSuffix}`] / daysInYear).toFixed(2)}\nEvictions Per Day`,
-        // `${feature.properties[`${this.bubbleProp}-${yearSuffix}`]}\n${this.evictionText} Rate`
-        `${feature.properties[`er-${yearSuffix}`]}\nEviction Rate`
+        `${feature.properties[`e-${yearSuffix}`] >= 0 ?
+            (feature.properties[`e-${yearSuffix}`] / daysInYear).toFixed(2) :
+            'Unavailable'}\nEvictions Per Day`,
+        `${feature.properties[`e-${yearSuffix}`] >= 0 ?
+            feature.properties[`er-${yearSuffix}`] : 'Unavailable'}\nEviction Rate`
       ],
       { align: 'c', w: width, h: 0.75, x: xVal, y: 1.8 },
       { font_size: 12 }
     );
     slide.addTable(
-      Object.keys(this.dataProps).map(k => [this.dataProps[k], feature.properties[`${k}-${yearSuffix}`]]),
+      Object.keys(this.dataProps).map(k => [
+        this.dataProps[k],
+        feature.properties[`${k}-${yearSuffix}`] >= 0 ? feature.properties[`${k}-${yearSuffix}`] : 'Unavailable'
+      ]),
       { align: 'l', w: width, h: 2, x: xVal, y: 2.3, rowH: [0.2, 0.2, 0.4, 0.2, 0.2, 0.4, 0.4],
         colW: [width * 0.66, width * 0.33], valign: 'm' },
       { font_size: 9 }
     );
     slide.addText('Race/Ethnicity', { align: 'c', font_size: 13, h: 0.3, w: width, x: xVal, y: 4.3, bold: true });
     slide.addTable(
-      Object.keys(this.demDataProps).map(k => [this.demDataProps[k], feature.properties[`${k}-${yearSuffix}`]]),
+      Object.keys(this.demDataProps).map(k => [
+        this.demDataProps[k],
+        feature.properties[`${k}-${yearSuffix}`] >= 0 ? feature.properties[`${k}-${yearSuffix}`] : 'Unavailable'
+      ]),
       { align: 'l', w: width, h: 2, x: xVal, y: 4.7, rowH: [0.2, 0.2, 0.2, 0.2, 0.4, 0.4, 0.2, 0.2],
         colW: [width * 0.66, width * 0.33], autoPage: false, valign: 'm' },
       { font_size: 9 }
