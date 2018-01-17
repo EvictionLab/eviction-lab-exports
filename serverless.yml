@@ -40,7 +40,6 @@ functions:
   pptx:
     package:
       include:
-        - assets/**
         - node_modules/d3-array/**
         - node_modules/d3-collection/**
         - node_modules/d3-color/**

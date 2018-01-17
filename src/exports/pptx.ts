@@ -1,14 +1,14 @@
-import * as fs from 'fs';
 import { RequestData } from '../data/requestData';
 import { Feature } from '../data/feature';
 import { Export } from './export';
 import { handler } from './handler';
-// import * as Canvas from 'canvas-aws-prebuilt';
+import * as Canvas from 'canvas-aws-prebuilt';
 // Need to use original canvas for local development
-import * as Canvas from 'canvas';
+// import * as Canvas from 'canvas';
 import { scaleLinear, scaleBand } from 'd3-scale';
 import { line } from 'd3-shape';
 import axios from 'axios';
+import { S3 } from 'aws-sdk';
 
 export class PptxExport extends Export {
   pptx;
@@ -19,6 +19,7 @@ export class PptxExport extends Export {
    `Data extracted on ${new Date().toISOString().slice(0, 10)}`;
   colors = ['e24000', '434878', '2c897f'];
   screenshotBase = 'https://screenshot.evictionlab.org';
+  assetBucket = process.env['asset_bucket'] || 'eviction-lab-exports';
 
   mainImage: string;
   titleImage: string;
@@ -40,7 +41,7 @@ export class PptxExport extends Export {
     dataBorder: { pt: 2, color: 'FFFFFF' }, fill: 'ffffff'
   };
   statTitleParams = {
-    align: 'c', font_size: 24, w: 3, h: 0.5, x: 0.75, y: 1.25
+    align: 'l', font_size: 11, w: 2.3, h: 0.5, x: 1.14, y: 0.33, font_face: 'Helvetica'
   };
   dataProps = {
     'e': 'Total Evictions',
@@ -80,19 +81,18 @@ export class PptxExport extends Export {
     return years;
   }
 
-  readImages(): void {
-    this.mainImage = 'image/png;base64,' + new Buffer(
-      fs.readFileSync(__dirname + '/../../../assets/evictionlab.png')
-    ).toString('base64');
-    this.titleImage = 'image/png;base64,' + new Buffer(
-      fs.readFileSync(__dirname + '/../../../assets/evictionlab-title.png')
-    ).toString('base64');
-    this.backgroundImage = 'image/png;base64,' + new Buffer(
-      fs.readFileSync(__dirname + '/../../../assets/evictionlab-bg.png')
-    ).toString('base64');
-    this.logoImage = 'image/png;base64,' + new Buffer(
-      fs.readFileSync(__dirname + '/../../../assets/evictionlab-logo.png')
-    ).toString('base64');
+  async readImages(): Promise<void> {
+    const s3 = new S3();
+    const mainImage = await s3.getObject({ Bucket: this.assetBucket, Key: 'assets/evictionlab.jpg' }).promise();
+    const titleImage = await s3.getObject({ Bucket: this.assetBucket, Key: 'assets/evictionlab-title.png' }).promise();
+    const backgroundImage = await s3.getObject({ Bucket: this.assetBucket, Key: 'assets/evictionlab-bg.png' }).promise();
+    const logoImage = await s3.getObject({ Bucket: this.assetBucket, Key: 'assets/evictionlab-logo.png' }).promise();
+
+    const dataPrefix = 'image/png;base64,';
+    this.mainImage = 'image/jpg;base64,' + (mainImage.Body as Buffer).toString('base64');
+    this.titleImage = dataPrefix + (titleImage.Body as Buffer).toString('base64');
+    this.backgroundImage = dataPrefix + (backgroundImage.Body as Buffer).toString('base64');
+    this.logoImage = dataPrefix + (logoImage.Body as Buffer).toString('base64');
   }
 
   createIntroSlide(): void {
@@ -180,9 +180,15 @@ export class PptxExport extends Export {
       featSlide.addShape(this.pptx.shapes.RECTANGLE, { w: 8.84, h: 2.67, y: 0.36, x: 0.52, fill: '666666' });
     }
 
+    let featTitleText;
+    if (evictionTotal >= 0) {
+      featTitleText = `${feature.properties.n} experienced ${evictionTotal} evictions in ${this.year}`;
+    } else {
+      featTitleText = `${this.year} eviction data for ${feature.properties.n} is unavailable`;
+    }
+
     featSlide.addText(
-      `${feature.properties.n} experienced ${evictionTotal >= 0 ? evictionTotal : 'Unavailable'} evictions in ${this.year}`,
-      { ...this.titleParams, y: 3.2, color: this.colors[index], bold: true }
+      featTitleText, { ...this.titleParams, y: 3.2, color: this.colors[index], bold: true }
     );
 
     featSlide.addText(
@@ -192,14 +198,14 @@ export class PptxExport extends Export {
           options: { bullet: true }
         },
         {
-          text: `Overall eviction rate: ${evictionRate >= 0 ? evictionRate : 'Unavailable'}`,
+          text: `Overall eviction rate: ${evictionRate >= 0 ? evictionRate : 'Unavailable'}*`,
           options: { bullet: true }
         }
       ], this.bulletParams
     );
 
     featSlide.addText(
-      'An eviction rate is the number of evictions over the number of renter-occupied households',
+      '* An eviction rate is the number of evictions over the number of renter-occupied households',
       { w: 9.15, h: 0.24, isTextBox: true, x: 0.44, y: 5.02, font_size: 11, font_face: 'Georgia', color: '666666' }
     );
   }
@@ -232,21 +238,10 @@ export class PptxExport extends Export {
     const yTicksCount = 5;
     const yTicks = y.ticks(yTicksCount);
 
-    context.beginPath();
-    x.domain().forEach(d => {
-      context.moveTo(x(d) + x.bandwidth() / 2, height);
-      context.lineTo(x(d) + x.bandwidth() / 2, height + 8);
-    });
-    context.strokeStyle = '#666666';
-    context.stroke();
-
     context.textAlign = "center";
     context.textBaseline = "top";
     context.font = "22px Helvetica";
     context.fillStyle = "#666666";
-    x.domain().forEach((d) => {
-      context.fillText(d, x(d) + x.bandwidth() / 2, height + 12);
-    });
 
     context.beginPath();
     yTicks.forEach((d) => {
@@ -413,39 +408,74 @@ export class PptxExport extends Export {
   }
 
   createDataTable(slide: any, yearSuffix: string, feature: Feature, count: number, idx: number): void {
-    const width = 9 / count;
-    const xVal = 0.5 + (idx * width);
+    const padding = 0.2;
+    const shapePadding = 0.08;
+    const width = 3;
+    const xVal = (0.3 + ((width + padding) * idx)) + ((3 - count) * ((width + padding) / 2)); 
     const daysInYear = +yearSuffix % 4 === 0 ? 366 : 365;
-    slide.addText(feature.properties.n, { ...this.statTitleParams, color: this.colors[idx], w: width, x: xVal });
-    slide.addTable(
-      [ 
-        `${feature.properties[`e-${yearSuffix}`] >= 0 ?
-            (feature.properties[`e-${yearSuffix}`] / daysInYear).toFixed(2) :
-            'Unavailable'}\nEvictions Per Day`,
-        `${feature.properties[`e-${yearSuffix}`] >= 0 ?
-            feature.properties[`er-${yearSuffix}`] : 'Unavailable'}\nEviction Rate`
-      ],
-      { align: 'c', w: width, h: 0.75, x: xVal, y: 1.8 },
-      { font_size: 12 }
+    slide.addShape(this.pptx.shapes.RECTANGLE, {
+      x: xVal - (shapePadding / 2), y: 0.36, w: width + shapePadding, h: 4.92, fill: 'ffffff'
+    });
+    slide.addText(
+      [{
+        text: feature.properties.n,
+        options: { color: this.colors[idx], bold: true }
+      },
+      {
+        text: '20' + yearSuffix,
+        options: { color: '666666', font_face: 'Georgia', font_size: 9 }
+      }],
+      { ...this.statTitleParams, x: xVal }
     );
-    slide.addTable(
-      Object.keys(this.dataProps).map(k => [
-        this.dataProps[k],
-        feature.properties[`${k}-${yearSuffix}`] >= 0 ? feature.properties[`${k}-${yearSuffix}`] : 'Unavailable'
-      ]),
-      { align: 'l', w: width, h: 2, x: xVal, y: 2.3, rowH: [0.2, 0.2, 0.4, 0.2, 0.2, 0.4, 0.4],
-        colW: [width * 0.66, width * 0.33], valign: 'm' },
-      { font_size: 9 }
+
+    slide.addText(
+      [{
+        text: `${feature.properties[`e-${yearSuffix}`] >= 0 ?
+          (feature.properties[`e-${yearSuffix}`] / daysInYear).toFixed(2) :
+          'Unavailable'}`,
+        options: { font_size: 12 }
+      },
+      {
+        text: 'EVICTIONS PER DAY',
+        options: { font_size: 6 }
+      }],
+      { align: 'c', x: xVal, y: 0.75, w: width / 2, h: 0.65, bold: true, font_face: 'Helvetica' }
     );
-    slide.addText('Race/Ethnicity', { align: 'c', font_size: 13, h: 0.3, w: width, x: xVal, y: 4.3, bold: true });
+    slide.addText(
+      [{
+        text: `${feature.properties[`e-${yearSuffix}`] >= 0 ?
+            feature.properties[`er-${yearSuffix}`] : 'Unavailable'}`,
+        options: { font_size: 12 }
+      },
+      {
+        text: 'EVICTION RATE',
+        options: { font_size: 6 }
+      }],
+      { align: 'c', x: xVal + (width / 2), y: 0.75, w: width / 2, h: 0.65, bold: true, font_face: 'Helvetica'}
+    );
+
     slide.addTable(
-      Object.keys(this.demDataProps).map(k => [
-        this.demDataProps[k],
-        feature.properties[`${k}-${yearSuffix}`] >= 0 ? feature.properties[`${k}-${yearSuffix}`] : 'Unavailable'
+      Object.keys(this.dataProps).map((k, i) => [
+        { text: this.dataProps[k], options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff' } },
+        { text: feature.properties[`${k}-${yearSuffix}`] >= 0 ? feature.properties[`${k}-${yearSuffix}`] : 'Unavailable',
+          options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff' } }
       ]),
-      { align: 'l', w: width, h: 2, x: xVal, y: 4.7, rowH: [0.2, 0.2, 0.2, 0.2, 0.4, 0.4, 0.2, 0.2],
+      { align: 'l', w: width, h: 1.8, x: xVal, y: 1.38, rowH: [0.08, 0.08, 0.16, 0.08, 0.08, 0.16, 0.16],
+        colW: [width * 0.66, width * 0.33], valign: 'm', autoPage: false },
+      { font_size: 9, border: { pt: '0', color: 'ffffff' } }
+    );
+    slide.addText('RACE/ETHNICITY', {
+      align: 'c', font_size: 6, h: 0.17, w: width, x: xVal, y: 3.09, bold: true, color: '666666'
+    });
+    slide.addTable(
+      Object.keys(this.demDataProps).map((k, i) => [
+        { text: this.demDataProps[k], options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff' } },
+        { text: feature.properties[`${k}-${yearSuffix}`] >= 0 ? feature.properties[`${k}-${yearSuffix}`] : 'Unavailable',
+          options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff' } }
+      ]),
+      { align: 'l', w: width, h: 1.6, x: xVal, y: 3.38, rowH: [0.08, 0.08, 0.08, 0.08, 0.16, 0.16, 0.08, 0.16],
         colW: [width * 0.66, width * 0.33], autoPage: false, valign: 'm' },
-      { font_size: 9 }
+      { font_size: 9, border: { pt: '0', color: 'ffffff' } }
     );
   }
 
@@ -503,7 +533,7 @@ export class PptxExport extends Export {
   }
 
   async createFile(): Promise<Buffer> {
-    this.readImages();
+    await this.readImages();
     this.createIntroSlide();
     this.createTitleSlide(this.features);
     for (let i = 0; i < this.features.length; ++i) {
