@@ -5,7 +5,7 @@ import { Export } from './export';
 import { RequestData } from '../data/requestData';
 import { handler } from './handler';
 import { Feature } from '../data/feature';
-import { ColMap } from '../data/col_map';
+import { ColMap } from '../data/colMap';
 
 export class XlsxExport extends Export {
   fileExt = 'xlsx';
