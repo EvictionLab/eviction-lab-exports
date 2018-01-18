@@ -9,7 +9,7 @@ export async function handler(exportClass, event, context, callback): Promise<vo
 
     if (!keyExists) {
         const fileBuffer = await fileExport.createFile();
-        fileExport.uploadFile(fileBuffer);
+        await fileExport.uploadFile(fileBuffer);
     }
 
     callback(null, {
