@@ -4,6 +4,9 @@ import { S3 } from 'aws-sdk';
 import { Chromeless } from 'chromeless';
 import * as Handlebars from 'handlebars';
 import { RequestData } from '../data/requestData';
+import { Feature } from '../data/feature';
+import { ColMap } from '../data/colMap';
+import { PercentCols, DollarCols } from '../data/propData';
 import { Export } from '../exports/export';
 import { handler } from '../exports/handler';
 
@@ -31,7 +34,9 @@ export class PdfExport extends Export {
     }).promise();
 
     const template = Handlebars.compile(htmlRes.Body.toString());
-    const compiledData = template({ features: this.features });
+    const compiledData = template({
+      features: this.features.map(f => this.processFeature(f))
+    });
 
     const pdfStr = await chromeless
       .setHtml(compiledData)
@@ -39,6 +44,22 @@ export class PdfExport extends Export {
 
     await chrome.kill();
     return fs.readFileSync(pdfStr);
+  }
+
+  private processFeature(feature: Feature): Feature {
+    const dataCols = Object.keys(ColMap).filter(k => ['n', 'pl'].indexOf(k) === -1);
+    Object.keys(feature.properties).forEach(k => {
+      const keyPre = k.split('-')[0];
+      const val = feature.properties[k];
+      if (PercentCols.indexOf(keyPre) !== -1) {
+        feature.properties[k] = val.toLocaleString('en-US') + '%';
+      } else if (DollarCols.indexOf(keyPre) !== -1) {
+        feature.properties[k] = '$' + val.toLocaleString('en-US');
+      } else if (dataCols.indexOf(keyPre) !== -1) {
+        feature.properties[k] = val.toLocaleString('en-US');
+      }
+    });
+    return feature;
   }
 }
 
