@@ -1,6 +1,7 @@
 import { RequestData } from '../data/requestData';
 import { Feature } from '../data/feature';
 import { Export } from './export';
+import { PercentCols, DollarCols } from '../data/propData';
 import { handler } from './handler';
 import * as Canvas from 'canvas-aws-prebuilt';
 // Need to use original canvas for local development
@@ -170,7 +171,7 @@ export class PptxExport extends Export {
     const screenshot = await this.getMapScreenshot(feature, yearSuffix);
     const evictionTotal = feature.properties[`e-${yearSuffix}`];
     const evictionRate = feature.properties[`er-${yearSuffix}`];
-    const evictionsPerDay = (feature.properties[`e-${yearSuffix}`] / daysInYear).toFixed(2);
+    const evictionsPerDay = +(feature.properties[`e-${yearSuffix}`] / daysInYear).toFixed(2);
 
     featSlide.addImage({ data: this.backgroundImage, ...this.fullSlideParams });
 
@@ -182,7 +183,7 @@ export class PptxExport extends Export {
 
     let featTitleText;
     if (evictionTotal >= 0) {
-      featTitleText = `${feature.properties.n} experienced ${evictionTotal} evictions in ${this.year}`;
+      featTitleText = `${feature.properties.n} experienced ${evictionTotal.toLocaleString('en-US')} evictions in ${this.year}`;
     } else {
       featTitleText = `${this.year} eviction data for ${feature.properties.n} is unavailable`;
     }
@@ -194,18 +195,18 @@ export class PptxExport extends Export {
     featSlide.addText(
       [
         {
-          text: `Number of evictions per day: ${evictionTotal >= 0 ? evictionsPerDay : 'Unavailable'}`,
+          text: `Number of evictions per day: ${evictionTotal >= 0 ? evictionsPerDay.toLocaleString('en-US') : 'Unavailable'}`,
           options: { bullet: true }
         },
         {
-          text: `Overall eviction rate: ${evictionRate >= 0 ? evictionRate : 'Unavailable'}*`,
+          text: `Overall eviction rate: ${evictionRate >= 0 ? evictionRate : 'Unavailable'}%*`,
           options: { bullet: true }
         }
       ], this.bulletParams
     );
 
     featSlide.addText(
-      '* An eviction rate is the number of evictions over the number of renter-occupied households',
+      '* An eviction rate is the number of evictions per 100 renter-occupied households',
       { w: 9.15, h: 0.24, isTextBox: true, x: 0.44, y: 5.02, font_size: 11, font_face: 'Georgia', color: '666666' }
     );
   }
@@ -431,7 +432,7 @@ export class PptxExport extends Export {
     slide.addText(
       [{
         text: `${feature.properties[`e-${yearSuffix}`] >= 0 ?
-          (feature.properties[`e-${yearSuffix}`] / daysInYear).toFixed(2) :
+          (+(feature.properties[`e-${yearSuffix}`] / daysInYear).toFixed(2)).toLocaleString('en-US') :
           'Unavailable'}`,
         options: { font_size: 12 }
       },
@@ -444,7 +445,7 @@ export class PptxExport extends Export {
     slide.addText(
       [{
         text: `${feature.properties[`e-${yearSuffix}`] >= 0 ?
-            feature.properties[`er-${yearSuffix}`] : 'Unavailable'}`,
+            `${feature.properties[`er-${yearSuffix}`]}%` : 'Unavailable'}`,
         options: { font_size: 12 }
       },
       {
@@ -457,7 +458,8 @@ export class PptxExport extends Export {
     slide.addTable(
       Object.keys(this.dataProps).map((k, i) => [
         { text: this.dataProps[k], options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff' } },
-        { text: feature.properties[`${k}-${yearSuffix}`] >= 0 ? feature.properties[`${k}-${yearSuffix}`] : 'Unavailable',
+        { text: feature.properties[`${k}-${yearSuffix}`] >= 0 ?
+            this.getPropString(k, feature.properties[`${k}-${yearSuffix}`]) : 'Unavailable',
           options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff' } }
       ]),
       { align: 'l', w: width, h: 1.8, x: xVal, y: 1.38, rowH: [0.08, 0.08, 0.16, 0.08, 0.08, 0.16, 0.16],
@@ -470,7 +472,8 @@ export class PptxExport extends Export {
     slide.addTable(
       Object.keys(this.demDataProps).map((k, i) => [
         { text: this.demDataProps[k], options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff' } },
-        { text: feature.properties[`${k}-${yearSuffix}`] >= 0 ? feature.properties[`${k}-${yearSuffix}`] : 'Unavailable',
+        { text: feature.properties[`${k}-${yearSuffix}`] >= 0 ?
+            this.getPropString(k, feature.properties[`${k}-${yearSuffix}`]) : 'Unavailable',
           options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff' } }
       ]),
       { align: 'l', w: width, h: 1.6, x: xVal, y: 3.38, rowH: [0.08, 0.08, 0.08, 0.08, 0.16, 0.16, 0.08, 0.16],
@@ -488,7 +491,7 @@ export class PptxExport extends Export {
     }
     // TODO: Should this be included regardless of how many features are selected?
     // Create comparison if more than one feature provided
-    chartSlide.addText(`Comparison of ${this.evictionText} rates in ${this.year}`, {
+    chartSlide.addText(`Comparison of ${this.evictionText.toLowerCase()} rates in ${this.year}`, {
       ...chartTitleParams, x: 0.86
     });
 
@@ -496,7 +499,7 @@ export class PptxExport extends Export {
     chartSlide.addImage({ data: barChartCanvas, x: 0.53, y: 0.67, w: 4.21, h: 3.54, });
 
     // Create line chart
-    chartSlide.addText(`Comparison of ${this.evictionText} rates over time`, {
+    chartSlide.addText(`Comparison of ${this.evictionText.toLowerCase()} rates over time`, {
       ...chartTitleParams, x: 5.57
     });
 
@@ -541,6 +544,17 @@ export class PptxExport extends Export {
     }
     this.createDataSlides(this.features);
     return await this.saveWrapper().then((f) => { return f; });
+  }
+
+  private getPropString(prop: string, propVal: number): string {
+    const val = propVal.toLocaleString('en-US');
+    if (PercentCols.indexOf(prop) !== -1) {
+      return val + '%';
+    }
+    if (DollarCols.indexOf(prop) !== -1) {
+      return '$' + val;
+    }
+    return val;
   }
 }
 
