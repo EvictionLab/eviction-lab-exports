@@ -31,7 +31,8 @@ export class PptxExport extends Export {
     align: 'l', font_size: 20, font_face: 'Helvetica', isTextBox: true, w: 9.15, h: 0.44, x: 0.44, y: 0.5
   };
   bulletParams = {
-    font_size: 12, color: '000000', margin: 1, w: 9.15, h: 0.56, x: 0.44, y: 4.15, font_face: 'Georgia'
+    font_size: 12, color: '000000', w: 9.15, h: 0.56, x: 0.44, y: 4.15,
+    font_face: 'Georgia', lineSpacing: 22
   };
   chartParams = {
     x: 1.25, y: 1.5, w: 7.5, h: 5, chartColors: this.colors,
@@ -98,9 +99,17 @@ export class PptxExport extends Export {
       ...this.fullSlideParams, fill: { type: 'solid', color: 'ffffff', alpha: 15 }
     });
 
+    // Set some params based off of amount of features
+    const introParams = {
+      1: { y: 1.8 }, 2: { y: 1.23 }, 3: { y: 0.85 }
+    };
+    const featureTitleParams = {
+      1: { y: 2.26, h: 0.57 }, 2: { y: 1.69, h: 1.1 }, 3: { y: 1.31, h: 1.62 }
+    };
+
     titleSlide.addText(this.translate['TITLE_INTRO'](), {
-      align: 'l', x: 0.44, y: 0.85, w: 8.99, h: 0.27, color: '000000', isTextBox: true,
-      font_face: 'Helvetica', font_size: 12, bold: true
+      ...introParams[features.length], align: 'l', x: 0.44, w: 8.99, h: 0.27, color: '000000',
+      isTextBox: true, font_face: 'Helvetica', font_size: 12, bold: true
     });
 
     titleSlide.addText(
@@ -111,22 +120,22 @@ export class PptxExport extends Export {
           }
         };
       }),
-      { x: 0.43, y: 1.31, w: 9.16, h: 1.62, align: 'l' }
+      { ...featureTitleParams[features.length], x: 0.43, w: 9.16, align: 'l' }
     );
 
     titleSlide.addText(
       [
         { text: this.translate['TITLE_SOURCE'](), 
-          options: { color: '000000', font_face: 'Georgia', font_size: 12, breakLine: true } },
+          options: { color: '000000', font_face: 'Georgia', font_size: 15, breakLine: true } },
         { text: this.translate['TITLE_EXTRACT_DATE'](), 
-          options: { color: '666666', font_face: 'Georgia', font_size: 12 } }
+          options: { color: '666666', font_face: 'Georgia', font_size: 15 } }
       ],
-      { x: 0.44, y: 3.47, w: 6.71, h: 0.53 }
+      { x: 0.44, y: 3.47, w: 8, h: 0.53 }
     );
 
     titleSlide.addText(
       this.translate['TITLE_WEB_LINK'](),
-      { x: 0.44, y: 4.87, w: 5.72, h: 0.24, color: '666666', font_face: 'Georgia', font_size: 12 }
+      { x: 0.44, y: 4.87, w: 5.72, h: 0.24, color: '666666', font_face: 'Georgia', font_size: 15 }
     );
 
     titleSlide.addImage({ data: this.logoImage, x: 8.33, y: 3.99, w: 1.26, h: 1.21 });
@@ -156,10 +165,11 @@ export class PptxExport extends Export {
 
     featSlide.addImage({ data: this.backgroundImage, ...this.fullSlideParams });
 
+    const imageParams = { w: 8.94, h: 2.94, y: 0.36, x: 0.52 };
     if (screenshot !== null) {
-      featSlide.addImage({ data: screenshot, w: 8.84, h: 2.67, y: 0.36, x: 0.52 });
+      featSlide.addImage({ ...imageParams, data: screenshot });
     } else {
-      featSlide.addShape(this.pptx.shapes.RECTANGLE, { w: 8.84, h: 2.67, y: 0.36, x: 0.52, fill: '666666' });
+      featSlide.addShape(this.pptx.shapes.RECTANGLE, { ...imageParams, fill: '666666' });
     }
 
     let featTitleText;
@@ -170,7 +180,7 @@ export class PptxExport extends Export {
     }
 
     featSlide.addText(
-      featTitleText, { ...this.titleParams, y: 3.2, color: this.colors[index], bold: true }
+      featTitleText, { ...this.titleParams, y: 3.56, color: this.colors[index], bold: true }
     );
 
     const unavailable = this.translate['UNAVAILABLE']();
@@ -403,7 +413,7 @@ export class PptxExport extends Export {
     const unavailable = this.translate['UNAVAILABLE']();
 
     slide.addShape(this.pptx.shapes.RECTANGLE, {
-      x: xVal - (shapePadding / 2), y: 0.36, w: width + shapePadding, h: 4.92, fill: 'ffffff'
+      x: xVal - (shapePadding / 2), y: 0.36, w: width + shapePadding, h: 5, fill: 'ffffff'
     });
     slide.addText(
       [{
@@ -437,7 +447,7 @@ export class PptxExport extends Export {
         options: { font_size: 12 }
       },
       {
-        text: this.translate['EVICTION_RATE'](),
+        text: this.translate['EVICTION_RATE']().toUpperCase(),
         options: { font_size: 6 }
       }],
       { align: 'c', x: xVal + (width / 2), y: 0.75, w: width / 2, h: 0.65, bold: true, font_face: 'Helvetica'}
@@ -448,25 +458,25 @@ export class PptxExport extends Export {
         { text: this.dataProps[k], options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff' } },
         { text: feature.properties[`${k}-${yearSuffix}`] >= 0 ?
             this.getPropString(k, feature.properties[`${k}-${yearSuffix}`]) : unavailable,
-          options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff' } }
+          options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff', align: 'r' } }
       ]),
       { align: 'l', w: width, h: 1.8, x: xVal, y: 1.38, rowH: [0.08, 0.08, 0.16, 0.08, 0.08, 0.16, 0.16],
         colW: [width * 0.66, width * 0.33], valign: 'm', autoPage: false },
-      { font_size: 9, border: { pt: '0', color: 'ffffff' } }
+      { font_face: 'Helvetica', font_size: 9, border: { pt: '0', color: 'ffffff' } }
     );
-    slide.addText(this.translate['RACE_ETHNICITY'](), {
-      align: 'c', font_size: 6, h: 0.17, w: width, x: xVal, y: 3.09, bold: true, color: '666666'
+    slide.addText(this.translate['RACE_ETHNICITY']().toUpperCase(), {
+      align: 'c', font_size: 6, h: 0.17, w: width, x: xVal, y: 3.15, bold: true, color: '666666'
     });
     slide.addTable(
       Object.keys(this.demDataProps).map((k, i) => [
         { text: this.demDataProps[k], options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff' } },
         { text: feature.properties[`${k}-${yearSuffix}`] >= 0 ?
             this.getPropString(k, feature.properties[`${k}-${yearSuffix}`]) : unavailable,
-          options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff' } }
+          options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff', align: 'r' } }
       ]),
       { align: 'l', w: width, h: 1.6, x: xVal, y: 3.38, rowH: [0.08, 0.08, 0.08, 0.08, 0.16, 0.16, 0.08, 0.16],
         colW: [width * 0.66, width * 0.33], autoPage: false, valign: 'm' },
-      { font_size: 9, border: { pt: '0', color: 'ffffff' } }
+      { font_face: 'Helvetica', font_size: 9, border: { pt: '0', color: 'ffffff' } }
     );
   }
 
@@ -474,8 +484,14 @@ export class PptxExport extends Export {
     const chartSlide = this.pptx.addNewSlide();
     chartSlide.addImage({ data: this.backgroundImage, ...this.fullSlideParams });
 
+    let chartPad = 0;
+    if (features.length === 1) {
+      chartPad = 0.4;
+    } else if (features.length === 2) {
+      chartPad = 0.3;
+    }
     const chartTitleParams = {
-      w: 3.89, h: 0.27, y: 0.27, align: 'l', font_face: 'Helvetica', font_size: 12, bold: true
+      w: 3.89, h: 0.27, y: 0.27 + chartPad, align: 'l', font_face: 'Helvetica', font_size: 12, bold: true
     }
     // TODO: Should this be included regardless of how many features are selected?
     // Create comparison if more than one feature provided
@@ -484,7 +500,7 @@ export class PptxExport extends Export {
     });
 
     const barChartCanvas = this.createBarChart(features);
-    chartSlide.addImage({ data: barChartCanvas, x: 0.53, y: 0.67, w: 4.21, h: 3.54, });
+    chartSlide.addImage({ data: barChartCanvas, x: 0.53, y: 0.67 + chartPad, w: 4.21, h: 3.54, valign: 'middle' });
 
     // Create line chart
     chartSlide.addText(this.translate['LINE_CHART_TITLE'](this.evictionText.toLowerCase()), {
@@ -494,13 +510,13 @@ export class PptxExport extends Export {
     const years = this.makeYearArr(this.years).map(y => y.toString());
 
     const lineChartCanvas = this.createLineChart(features);
-    chartSlide.addImage({ data: lineChartCanvas, x: 5.22, y: 0.67, w: 4.21, h: 3.54 });
+    chartSlide.addImage({ data: lineChartCanvas, x: 5.22, y: 0.67 + chartPad, w: 4.21, h: 3.54, valign: 'middle' });
 
     features.forEach((f, i) => {
-      const yVal = 4.38 + (0.3 * i);
+      const yVal = (4.38 + (0.3 * i)) + chartPad;
 
       // Add bar chart legend
-      chartSlide.addShape(this.pptx.shapes.OVAL, { x: 0.53, y: yVal - 0.05, w: 0.2, h: 0.2, fill: this.colors[i] });
+      chartSlide.addText(i + 1, { x: 0.53, w: 0.4, align: 'c', y: yVal, h: 0.1, color: this.colors[i], font_size: 12, bold: true });
       chartSlide.addText(f.properties.n, { x: 0.93, y: yVal, w: 4, h: 0.1, color: this.colors[i], font_size: 12, bold: true });
 
       // Add line chart legend
