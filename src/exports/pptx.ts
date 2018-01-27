@@ -115,7 +115,8 @@ export class PptxExport extends Export {
     titleSlide.addText(
       features.map((f, i) => {
         return {
-          text: f.properties.n, options: { 
+          text: i === (features.length - 1) && features.length > 1 ? `& ${f.properties.n}` : f.properties.n, 
+          options: {
             color: this.colors[i], font_size: 26, font_face: 'Helvetica', bold: true
           }
         };
@@ -253,10 +254,10 @@ export class PptxExport extends Export {
 
     context.save();
     context.rotate(-Math.PI / 2);
-    context.textAlign = "right";
+    context.textAlign = "center";
     context.textBaseline = "top";
     context.font = "24px Helvetica";
-    context.fillText(`${this.evictionText} Rate`, -150, -70);
+    context.fillText(`${this.evictionText} Rate`, -(height / 2), -70);
     context.restore();
 
     features.forEach((f, i) => {
@@ -347,10 +348,10 @@ export class PptxExport extends Export {
 
     context.save();
     context.rotate(-Math.PI / 2);
-    context.textAlign = "right";
+    context.textAlign = "center";
     context.textBaseline = "top";
     context.font = "24px Helvetica";
-    context.fillText(axisText, -150, -70);
+    context.fillText(axisText, -(height / 2), -70);
     context.restore();
 
     const lineChart = line()
@@ -408,7 +409,11 @@ export class PptxExport extends Export {
     const padding = 0.2;
     const shapePadding = 0.08;
     const width = 3;
-    const xVal = (0.3 + ((width + padding) * idx)) + ((3 - count) * ((width + padding) / 2)); 
+    let xVal = (0.3 + ((width + padding) * idx)) + ((3 - count) * ((width + padding) / 2));
+    const twoCardMargin = 1.33;
+    if (count === 2) {
+      xVal = idx === 0 ? xVal - (twoCardMargin * 0.25) : xVal + (twoCardMargin * 0.75);
+    }
     const daysInYear = +yearSuffix % 4 === 0 ? 366 : 365;
     const unavailable = this.translate['UNAVAILABLE']();
 
@@ -484,7 +489,7 @@ export class PptxExport extends Export {
     const chartSlide = this.pptx.addNewSlide();
     chartSlide.addImage({ data: this.backgroundImage, ...this.fullSlideParams });
 
-    let chartPad = 0;
+    let chartPad = 0.1;
     if (features.length === 1) {
       chartPad = 0.4;
     } else if (features.length === 2) {
