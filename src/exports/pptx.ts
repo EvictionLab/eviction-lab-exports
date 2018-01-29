@@ -17,7 +17,7 @@ export class PptxExport extends Export {
   evictionText: string;
   fileExt = 'pptx';
 
-  colors = ['e24000', '434878', '2c897f'];
+  colors = ['e24000', '434878', '2c897f', '94aabd'];
   screenshotBase = 'https://screenshot.evictionlab.org';
   assetBucket = process.env['asset_bucket'] || 'eviction-lab-exports';
 
@@ -131,7 +131,7 @@ export class PptxExport extends Export {
         { text: this.translate['TITLE_EXTRACT_DATE'](), 
           options: { color: '666666', font_face: 'Georgia', font_size: 15 } }
       ],
-      { x: 0.44, y: 3.47, w: 8, h: 0.53 }
+      { x: 0.44, y: 3.47, w: 8, h: 0.53, lineSpacing: 28 }
     );
 
     titleSlide.addText(
@@ -186,22 +186,31 @@ export class PptxExport extends Export {
     );
 
     const unavailable = this.translate['UNAVAILABLE']();
-    featSlide.addText(
-      [
-        {
-          text: this.translate['FEATURE_BULLET_ONE'](evictionTotal >= 0 ? evictionsPerDay.toLocaleString('en-US') : unavailable),
-          options: { bullet: true }
-        },
-        {
-          text: this.translate['FEATURE_BULLET_TWO'](evictionRate >= 0 ? evictionRate.toString() + '%' : unavailable),
-          options: { bullet: true }
-        }
-      ], this.bulletParams
-    );
+    const slideBullets = [
+      {
+        text: this.translate['FEATURE_BULLET_ONE'](evictionTotal >= 0 ? evictionsPerDay.toLocaleString('en-US') : unavailable),
+        options: { bullet: true }
+      },
+      {
+        text: this.translate['FEATURE_BULLET_TWO'](evictionRate >= 0 ? evictionRate.toString() + '%' : unavailable),
+        options: { bullet: true }
+      }
+    ];
 
+    [this.dataProps, this.demDataProps].forEach(p => {
+      if (p.hasOwnProperty(this.dataProp)) {
+        slideBullets.push({
+          text: `${p[this.dataProp]}: ${feature.properties[`${this.dataProp}-${yearSuffix}`] >= 0 ?
+            this.getPropString(this.dataProp, feature.properties[`${this.dataProp}-${yearSuffix}`]) : unavailable}`,
+          options: { bullet: true }
+        });
+      }
+    });
+
+    featSlide.addText(slideBullets, this.bulletParams);
     featSlide.addText(
       this.translate['FEATURE_RATE_DESCRIPTION'](),
-      { w: 9.15, h: 0.24, isTextBox: true, x: 0.44, y: 5.02, font_size: 11, font_face: 'Georgia', color: '666666' }
+      { w: 9.15, h: 0.24, isTextBox: true, x: 0.44, y: 5.1, font_size: 11, font_face: 'Georgia', color: '666666' }
     );
   }
 
@@ -223,9 +232,11 @@ export class PptxExport extends Export {
 
     const y = scaleLinear()
       .rangeRound([height, 0]);
+    
+    const chartFeatures = this.getFeatures(features);
 
-    x.domain(features.map(f => f.properties.n));
-    let maxY = Math.max(...features.map(f => f.properties[`${this.bubbleProp}-${this.year.toString().slice(2)}`]));
+    x.domain(chartFeatures.map(f => f.properties.n));
+    let maxY = Math.max(...chartFeatures.map(f => f.properties[`${this.bubbleProp}-${this.year.toString().slice(2)}`]));
     // Minimum value of 1/1.1
     maxY = Math.max(maxY, 1 / 1.1);
     y.domain([0, maxY]);
@@ -261,7 +272,7 @@ export class PptxExport extends Export {
     context.fillText(`${this.evictionText} Rate`, -(height / 2), -70);
     context.restore();
 
-    features.forEach((f, i) => {
+    chartFeatures.forEach((f, i) => {
       context.fillStyle = '#' + this.colors[i];
 
       // Set minimum bar height if null
@@ -298,8 +309,10 @@ export class PptxExport extends Export {
     const y = scaleLinear()
       .rangeRound([height, 0]);
 
+    const chartFeatures = this.getFeatures(features);
+
     x.domain([yearArr[0], yearArr[yearArr.length - 1]]);
-    const maxY = Math.max(...features.map(f => {
+    const maxY = Math.max(...chartFeatures.map(f => {
       return Math.max(...yearArr.map(y => {
         return f.properties[`${this.bubbleProp}-${y.toString().slice(2)}`] || 0;
       }));
@@ -361,7 +374,7 @@ export class PptxExport extends Export {
       .defined(d => d.val >= 0)
       .context(context);
 
-    features.forEach((f, i) => {
+    chartFeatures.forEach((f, i) => {
       context.beginPath();
       const data = yearArr.map(y => {
         return { year: y, val: f.properties[`${this.bubbleProp}-${y.toString().slice(2)}`] };
@@ -374,6 +387,8 @@ export class PptxExport extends Export {
         context.setLineDash([2, 2]);
       } else if (i === 2) {
         context.setLineDash([8, 8]);
+      } else if (i === 3) {
+        context.setLineDash([15, 3]);
       }
       context.stroke();
 
@@ -399,6 +414,8 @@ export class PptxExport extends Export {
       context.setLineDash([2, 2]);
     } else if (index === 2) {
       context.setLineDash([8, 8]);
+    } else if (index === 3) {
+      context.setLineDash([15, 3]);
     }
     context.moveTo(0, 2);
     context.lineTo(37, 2);
@@ -489,12 +506,8 @@ export class PptxExport extends Export {
     const chartSlide = this.pptx.addNewSlide();
     chartSlide.addImage({ data: this.backgroundImage, ...this.fullSlideParams });
 
-    let chartPad = 0.1;
-    if (features.length === 1) {
-      chartPad = 0.4;
-    } else if (features.length === 2) {
-      chartPad = 0.3;
-    }
+    const chartFeatures = this.getFeatures(features);
+    const chartPad = (4 - chartFeatures.length) * 0.1;
     const chartTitleParams = {
       w: 3.89, h: 0.27, y: 0.27 + chartPad, align: 'l', font_face: 'Helvetica', font_size: 12, bold: true
     }
@@ -517,7 +530,7 @@ export class PptxExport extends Export {
     const lineChartCanvas = this.createLineChart(features);
     chartSlide.addImage({ data: lineChartCanvas, x: 5.22, y: 0.67 + chartPad, w: 4.21, h: 3.54, valign: 'middle' });
 
-    features.forEach((f, i) => {
+    chartFeatures.forEach((f, i) => {
       const yVal = (4.38 + (0.3 * i)) + chartPad;
 
       // Add bar chart legend
@@ -564,6 +577,19 @@ export class PptxExport extends Export {
       return '$' + val;
     }
     return val;
+  }
+
+  private getFeatures(features: Feature[]): Feature[] {
+    if (this.showUsAverage || features.length === 1) {
+      return [...features, {
+        bbox: [],
+        properties: {
+          GEOID: '0', layerId: '', n: 'United States', ...this.usAverage
+        }
+      }];
+    } else {
+      return features;
+    }
   }
 }
 

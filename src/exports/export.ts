@@ -12,6 +12,8 @@ export abstract class Export {
     years: Array<number>;
     lang: string;
     key: string;
+    showUsAverage: boolean;
+    usAverage: Object;
     dataProp: string;
     bubbleProp: string;
     templateKey: string | undefined;
@@ -23,6 +25,8 @@ export abstract class Export {
         this.year = requestData.year;
         this.years = requestData.years;
         this.lang = requestData.lang;
+        this.showUsAverage = requestData.showUsAverage;
+        this.usAverage = requestData.usAverage;
         this.dataProp = requestData.dataProp.split('-')[0];
         // If 'none' is supplied as eviction prop, default to eviction rate
         this.bubbleProp = requestData.bubbleProp.startsWith('none') ? 'er' :
@@ -37,7 +41,7 @@ export abstract class Export {
     createKey(requestData: RequestData): string {
         const idPath = requestData.features.map(f => f.properties.GEOID).join('/');
         return `${this.lang}/${this.year}/${this.years[0]}-${this.years[1]}/` +
-            `${this.dataProp}/${this.bubbleProp}/${idPath}/eviction_lab_export.${this.fileExt}`;
+            `${this.dataProp}/${this.bubbleProp}/${this.showUsAverage ? 'us/' : ''}${idPath}/eviction_lab_export.${this.fileExt}`;
     }
 
     /**
