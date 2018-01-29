@@ -142,7 +142,7 @@ export class PptxExport extends Export {
     titleSlide.addImage({ data: this.logoImage, x: 8.33, y: 3.99, w: 1.26, h: 1.21 });
   }
 
-  async getMapScreenshot(feature: Feature, yearSuffix: string) {
+  async getMapScreenshot(feature: Feature, yearSuffix: string, index: number) {
     const bbox = {
       n: feature.bbox[3],
       s: feature.bbox[1],
@@ -150,7 +150,8 @@ export class PptxExport extends Export {
       w: feature.bbox[0]
     };
     const screenshotUrl = `${this.screenshotBase}/${bbox.n}/${bbox.s}/${bbox.e}/${bbox.w}/` +
-      `${feature.properties.layerId}/${this.dataProp}-${yearSuffix}/${this.bubbleProp}-${yearSuffix}`;
+      `${feature.properties.layerId}/${this.dataProp}-${yearSuffix}/${this.bubbleProp}-${yearSuffix}/` +
+      `${feature.properties.GEOID}/${index}`;
     const img = await axios.get(screenshotUrl, { responseType: 'arraybuffer' }).catch(err => null);
     return img !== null ? 'image/png;base64,' + new Buffer(img.data, 'binary').toString('base64') : null;
   }
@@ -159,7 +160,7 @@ export class PptxExport extends Export {
     const featSlide = this.pptx.addNewSlide({ bkgd: 'ffffff' });
     const daysInYear = this.year % 4 === 0 ? 366 : 365;
     const yearSuffix = this.year.toString().slice(2);
-    const screenshot = await this.getMapScreenshot(feature, yearSuffix);
+    const screenshot = await this.getMapScreenshot(feature, yearSuffix, index);
     const evictionTotal = feature.properties[`e-${yearSuffix}`];
     const evictionRate = feature.properties[`er-${yearSuffix}`];
     const evictionsPerDay = +(feature.properties[`e-${yearSuffix}`] / daysInYear).toFixed(2);
@@ -410,9 +411,8 @@ export class PptxExport extends Export {
     const shapePadding = 0.08;
     const width = 3;
     let xVal = (0.3 + ((width + padding) * idx)) + ((3 - count) * ((width + padding) / 2));
-    const twoCardMargin = 1.33;
     if (count === 2) {
-      xVal = idx === 0 ? xVal - (twoCardMargin * 0.25) : xVal + (twoCardMargin * 0.75);
+      xVal = idx === 0 ? 1.19 : 5.73;
     }
     const daysInYear = +yearSuffix % 4 === 0 ? 366 : 365;
     const unavailable = this.translate['UNAVAILABLE']();
