@@ -23,7 +23,7 @@ export const Translations: Object = {
         'DATA_PROPS': {
             'e': 'Total Evictions',
             'p': 'Population',
-            'roh': '% Renter-Occupied Households',
+            'pro': '% Renter-Occupied Households',
             'pr': 'Poverty Rate',
             'mgr': 'Median Gross Rent',
             'mhi': 'Median Household Income',
@@ -64,7 +64,7 @@ export const Translations: Object = {
         'DATA_PROPS': {
             'e': 'Total Evictions',
             'p': 'Población',
-            'roh': '% Casas Ocupadas por Inquilinos',
+            'pro': '% Casas Ocupadas por Inquilinos',
             'pr': 'Tasa de Pobreza',
             'mgr': 'Renta Bruta Mediana',
             'mhi': 'Ingreso Bruto Mediano',
