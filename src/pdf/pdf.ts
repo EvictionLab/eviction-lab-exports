@@ -40,7 +40,14 @@ export class PdfExport extends Export {
 
     const pdfStr = await chromeless
       .setHtml(compiledData)
-      .pdf({ displayHeaderFooter: false, landscape: false });
+      .pdf({
+        displayHeaderFooter: false,
+        landscape: false,
+        marginTop: 0,
+        marginBottom: 0,
+        marginLeft: 0,
+        marginRight: 0
+      });
 
     await chrome.kill();
     return fs.readFileSync(pdfStr);
