@@ -388,9 +388,14 @@ export class PptxExport extends Export {
       } else if (i === 2) {
         context.setLineDash([8, 8]);
       } else if (i === 3) {
-        context.setLineDash([15, 3]);
+        context.lineWidth = 6;
+        context.setLineDash([]);
+        context.stroke();
+        context.lineWidth = 3;
+        context.globalCompositeOperation = 'destination-out';
       }
       context.stroke();
+      context.globalCompositeOperation = 'source-over';
 
       const radius = 7.5;
       data.filter(d => d.val > -1)
@@ -415,7 +420,13 @@ export class PptxExport extends Export {
     } else if (index === 2) {
       context.setLineDash([8, 8]);
     } else if (index === 3) {
-      context.setLineDash([15, 3]);
+      context.lineWidth = 6;
+      context.setLineDash([]);
+      context.moveTo(0, 2);
+      context.lineTo(37, 2);
+      context.stroke();
+      context.lineWidth = 3;
+      context.globalCompositeOperation = 'destination-out';
     }
     context.moveTo(0, 2);
     context.lineTo(37, 2);
