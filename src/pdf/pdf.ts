@@ -10,6 +10,13 @@ import { PercentCols, DollarCols } from '../data/propData';
 import { Export } from '../exports/export';
 import { handler } from '../exports/handler';
 
+/*
+TODO:
+- Create graph page
+- Render D3 with evaluate, or generate here
+- Setup location table, include rotated third version
+*/
+
 export class PdfExport extends Export {
   fileExt = 'pdf';
   get templateKey() { return `assets/${this.lang}/report.html`; }
@@ -33,12 +40,27 @@ export class PdfExport extends Export {
       Key: this.templateKey
     }).promise();
 
+    // Get screenshots for each feature
+    const yearSuffix = this.year.toString().slice(2);
+    const features = this.features.map(f => this.processFeature(f));
+    let params = { width: 520, height: 520 };
+    if (features.length === 2) {
+      params.height = 190;
+    } else if (features.length === 3) {
+      params = { width: 200, height: 200 };
+    }
+    await Promise.all(features.map(async (f, i) => {
+      f.screenshot = await this.getMapScreenshot(f, yearSuffix, i, params);
+    }));
+
     const template = Handlebars.compile(htmlRes.Body.toString());
     const compiledData = template({
+      date: new Date().toISOString().slice(0, 10),
+      year: this.year,
       oneFeature: this.features.length === 1,
       twoFeatures: this.features.length === 2,
       threeFeatures: this.features.length === 3,
-      features: this.features.map(f => this.processFeature(f)),
+      features: features,
       dataProp: this.dataProp.startsWith('none') ? null : this.dataProp
     });
 

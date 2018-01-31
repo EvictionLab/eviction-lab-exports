@@ -10,8 +10,9 @@
   "dependencies": {
     "@types/handlebars": "^4.0.36",
     "aws-sdk": "^2.122.0",
-    "handlebars": "^4.0.10",
-    "chromeless": "^1.3.0"
+    "axios": "^0.17.1",
+    "chromeless": "^1.3.0",
+    "handlebars": "^4.0.10"
   },
   "devDependencies": {
     "@types/node": "^8.0.31",

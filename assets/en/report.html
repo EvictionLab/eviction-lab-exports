@@ -128,7 +128,12 @@
             font-weight: bold;
             text-transform: uppercase;
         }
-        .page.feature-details .details ul { font-family: 'Akkurat', sans-serif; }
+        .page.feature-details .details ul {
+            padding-left: 16px;
+            font-family: 'Akkurat', sans-serif;
+            font-size: 13px;
+            line-height: 21px;
+        }
         .page.feature-details .details ul li span:nth-child(2) { font-weight: bold; }
         .page.feature-details .screenshot:first-child { top: 46px; }
 
@@ -235,7 +240,7 @@
 </div>
 {{#if oneFeature }}
 <div class="page one-feature feature-details">
-    <div class="screenshot"></div>
+    <div class="screenshot" {{#if features.0.screenshot}}style="background:url('data:{{features.0.screenshot}}')"{{/if}}></div>
     <div class="details">
         <h3>{{features.0.properties.n}} experienced {{features.0.properties.e}} evictions in {{year}}</h3>
         <ul>
@@ -252,7 +257,7 @@
 {{#if twoFeatures}}
 <div class="page two-features feature-details">
     {{#each features}}
-    <div class="screenshot"></div>
+    <div class="screenshot" {{#if screenshot}}style="background:url('data:{{screenshot}}')"{{/if}}></div>
     <div class="details">
         <h3>{{properties.n}} experienced {{properties.e}} evictions in {{year}}</h3>
         <ul>
@@ -270,7 +275,7 @@
 {{#if threeFeatures}}
 <div class="page three-features feature-details">
     {{#each features}}
-    <div class="screenshot"></div>
+    <div class="screenshot" {{#if screenshot}}style="background:url('data:{{screenshot}}')"{{/if}}></div>
     <div class="details">
         <h3>{{properties.n}} experienced {{properties.e}} evictions in {{year}}</h3>
         <ul>

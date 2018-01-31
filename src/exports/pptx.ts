@@ -9,7 +9,6 @@ import * as Canvas from 'canvas-aws-prebuilt';
 // import * as Canvas from 'canvas';
 import { scaleLinear, scaleBand } from 'd3-scale';
 import { line } from 'd3-shape';
-import axios from 'axios';
 import { S3 } from 'aws-sdk';
 
 export class PptxExport extends Export {
@@ -18,7 +17,6 @@ export class PptxExport extends Export {
   fileExt = 'pptx';
 
   colors = ['e24000', '434878', '2c897f', '94aabd'];
-  screenshotBase = 'https://screenshot.evictionlab.org';
   assetBucket = process.env['asset_bucket'] || 'eviction-lab-exports';
 
   mainImage: string;
@@ -140,20 +138,6 @@ export class PptxExport extends Export {
     );
 
     titleSlide.addImage({ data: this.logoImage, x: 8.33, y: 3.99, w: 1.26, h: 1.21 });
-  }
-
-  async getMapScreenshot(feature: Feature, yearSuffix: string, index: number) {
-    const bbox = {
-      n: feature.bbox[3],
-      s: feature.bbox[1],
-      e: feature.bbox[2],
-      w: feature.bbox[0]
-    };
-    const screenshotUrl = `${this.screenshotBase}/${bbox.n}/${bbox.s}/${bbox.e}/${bbox.w}/` +
-      `${feature.properties.layerId}/${this.dataProp}-${yearSuffix}/${this.bubbleProp}-${yearSuffix}/` +
-      `${feature.properties.GEOID}/${index}`;
-    const img = await axios.get(screenshotUrl, { responseType: 'arraybuffer' }).catch(err => null);
-    return img !== null ? 'image/png;base64,' + new Buffer(img.data, 'binary').toString('base64') : null;
   }
 
   async createFeatureSlide(feature: Feature, index: number): Promise<void> {
