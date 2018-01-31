@@ -35,13 +35,20 @@ export class PdfExport extends Export {
 
     const template = Handlebars.compile(htmlRes.Body.toString());
     const compiledData = template({
-      features: this.features.map(f => this.processFeature(f))
+      oneFeature: this.features.length === 1,
+      twoFeatures: this.features.length === 2,
+      threeFeatures: this.features.length === 3,
+      features: this.features.map(f => this.processFeature(f)),
+      dataProp: this.dataProp.startsWith('none') ? null : this.dataProp
     });
 
     const pdfStr = await chromeless
       .setHtml(compiledData)
+      .wait(500)
       .pdf({
         displayHeaderFooter: false,
+        printBackground: true,
+        scale: 2,
         landscape: false,
         marginTop: 0,
         marginBottom: 0,
@@ -55,17 +62,25 @@ export class PdfExport extends Export {
 
   private processFeature(feature: Feature): Feature {
     const dataCols = Object.keys(ColMap).filter(k => ['n', 'pl'].indexOf(k) === -1);
-    Object.keys(feature.properties).forEach(k => {
-      const keyPre = k.split('-')[0];
-      const val = feature.properties[k];
-      if (PercentCols.indexOf(keyPre) !== -1) {
-        feature.properties[k] = val.toLocaleString('en-US') + '%';
-      } else if (DollarCols.indexOf(keyPre) !== -1) {
-        feature.properties[k] = '$' + val.toLocaleString('en-US');
-      } else if (dataCols.indexOf(keyPre) !== -1) {
-        feature.properties[k] = val.toLocaleString('en-US');
+    const yearSuffix = this.year.toString().slice(2);
+    dataCols.forEach(k => {
+      const val = feature.properties[`${k}-${yearSuffix}`];
+      if (val) {
+        if (PercentCols.indexOf(k) !== -1) {
+          feature.properties[k] = val.toLocaleString('en-US') + '%';
+        } else if (DollarCols.indexOf(k) !== -1) {
+          feature.properties[k] = '$' + val.toLocaleString('en-US');
+        } else if (dataCols.indexOf(k) !== -1) {
+          feature.properties[k] = val.toLocaleString('en-US');
+        }
       }
     });
+    const daysInYear = this.year % 4 === 0 ? 366 : 365;
+    const evictionsPerDay = +(feature.properties[`e-${yearSuffix}`] / daysInYear).toFixed(2);
+    feature.properties['epd'] = evictionsPerDay;
+    if (this.dataProp && !this.dataProp.startsWith('none')) {
+      feature.properties['dataProp'] = feature.properties[this.dataProp];
+    }
     return feature;
   }
 }
