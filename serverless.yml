@@ -23,6 +23,7 @@ package:
   exclude:
     - node_modules/**
   include:
+    - ./assets/fonts
     - node_modules/aws-sdk/**
 
 functions:
@@ -124,6 +125,11 @@ functions:
           path: /zip
           method: post
           cors: true
+
+custom:
+  optimize:
+    includePaths:
+      - ./assets/fonts
 
 # custom:
 #   customDomain:

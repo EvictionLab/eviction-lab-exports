@@ -9,6 +9,7 @@ import { ColMap } from '../data/colMap';
 import { PercentCols, DollarCols } from '../data/propData';
 import { Export } from '../exports/export';
 import { handler } from '../exports/handler';
+import { Chart } from '../exports/chart';
 
 /*
 TODO:

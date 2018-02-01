@@ -2,13 +2,14 @@ import { RequestData } from '../data/requestData';
 import { Feature } from '../data/feature';
 import { Export } from './export';
 import { Translations } from '../data/translate';
+import { Chart } from './chart';
 import { PercentCols, DollarCols } from '../data/propData';
 import { handler } from './handler';
-import * as Canvas from 'canvas-aws-prebuilt';
+// import * as Canvas from 'canvas-aws-prebuilt';
 // Need to use original canvas for local development
 // import * as Canvas from 'canvas';
-import { scaleLinear, scaleBand } from 'd3-scale';
-import { line } from 'd3-shape';
+// import { scaleLinear, scaleBand } from 'd3-scale';
+// import { line } from 'd3-shape';
 import { S3 } from 'aws-sdk';
 
 export class PptxExport extends Export {
@@ -42,6 +43,7 @@ export class PptxExport extends Export {
   dataProps: Object;
   demDataProps: Object;
   translate: Object;
+  chart: Chart;
 
   constructor(requestData: RequestData) {
     super(requestData);
@@ -54,6 +56,10 @@ export class PptxExport extends Export {
     this.dataProps = Translations[this.lang]['DATA_PROPS'];
     this.demDataProps = Translations[this.lang]['DEM_DATA_PROPS'];
     this.evictionText = this.bubbleProp === 'er' ? this.translate['EVICTION']() : this.translate['EVICTION_FILING']();
+    this.chart = new Chart(
+      945, 795, this.year, this.makeYearArr(this.years), this.bubbleProp,
+      this.colors, this.evictionText, this.translate
+    );
   };
 
   makeYearArr(yearRange: number[]): number[] {
@@ -198,226 +204,6 @@ export class PptxExport extends Export {
     );
   }
 
-  createBarChart(features: Feature[]): string {
-    const margin = {top: 20, left: 120, right: 20, bottom: 80};
-    const fullWidth = 945;
-    const fullHeight = 795;
-    const width = fullWidth - margin.left - margin.right;
-    const height = fullHeight - margin.top - margin.bottom;
-    const canvas = new Canvas(fullWidth, fullHeight);
-    const context = canvas.getContext('2d');
-    context.fillStyle = 'white';
-    context.fillRect(0, 0, fullWidth, fullHeight);
-    context.translate(margin.left, margin.top);
-
-    const x = scaleBand()
-      .rangeRound([0, width])
-      .padding(0.3);
-
-    const y = scaleLinear()
-      .rangeRound([height, 0]);
-    
-    const chartFeatures = this.getFeatures(features);
-
-    x.domain(chartFeatures.map(f => f.properties.n));
-    let maxY = Math.max(...chartFeatures.map(f => f.properties[`${this.bubbleProp}-${this.year.toString().slice(2)}`]));
-    // Minimum value of 1/1.1
-    maxY = Math.max(maxY, 1 / 1.1);
-    y.domain([0, maxY]);
-
-    const yTicksCount = 5;
-    const yTicks = y.ticks(yTicksCount);
-
-    context.textAlign = "center";
-    context.textBaseline = "top";
-    context.font = "22px Helvetica";
-    context.fillStyle = "#666666";
-
-    context.beginPath();
-    yTicks.forEach((d) => {
-      context.moveTo(0, y(d) + 0.5);
-      context.lineTo(width, y(d) + 0.5);
-    });
-    context.strokeStyle = "#666666";
-    context.stroke();
-
-    context.textAlign = "right";
-    context.textBaseline = "middle";
-    context.font = "20px Helvetica";
-    yTicks.forEach(function (d) {
-      context.fillText(d, -15, y(d));
-    });
-
-    context.save();
-    context.rotate(-Math.PI / 2);
-    context.textAlign = "center";
-    context.textBaseline = "top";
-    context.font = "24px Helvetica";
-    context.fillText(`${this.evictionText} Rate`, -(height / 2), -70);
-    context.restore();
-
-    chartFeatures.forEach((f, i) => {
-      context.fillStyle = '#' + this.colors[i];
-
-      // Set minimum bar height if null
-      // TODO: Does this still apply for static image?
-      const val = f.properties[`${this.bubbleProp}-${this.year.toString().slice(2)}`];
-      const barDisplayVal = val >= 0.1 ? val : y.domain()[y.domain().length - 1] * 0.005;
-      context.fillRect(
-        x(f.properties.n),
-        y(barDisplayVal),
-        x.bandwidth(),
-        height - y(barDisplayVal)
-      );
-    });
-
-    return canvas.toDataURL();
-  }
-
-  createLineChart(features: Feature[]): string {
-    const yearArr = this.makeYearArr(this.years);
-    const margin = { top: 20, left: 120, right: 50, bottom: 80 };
-    const fullWidth = 945;
-    const fullHeight = 795;
-    const width = fullWidth - margin.left - margin.right;
-    const height = fullHeight - margin.top - margin.bottom;
-    const canvas = new Canvas(fullWidth, fullHeight);
-    const context = canvas.getContext('2d');
-    context.fillStyle = 'white';
-    context.fillRect(0, 0, fullWidth, fullHeight);
-    context.translate(margin.left, margin.top);
-
-    const x = scaleLinear()
-      .rangeRound([0, width]);
-
-    const y = scaleLinear()
-      .rangeRound([height, 0]);
-
-    const chartFeatures = this.getFeatures(features);
-
-    x.domain([yearArr[0], yearArr[yearArr.length - 1]]);
-    const maxY = Math.max(...chartFeatures.map(f => {
-      return Math.max(...yearArr.map(y => {
-        return f.properties[`${this.bubbleProp}-${y.toString().slice(2)}`] || 0;
-      }));
-    }));
-    y.domain([0, maxY]);
-
-    const tickSize = 16;
-    const xTicksCount = Math.floor((yearArr.length - 1) / 3);
-    const xTicks = x.ticks(xTicksCount);
-    const yTicksCount = 5;
-    const yTicks = y.ticks(yTicksCount);
-
-    context.beginPath();
-    xTicks.forEach(d => {
-      context.moveTo(x(d), height);
-      context.lineTo(x(d), height + tickSize);
-    });
-    context.strokeStyle = "#666666";
-    context.stroke();
-
-    context.textAlign = "center";
-    context.textBaseline = "top";
-    context.font = "22px Helvetica";
-    context.fillStyle = "#666666";
-    xTicks.forEach(d => {
-      context.fillText(d, x(d), height + tickSize + 10);
-    });
-
-    context.beginPath();
-    yTicks.forEach(d => {
-      context.moveTo(0, y(d) + 0.5);
-      context.lineTo(width, y(d) + 0.5);
-    });
-    context.strokeStyle = "#666666";
-    context.stroke();
-
-    context.textAlign = "right";
-    context.textBaseline = "middle";
-    context.font = "20px Helvetica";
-    yTicks.forEach(d => {
-      context.fillText(d, -15, y(d));
-    });
-
-    const axisText = this.bubbleProp === 'er' ?
-      this.translate['EVICTION_RATE']() :
-      this.translate['EVICTION_FILING_RATE']();
-
-    context.save();
-    context.rotate(-Math.PI / 2);
-    context.textAlign = "center";
-    context.textBaseline = "top";
-    context.font = "24px Helvetica";
-    context.fillText(axisText, -(height / 2), -70);
-    context.restore();
-
-    const lineChart = line()
-      .x(d => x(d.year))
-      .y(d => y(d.val))
-      .defined(d => d.val >= 0)
-      .context(context);
-
-    chartFeatures.forEach((f, i) => {
-      context.beginPath();
-      const data = yearArr.map(y => {
-        return { year: y, val: f.properties[`${this.bubbleProp}-${y.toString().slice(2)}`] };
-      });
-      lineChart(data);
-      context.lineWidth = 6;
-      context.strokeStyle = '#' + this.colors[i];
-      context.fillStyle = '#' + this.colors[i];
-      if (i === 1) {
-        context.setLineDash([2, 2]);
-      } else if (i === 2) {
-        context.setLineDash([8, 8]);
-      } else if (i === 3) {
-        context.lineWidth = 6;
-        context.setLineDash([]);
-        context.stroke();
-        context.lineWidth = 3;
-        context.globalCompositeOperation = 'destination-out';
-      }
-      context.stroke();
-      context.globalCompositeOperation = 'source-over';
-
-      const radius = 7.5;
-      data.filter(d => d.val > -1)
-        .forEach(d => {
-          context.beginPath();
-          context.arc(x(d.year), y(d.val), radius, 0, 2 * Math.PI);
-          context.fill();
-        });
-    });
-
-    return canvas.toDataURL();
-  }
-
-  createLineChartLegend(features: Feature, index: number): string {
-    const canvas = new Canvas(37, 4);
-    const context = canvas.getContext('2d');
-
-    context.strokeStyle = "#" + this.colors[index];
-    context.lineWidth = 4;
-    if (index === 1) {
-      context.setLineDash([2, 2]);
-    } else if (index === 2) {
-      context.setLineDash([8, 8]);
-    } else if (index === 3) {
-      context.lineWidth = 6;
-      context.setLineDash([]);
-      context.moveTo(0, 2);
-      context.lineTo(37, 2);
-      context.stroke();
-      context.lineWidth = 3;
-      context.globalCompositeOperation = 'destination-out';
-    }
-    context.moveTo(0, 2);
-    context.lineTo(37, 2);
-    context.stroke();
-    return canvas.toDataURL();
-  }
-
   createDataTable(slide: any, yearSuffix: string, feature: Feature, count: number, idx: number): void {
     const padding = 0.2;
     const shapePadding = 0.08;
@@ -512,7 +298,7 @@ export class PptxExport extends Export {
       ...chartTitleParams, x: 0.86
     });
 
-    const barChartCanvas = this.createBarChart(features);
+    const barChartCanvas = this.chart.createBarChart(chartFeatures);
     chartSlide.addImage({ data: barChartCanvas, x: 0.53, y: 0.67 + chartPad, w: 4.21, h: 3.54, valign: 'middle' });
 
     // Create line chart
@@ -522,7 +308,7 @@ export class PptxExport extends Export {
 
     const years = this.makeYearArr(this.years).map(y => y.toString());
 
-    const lineChartCanvas = this.createLineChart(features);
+    const lineChartCanvas = this.chart.createLineChart(chartFeatures);
     chartSlide.addImage({ data: lineChartCanvas, x: 5.22, y: 0.67 + chartPad, w: 4.21, h: 3.54, valign: 'middle' });
 
     chartFeatures.forEach((f, i) => {
@@ -534,7 +320,7 @@ export class PptxExport extends Export {
 
       // Add line chart legend
       chartSlide.addImage({
-        data: this.createLineChartLegend(f, i), x: 5.22, y: yVal, w: 0.5, h: 0.06
+        data: this.chart.createLineChartLegend(f, i), x: 5.22, y: yVal, w: 0.5, h: 0.06
       });
       chartSlide.addText(f.properties.n, { x: 5.89, y: yVal, w: 4, h: 0.1, color: this.colors[i], font_size: 12, bold: true });
     });

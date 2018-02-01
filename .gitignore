@@ -6,5 +6,6 @@ jspm_packages
 .serverless
 .build
 
+src/assets/*
 assets/fonts/*.otf
 assets/fonts/*.ttf
