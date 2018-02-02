@@ -82,7 +82,7 @@ export class Chart {
         context.restore();
 
         features.forEach((f, i) => {
-            context.fillStyle = '#' + this.colors[i];
+            context.fillStyle = '#' + this.getColor(f, i);
 
             // Set minimum bar height if null
             // TODO: Does this still apply for static image?
@@ -191,8 +191,8 @@ export class Chart {
             });
             lineChart(data);
             context.lineWidth = 6;
-            context.strokeStyle = '#' + this.colors[i];
-            context.fillStyle = '#' + this.colors[i];
+            context.strokeStyle = '#' + this.getColor(f, i);
+            context.fillStyle = '#' + this.getColor(f, i);
             if (i === 1) {
                 context.setLineDash([2, 2]);
             } else if (i === 2) {
@@ -219,11 +219,11 @@ export class Chart {
         return canvas.toDataURL();
     }
 
-    createLineChartLegend(features: Feature, index: number): string {
+    createLineChartLegend(feature: Feature, index: number): string {
         const canvas = new Canvas(37, 4);
         const context = canvas.getContext('2d');
 
-        context.strokeStyle = "#" + this.colors[index];
+        context.strokeStyle = "#" + this.getColor(feature, index);
         context.lineWidth = 4;
         if (index === 1) {
             context.setLineDash([2, 2]);
@@ -242,5 +242,13 @@ export class Chart {
         context.lineTo(37, 2);
         context.stroke();
         return canvas.toDataURL();
+    }
+
+    private getColor(f: Feature, i: number): string {
+        if (f.properties.n === 'United States') {
+            return this.colors[3];
+        } else {
+            return this.colors[i];
+        }
     }
 }

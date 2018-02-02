@@ -96,7 +96,7 @@
         #title .locations h1:first-child { color: #E24000; }
         #title .locations h1:nth-child(2) { color: #434878}
         #title .locations h1:nth-child(3) { color: #2C897F; }
-        #title .locations h1:nth-last-child(2)::after { content: ' &'; }
+        /* #title .locations h1:nth-last-child(2)::after { content: ' &'; } */
 
         /* FEATURE DETAIL PAGE */
         .page.feature-details { position: relative; }
@@ -208,13 +208,56 @@
         }
 
         /* STATS TABLES */
-        .page.stats { }
-        /* .page.stats */
-        .page.stats.three-locations {
-            transform: rotate(90deg);
+        .page.stats { position: relative }
+        .page.stats .stat-table {
+            position: absolute;
+            top: 46px;
+            height: 716px;
+            border: 1px solid #C6CCCF;
+            display: inline-block;
+        }
+        .page.stats .stat-table h3 {
+            margin: 8px;
+            margin-top: 16px;
+            font-size: 15px;
+            font-family: 'GT Eesti Display';
+            font-weight: bold;
+        }
+        .page.stats .stat.table p.year {
+            font-size: 12px;
+            font-weight: bold;
+            font-family: 'Akkurat';
+            color: #000;
+        }
+        .page.stats .stat-table:first-child h3 { color: #E24000; }
+        .page.stats .stat-table:nth-child(2) { color: #434878; }
+        .page.stats .stat-table:nth-child(3) { color: #2C897F; }
+
+        .page.stats.one-feature .stat-table {
+            left: 130px;
+            width: 350px;
+            height: 716px;
+        }
+        .page.stats.two-features .stat-table {
+            top: 106px;
+            left: 60px;
+            width: 230px;
+            height: 580px;
+        }
+        .page.stats.two-features .stat-table:nth-child(2) { left: 325px; }
+        .page.stats.three-features {
+            transform: rotate(90deg) translate(90px, 90px);
             height: 612px;
             width: 792px;
         }
+        .page.stats.three-features .stat-table {
+            margin-top: 15px;
+            width: 230px;
+            height: 580px;
+        }
+        .page.stats.three-features .stat-table:first-child { margin-left: 36px; left: 36px; }
+        .page.stats.three-features .stat-table:nth-child(2) { left: 280px; }
+        .page.stats.three-features .stat-table:nth-child(3) { left: 527px; }
     </style>
 </head>
 <body>
@@ -362,8 +405,13 @@
         {{/each}}
     </div>
 </div>
-<div class="page stats">
-    
+<div class="page stats {{#if oneFeature}}one-feature{{/if}} {{#if twoFeatures}}two-features{{/if}} {{#if threeFeatures}}three-features{{/if}}">
+    {{#each features}}
+    <div class="stat-table">
+        <h3>{{properties.n}}</h3>
+        <p class="year">{{year}}</p>
+    </div>
+    {{/each}}
 </div>
 </body>
 </html>

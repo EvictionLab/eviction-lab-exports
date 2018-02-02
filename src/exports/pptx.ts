@@ -5,11 +5,6 @@ import { Translations } from '../data/translate';
 import { Chart } from './chart';
 import { PercentCols, DollarCols } from '../data/propData';
 import { handler } from './handler';
-// import * as Canvas from 'canvas-aws-prebuilt';
-// Need to use original canvas for local development
-// import * as Canvas from 'canvas';
-// import { scaleLinear, scaleBand } from 'd3-scale';
-// import { line } from 'd3-shape';
 import { S3 } from 'aws-sdk';
 
 export class PptxExport extends Export {
@@ -111,7 +106,7 @@ export class PptxExport extends Export {
     titleSlide.addText(
       features.map((f, i) => {
         return {
-          text: i === (features.length - 1) && features.length > 1 ? `& ${f.properties.n}` : f.properties.n, 
+          text: f.properties.n, 
           options: {
             color: this.colors[i], font_size: 26, font_face: 'Helvetica', bold: true
           }
