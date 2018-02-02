@@ -18,13 +18,8 @@ export class Chart {
         public evictionText: string,
         public translate
     ) {
-        console.log(__dirname);
-        console.log(fs.readdirSync(path.join(__dirname, '../')));
-        console.log(fs.readdirSync(path.join(__dirname, '../../')));
-        console.log(fs.readdirSync(path.join(__dirname, '../../assets/fonts')));
         process.env.FONTCONFIG_PATH = path.join(__dirname, fs.existsSync(path.join(__dirname, '../assets')) ?
             '../assets/fonts' : '../../assets/fonts');
-        console.log(process.env.FONTCONFIG_PATH);
     }
 
     createBarChart(features: Feature[]): string {

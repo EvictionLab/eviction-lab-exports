@@ -46,6 +46,27 @@ export abstract class Export {
             `${this.dataProp}/${this.bubbleProp}/${this.showUsAverage ? 'us/' : ''}${idPath}/eviction_lab_export.${this.fileExt}`;
     }
 
+    makeYearArr(yearRange: number[]): number[] {
+        let years = [];
+        for (let year = yearRange[0]; year <= yearRange[yearRange.length - 1]; ++year) {
+            years.push(year);
+        }
+        return years;
+    }
+
+    getFeatures(features: Feature[]): Feature[] {
+        if (this.showUsAverage || features.length === 1) {
+            return [...features, {
+                bbox: [],
+                properties: {
+                    GEOID: '0', layerId: '', n: 'United States', ...this.usAverage
+                }
+            }];
+        } else {
+            return features;
+        }
+    }
+
     /**
      * Returns true if key exists, otherwise false
      */

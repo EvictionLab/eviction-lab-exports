@@ -10,21 +10,28 @@ import { PercentCols, DollarCols } from '../data/propData';
 import { Export } from '../exports/export';
 import { handler } from '../exports/handler';
 import { Chart } from '../exports/chart';
+import { Translations } from '../data/translate';
 
 /*
 TODO:
-- Create graph page
-- Render D3 with evaluate, or generate here
 - Setup location table, include rotated third version
+- Text page
 */
 
 export class PdfExport extends Export {
   fileExt = 'pdf';
+  chart: Chart;
   get templateKey() { return `assets/${this.lang}/report.html`; }
 
   constructor(requestData: RequestData) {
     super(requestData);
     this.key = this.createKey(requestData);
+    const translations = Translations[this.lang]['PPTX'];
+    const evictionText = this.bubbleProp === 'er' ? translations['EVICTION']() : translations['EVICTION_FILING']();
+    this.chart = new Chart(
+      975, 750, this.year, this.makeYearArr(this.years), this.bubbleProp,
+      ['e24000', '434878', '2c897f', '94aabd'], evictionText, translations
+    );
   };
 
   async createFile(): Promise<Buffer> {
@@ -54,6 +61,8 @@ export class PdfExport extends Export {
       f.screenshot = await this.getMapScreenshot(f, yearSuffix, i, params);
     }));
 
+    const chartFeatures = this.getFeatures(this.features);
+
     const template = Handlebars.compile(htmlRes.Body.toString());
     const compiledData = template({
       date: new Date().toISOString().slice(0, 10),
@@ -62,12 +71,20 @@ export class PdfExport extends Export {
       twoFeatures: this.features.length === 2,
       threeFeatures: this.features.length === 3,
       features: features,
-      dataProp: this.dataProp.startsWith('none') ? null : this.dataProp
+      chartFeatures: chartFeatures.map((f, i) => {
+        f.lineLegend = this.chart.createLineChartLegend(f, i);
+        f.properties.idx = i + 1; return f;
+      }),
+      showUsAverage: this.showUsAverage,
+      dataProp: this.dataProp.startsWith('none') ? null : this.dataProp,
+      lineChart: this.chart.createLineChart(chartFeatures),
+      barChart: this.chart.createBarChart(chartFeatures)
     });
 
     const pdfStr = await chromeless
       .setHtml(compiledData)
       .wait(500)
+      // .html()
       .pdf({
         displayHeaderFooter: false,
         printBackground: true,
@@ -78,8 +95,10 @@ export class PdfExport extends Export {
         marginLeft: 0,
         marginRight: 0
       });
+    // fs.writeFileSync('test.html', pdfStr);
 
     await chrome.kill();
+    // return fs.readFileSync('test.html');
     return fs.readFileSync(pdfStr);
   }
 

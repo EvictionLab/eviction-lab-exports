@@ -158,6 +158,63 @@
         .page.three-features .details:nth-child(2) { top: 46px; }
         .page.three-features .screenshot:nth-child(3), .page.three-features .details:nth-child(4) { top: 269px; }
         .page.three-features .screenshot:nth-child(5), .page.three-features .details:nth-child(6) { top: 497px; }
+
+        /* CHARTS PAGE */
+        .page.charts { position: relative; }
+        .page.charts .title {
+            position: absolute;
+            font-size: 15px;
+            /* top: 70px; */
+            top: 46px;
+            left: 100px;
+            width: 416px;
+            text-align: center;
+            text-transform: uppercase;
+            font-family: 'GT Eesti Display';
+            color: #000000;
+        }
+        .page.charts .chart {
+            width: 325px;
+            height: 250px;
+            left: 146px;
+            background-color: lightgrey;
+            position: absolute;
+            background-repeat: no-repeat;
+            background-size: contain;
+        }
+        .page.charts .chart:first-of-type { top: 70px; }
+        .page.charts .chart:nth-of-type(3) { top: 420px; }
+        .page.charts .legend { position: absolute; left: 146px; width: 325px; }
+        .page.charts .legend p {
+            font-size: 14px;
+            line-height: 22px;
+            font-weight: bold;
+        }
+        .page.charts .legend.line { top: 330px; }
+        .page.charts .legend.bar { top: 680px; }
+        .legend p:first-child { color: #E24000; }
+        .legend p:nth-child(2) { color: #434878; }
+        .legend p:nth-child(3) { color: #2C897F; }
+        .legend.us-avg p:last-child { color: #94aabd; }
+
+        .legend.line p span:first-child {
+            display: inline-block;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            height: 14px;
+            width: 30px;
+            margin-right: 16px;
+        }
+
+        /* STATS TABLES */
+        .page.stats { }
+        /* .page.stats */
+        .page.stats.three-locations {
+            transform: rotate(90deg);
+            height: 612px;
+            width: 792px;
+        }
     </style>
 </head>
 <body>
@@ -291,7 +348,22 @@
 </div>
 {{/if}}
 <div class="page charts">
-    <div class="chart" id="line-chart"></div>
+    <p class="title">Comparison of Eviction Rates Over Time</p>
+    <div class="chart" id="line-chart" {{#if lineChart}}style="background-color: inherit; background-image:url('data:{{lineChart}}')"{{/if}}></div>
+    <div class="line legend {{#if showUsAverage}}us-avg{{/if}}">
+        {{#each chartFeatures}}
+        <p><span {{#if lineLegend}}style="background-image:url('data:{{lineLegend}}')"{{/if}}></span> <span>{{properties.n}}</span></p>
+        {{/each}}
+    </div>
+    <div class="chart" id="bar-chart" {{#if barChart}}style="background-color: inherit; background-image:url('data:{{barChart}}')"{{/if}}></div>
+    <div class="bar legend {{#if showUsAverage}}us-avg{{/if}}">
+        {{#each chartFeatures}}
+        <p>{{properties.idx}} {{properties.n}}</p>
+        {{/each}}
+    </div>
+</div>
+<div class="page stats">
+    
 </div>
 </body>
 </html>

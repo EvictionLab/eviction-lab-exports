@@ -62,14 +62,6 @@ export class PptxExport extends Export {
     );
   };
 
-  makeYearArr(yearRange: number[]): number[] {
-    let years = [];
-    for (let year = yearRange[0]; year <= yearRange[yearRange.length - 1]; ++year) {
-      years.push(year);
-    }
-    return years;
-  }
-
   async readImages(): Promise<void> {
     const s3 = new S3();
     const mainImage = await s3.getObject({ Bucket: this.assetBucket, Key: 'assets/evictionlab.jpg' }).promise();
@@ -358,19 +350,6 @@ export class PptxExport extends Export {
       return '$' + val;
     }
     return val;
-  }
-
-  private getFeatures(features: Feature[]): Feature[] {
-    if (this.showUsAverage || features.length === 1) {
-      return [...features, {
-        bbox: [],
-        properties: {
-          GEOID: '0', layerId: '', n: 'United States', ...this.usAverage
-        }
-      }];
-    } else {
-      return features;
-    }
   }
 }
 
