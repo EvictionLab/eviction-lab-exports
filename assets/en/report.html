@@ -223,11 +223,12 @@
             font-family: 'GT Eesti Display';
             font-weight: bold;
         }
-        .page.stats .stat.table p.year {
+        .page.stats .stat-table p.year {
             font-size: 12px;
             font-weight: bold;
             font-family: 'Akkurat';
             color: #000;
+            margin: 8px;
         }
         .page.stats .stat-table:first-child h3 { color: #E24000; }
         .page.stats .stat-table:nth-child(2) { color: #434878; }
@@ -252,12 +253,42 @@
         }
         .page.stats.three-features .stat-table {
             margin-top: 15px;
-            width: 230px;
-            height: 580px;
+            width: 220px;
+            height: 520px;
         }
         .page.stats.three-features .stat-table:first-child { margin-left: 36px; left: 36px; }
-        .page.stats.three-features .stat-table:nth-child(2) { left: 280px; }
+        .page.stats.three-features .stat-table:nth-child(2) { left: 300px; }
         .page.stats.three-features .stat-table:nth-child(3) { left: 527px; }
+        .er, .epd {
+            width: 40%;
+            margin: 24px 8px;
+            text-align: center;
+        }
+        .er p, .epd p { color: #000; }
+        .er p:first-child, .epd p:first-child {
+            font-size: 15px;
+            font-weight: bold;
+        }
+        .epd { float: left; }
+        .er { float: right; }
+        .data-props {
+            margin: 0 8px;
+            padding: 2px;
+            height: 22px;
+            clear: both;
+        }
+        .data-props p { margin: 6px; color: #000; }
+        .data-props p:first-child { float: left; }
+        .data-props p:nth-child(2) { float: right; font-weight: bold; }
+        .data-props:nth-child(even) { background-color: #ddd; }
+        p.divider { text-align: center; margin: 16px; font-weight: bold; color: #000; }
+
+        .page.stats.one-feature .data-props { height: 28px; }
+        .page.stats.one-feature .data-props p { margin: 8px; font-size: 12px; }
+        .page.stats.one-feature p.divider { margin: 24px; font-size: 14px; }
+
+        .page.stats.three-features .data-props { height: 16px; }
+        .page.stats.three-features .data-props p { margin: 2px; }
     </style>
 </head>
 <body>
@@ -409,7 +440,22 @@
     {{#each features}}
     <div class="stat-table">
         <h3>{{properties.n}}</h3>
-        <p class="year">{{year}}</p>
+        <p class="year">{{@root.year}}</p>
+        <div class="epd">
+            <p>{{properties.epd}}</p>
+            <p>Evictions per Day</p>
+        </div>
+        <div class="er">
+            <p>{{properties.er}}</p>
+            <p>Eviction Rate</p>
+        </div>
+        {{#each dataProps}}
+        <div class="data-props"><p>{{@key}}</p><p>{{this}}</p></div>
+        {{/each}}
+        <p class="divider">Demographic Breakdown</p>
+        {{#each demDataProps}}
+        <div class="data-props"><p>{{@key}}</p><p>{{this}}</p></div>
+        {{/each}}
     </div>
     {{/each}}
 </div>

@@ -21,12 +21,16 @@ TODO:
 export class PdfExport extends Export {
   fileExt = 'pdf';
   chart: Chart;
+  dataProps: Object;
+  demDataProps: Object;
   get templateKey() { return `assets/${this.lang}/report.html`; }
 
   constructor(requestData: RequestData) {
     super(requestData);
     this.key = this.createKey(requestData);
     const translations = Translations[this.lang]['PPTX'];
+    this.dataProps = Translations[this.lang]['DATA_PROPS'];
+    this.demDataProps = Translations[this.lang]['DEM_DATA_PROPS'];
     const evictionText = this.bubbleProp === 'er' ? translations['EVICTION']() : translations['EVICTION_FILING']();
     this.chart = new Chart(
       975, 750, this.year, this.makeYearArr(this.years), this.bubbleProp,
@@ -77,6 +81,8 @@ export class PdfExport extends Export {
       }),
       showUsAverage: this.showUsAverage,
       dataProp: this.dataProp.startsWith('none') ? null : this.dataProp,
+      dataProps: this.dataProps,
+      demDataProps: this.demDataProps,
       lineChart: this.chart.createLineChart(chartFeatures),
       barChart: this.chart.createBarChart(chartFeatures)
     });
@@ -123,6 +129,14 @@ export class PdfExport extends Export {
     if (this.dataProp && !this.dataProp.startsWith('none')) {
       feature.properties['dataProp'] = feature.properties[this.dataProp];
     }
+    feature.dataProps = {};
+    feature.demDataProps = {};
+    Object.keys(this.dataProps).forEach(k => {
+      feature.dataProps[this.dataProps[k]] = feature.properties[k];
+    });
+    Object.keys(this.demDataProps).forEach(k => {
+      feature.demDataProps[this.demDataProps[k]] = feature.properties[k];
+    });
     return feature;
   }
 }
