@@ -137,7 +137,9 @@ export class PptxExport extends Export {
     const featSlide = this.pptx.addNewSlide({ bkgd: 'ffffff' });
     const daysInYear = this.year % 4 === 0 ? 366 : 365;
     const yearSuffix = this.year.toString().slice(2);
-    const screenshot = await this.getMapScreenshot(feature, yearSuffix, index);
+    const screenshot = await this.getMapScreenshot(feature, yearSuffix, index, {
+      width: 1340 * 2, height: 440 * 2
+    });
     const evictionTotal = feature.properties[`e-${yearSuffix}`];
     const evictionRate = feature.properties[`er-${yearSuffix}`];
     const evictionsPerDay = +(feature.properties[`e-${yearSuffix}`] / daysInYear).toFixed(2);
