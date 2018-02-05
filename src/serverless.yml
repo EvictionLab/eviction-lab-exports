@@ -18,6 +18,10 @@ plugins:
   - serverless-offline
   # - serverless-domain-manager
 
+package:
+  include:
+    - ./assets
+
 functions:
   pdf:
     timeout: 300
@@ -28,6 +32,10 @@ functions:
           method: post
           cors: true
 
+custom:
+  optimize:
+    includePaths:
+      - ../assets/fonts
 # custom:
 #   customDomain:
 #     domainName: 'exports.evictionlab.org'

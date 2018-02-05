@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import { S3 } from 'aws-sdk';
+import axios from 'axios';
 import { RequestData } from '../data/requestData';
 import { Feature } from '../data/feature';
 
@@ -19,6 +20,7 @@ export abstract class Export {
     templateKey: string | undefined;
     assetBucket: string = process.env['asset_bucket'];
     exportBucket: string = process.env['export_bucket'];
+    screenshotBase = 'https://screenshot.evictionlab.org';
 
     constructor(requestData: RequestData) {
         this.features = requestData.features;
@@ -44,6 +46,27 @@ export abstract class Export {
             `${this.dataProp}/${this.bubbleProp}/${this.showUsAverage ? 'us/' : ''}${idPath}/eviction_lab_export.${this.fileExt}`;
     }
 
+    makeYearArr(yearRange: number[]): number[] {
+        let years = [];
+        for (let year = yearRange[0]; year <= yearRange[yearRange.length - 1]; ++year) {
+            years.push(year);
+        }
+        return years;
+    }
+
+    getFeatures(features: Feature[]): Feature[] {
+        if (this.showUsAverage || features.length === 1) {
+            return [...features, {
+                bbox: [],
+                properties: {
+                    GEOID: '0', layerId: '', n: 'United States', ...this.usAverage
+                }
+            }];
+        } else {
+            return features;
+        }
+    }
+
     /**
      * Returns true if key exists, otherwise false
      */
@@ -57,6 +80,21 @@ export abstract class Export {
         } catch(err) {
             return false;
         }
+    }
+
+    async getMapScreenshot(feature: Feature, yearSuffix: string, index: number, params = {}) {
+        const bbox = {
+            n: feature.bbox[3],
+            s: feature.bbox[1],
+            e: feature.bbox[2],
+            w: feature.bbox[0]
+        };
+        const paramString = `?${Object.keys(params).map(k => `${k}=${params[k]}`).join('&')}`;
+        const screenshotUrl = `${this.screenshotBase}/${bbox.n}/${bbox.s}/${bbox.e}/${bbox.w}/` +
+            `${feature.properties.layerId}/${this.dataProp}-${yearSuffix}/${this.bubbleProp}-${yearSuffix}/` +
+            `${feature.properties.GEOID}/${index}${paramString}`;
+        const img = await axios.get(screenshotUrl, { responseType: 'arraybuffer' }).catch(err => null);
+        return img !== null ? 'image/png;base64,' + new Buffer(img.data, 'binary').toString('base64') : null;
     }
 
     /**

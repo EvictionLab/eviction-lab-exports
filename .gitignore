@@ -5,3 +5,7 @@ jspm_packages
 # Serverless directories
 .serverless
 .build
+
+src/assets/*
+assets/fonts/*.otf
+assets/fonts/*.ttf
