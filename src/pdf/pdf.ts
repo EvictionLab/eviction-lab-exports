@@ -54,10 +54,12 @@ export class PdfExport extends Export {
     if (features.length === 2) {
       params.height = 190;
     } else if (features.length === 3) {
-      params = { width: 200, height: 200 };
+      params = { width: 200, height: 200};
     }
     await Promise.all(features.map(async (f, i) => {
-      f.screenshot = await this.getMapScreenshot(f, yearSuffix, i, params);
+      f.screenshot = await this.getMapScreenshot(f, yearSuffix, i, {
+        width: params.width * 2, height: params.height * 2
+      });
     }));
 
     const chartFeatures = this.getFeatures(this.features);
