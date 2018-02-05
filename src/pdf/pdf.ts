@@ -12,11 +12,6 @@ import { handler } from '../exports/handler';
 import { Chart } from '../exports/chart';
 import { Translations } from '../data/translate';
 
-/*
-TODO:
-- Setup location table, include rotated third version
-- Text page
-*/
 
 export class PdfExport extends Export {
   fileExt = 'pdf';
@@ -81,6 +76,7 @@ export class PdfExport extends Export {
       }),
       showUsAverage: this.showUsAverage,
       dataProp: this.dataProp.startsWith('none') ? null : this.dataProp,
+      dataPropText: this.dataProps[this.dataProp],
       dataProps: this.dataProps,
       demDataProps: this.demDataProps,
       lineChart: this.chart.createLineChart(chartFeatures),
@@ -90,7 +86,6 @@ export class PdfExport extends Export {
     const pdfStr = await chromeless
       .setHtml(compiledData)
       .wait(500)
-      // .html()
       .pdf({
         displayHeaderFooter: false,
         printBackground: true,
@@ -101,10 +96,8 @@ export class PdfExport extends Export {
         marginLeft: 0,
         marginRight: 0
       });
-    // fs.writeFileSync('test.html', pdfStr);
 
     await chrome.kill();
-    // return fs.readFileSync('test.html');
     return fs.readFileSync(pdfStr);
   }
 
