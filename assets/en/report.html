@@ -5,12 +5,6 @@
     <style>
         @font-face {
             font-family: 'GT Eesti Display';
-            font-weight: normal;
-            font-style: normal;
-            src: url("https://s3.amazonaws.com/eviction-lab-exports/assets/fonts/GT-Eesti-Display-Medium.ttf");
-        }
-        @font-face {
-            font-family: 'GT Eesti Display';
             font-weight: bold;
             font-style: normal;
             src: url("https://s3.amazonaws.com/eviction-lab-exports/assets/fonts/GT-Eesti-Display-Bold.ttf");
@@ -103,7 +97,8 @@
         .page.feature-details .screenshot {
             top: 46px;
             position: absolute;
-            background: lightgrey;
+            background-color: lightgrey;
+            background-size: contain;
             left: 46px;
             width: 520px;
         }
@@ -164,13 +159,13 @@
         .page.charts .title {
             position: absolute;
             font-size: 15px;
-            /* top: 70px; */
             top: 46px;
             left: 100px;
             width: 416px;
             text-align: center;
             text-transform: uppercase;
             font-family: 'GT Eesti Display';
+            font-weight: bold;
             color: #000000;
         }
         .page.charts .chart {
@@ -410,7 +405,7 @@
 </div>
 {{#if oneFeature }}
 <div class="page one-feature feature-details">
-    <div class="screenshot" {{#if features.0.screenshot}}style="background:url('data:{{features.0.screenshot}}')"{{/if}}></div>
+    <div class="screenshot" {{#if features.0.screenshot}}style="background-image:url('data:{{features.0.screenshot}}')"{{/if}}></div>
     <div class="details">
         <h3>{{features.0.properties.n}} experienced {{features.0.properties.e}} evictions in {{year}}</h3>
         <ul>
@@ -427,7 +422,7 @@
 {{#if twoFeatures}}
 <div class="page two-features feature-details">
     {{#each features}}
-    <div class="screenshot" {{#if screenshot}}style="background:url('data:{{screenshot}}')"{{/if}}></div>
+    <div class="screenshot" {{#if screenshot}}style="background-image:url('data:{{screenshot}}')"{{/if}}></div>
     <div class="details">
         <h3>{{properties.n}} experienced {{properties.e}} evictions in {{year}}</h3>
         <ul>
@@ -445,7 +440,7 @@
 {{#if threeFeatures}}
 <div class="page three-features feature-details">
     {{#each features}}
-    <div class="screenshot" {{#if screenshot}}style="background:url('data:{{screenshot}}')"{{/if}}></div>
+    <div class="screenshot" {{#if screenshot}}style="background-image:url('data:{{screenshot}}')"{{/if}}></div>
     <div class="details">
         <h3>{{properties.n}} experienced {{properties.e}} evictions in {{year}}</h3>
         <ul>
