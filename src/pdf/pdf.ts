@@ -18,18 +18,19 @@ export class PdfExport extends Export {
   chart: Chart;
   dataProps: Object;
   demDataProps: Object;
+  translate;
   get templateKey() { return `assets/${this.lang}/report.html`; }
 
   constructor(requestData: RequestData) {
     super(requestData);
     this.key = this.createKey(requestData);
-    const translations = Translations[this.lang]['PPTX'];
+    this.translate = Translations[this.lang]['EXPORT'];
     this.dataProps = Translations[this.lang]['DATA_PROPS'];
     this.demDataProps = Translations[this.lang]['DEM_DATA_PROPS'];
-    const evictionText = this.bubbleProp === 'er' ? translations['EVICTION']() : translations['EVICTION_FILING']();
+    const evictionText = this.bubbleProp === 'er' ? this.translate['EVICTION']() : this.translate['EVICTION_FILING']();
     this.chart = new Chart(
       975, 750, this.year, this.makeYearArr(this.years), this.bubbleProp,
-      ['e24000', '434878', '2c897f', '94aabd'], evictionText, translations
+      ['e24000', '434878', '2c897f', '94aabd'], evictionText, this.translate
     );
   };
 
@@ -106,9 +107,10 @@ export class PdfExport extends Export {
   private processFeature(feature: Feature): Feature {
     const dataCols = Object.keys(ColMap).filter(k => ['n', 'pl'].indexOf(k) === -1);
     const yearSuffix = this.year.toString().slice(2);
+    const unavailable = this.translate['UNAVAILABLE']();
     dataCols.forEach(k => {
       const val = feature.properties[`${k}-${yearSuffix}`];
-      if (val) {
+      if (val && val > -1) {
         if (PercentCols.indexOf(k) !== -1) {
           feature.properties[k] = val.toLocaleString('en-US') + '%';
         } else if (DollarCols.indexOf(k) !== -1) {
@@ -116,11 +118,19 @@ export class PdfExport extends Export {
         } else if (dataCols.indexOf(k) !== -1) {
           feature.properties[k] = val.toLocaleString('en-US');
         }
+      } else {
+        feature.properties[k] = unavailable;
       }
     });
     const daysInYear = this.year % 4 === 0 ? 366 : 365;
-    const evictionsPerDay = +(feature.properties[`e-${yearSuffix}`] / daysInYear).toFixed(2);
-    feature.properties['epd'] = evictionsPerDay;
+    if (feature.properties.e === unavailable) {
+      feature.title = this.translate['FEATURE_TITLE_UNAVAILABLE'](feature.properties.n, this.year);
+      feature.properties.epd = unavailable;
+    } else {
+      feature.title = this.translate['FEATURE_TITLE'](feature.properties.n, feature.properties.e, this.year);
+      const daysInYear = this.year % 4 === 0 ? 366 : 365;
+      feature.properties.epd = +(feature.properties[`e-${yearSuffix}`] / daysInYear).toFixed(2);
+    }
     if (this.dataProp && !this.dataProp.startsWith('none')) {
       feature.properties['dataProp'] = feature.properties[this.dataProp];
     }

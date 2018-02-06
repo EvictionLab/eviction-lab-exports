@@ -390,9 +390,6 @@
     <div id="title">
         <div class="title-intro">Understanding eviction in</div>
         <div class="locations">
-            <!-- <h1>Allentown, PA</h1>
-            <h1>Long Island City, NY</h1>
-            <h1>204 Walton-on-the-Severn, MD</h1> -->
             {{#each features}}
             <h1>{{properties.n}}</h1>
             {{/each}}
@@ -407,7 +404,7 @@
 <div class="page one-feature feature-details">
     <div class="screenshot" {{#if features.0.screenshot}}style="background-image:url('data:{{features.0.screenshot}}')"{{/if}}></div>
     <div class="details">
-        <h3>{{features.0.properties.n}} experienced {{features.0.properties.e}} evictions in {{year}}</h3>
+        <h3>{{title}}</h3>
         <ul>
             <li><span>Number of evictions per day:</span> <span>{{features.0.properties.epd}}</span></li>
             <li><span>Overall eviction rate:</span> <span>{{features.0.properties.er}}</span></li>
@@ -424,7 +421,7 @@
     {{#each features}}
     <div class="screenshot" {{#if screenshot}}style="background-image:url('data:{{screenshot}}')"{{/if}}></div>
     <div class="details">
-        <h3>{{properties.n}} experienced {{properties.e}} evictions in {{year}}</h3>
+        <h3>{{title}}</h3>
         <ul>
             <li><span>Number of evictions per day:</span> <span>{{properties.epd}}</span></li>
             <li><span>Overall eviction rate:</span> <span>{{properties.er}}</span></li>
@@ -442,7 +439,7 @@
     {{#each features}}
     <div class="screenshot" {{#if screenshot}}style="background-image:url('data:{{screenshot}}')"{{/if}}></div>
     <div class="details">
-        <h3>{{properties.n}} experienced {{properties.e}} evictions in {{year}}</h3>
+        <h3>{{title}}</h3>
         <ul>
             <li><span>Number of evictions per day:</span> <span>{{properties.epd}}</span></li>
             <li><span>Overall eviction rate:</span> <span>{{properties.er}}</span></li>

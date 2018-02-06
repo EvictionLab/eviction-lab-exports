@@ -47,7 +47,7 @@ export class PptxExport extends Export {
     // https://github.com/gitbrent/PptxGenJS/issues/38#issuecomment-279001048
     delete require.cache[require.resolve('pptxgenjs')];
     this.pptx = require('pptxgenjs');
-    this.translate = Translations[this.lang]['PPTX'];
+    this.translate = Translations[this.lang]['EXPORT'];
     this.dataProps = Translations[this.lang]['DATA_PROPS'];
     this.demDataProps = Translations[this.lang]['DEM_DATA_PROPS'];
     this.evictionText = this.bubbleProp === 'er' ? this.translate['EVICTION']() : this.translate['EVICTION_FILING']();
