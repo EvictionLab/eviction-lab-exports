@@ -110,7 +110,7 @@ export class PdfExport extends Export {
     const unavailable = this.translate['UNAVAILABLE']();
     dataCols.forEach(k => {
       const val = feature.properties[`${k}-${yearSuffix}`];
-      if (val && val > -1) {
+      if (val > -1) {
         if (PercentCols.indexOf(k) !== -1) {
           feature.properties[k] = val.toLocaleString('en-US') + '%';
         } else if (DollarCols.indexOf(k) !== -1) {
