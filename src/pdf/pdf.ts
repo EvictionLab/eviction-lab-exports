@@ -108,6 +108,8 @@ export class PdfExport extends Export {
     const dataCols = Object.keys(ColMap).filter(k => ['n', 'pl'].indexOf(k) === -1);
     const yearSuffix = this.year.toString().slice(2);
     const unavailable = this.translate['UNAVAILABLE']();
+    feature.properties.name = feature.properties.layerId === 'states' ?
+      feature.properties.n : `${feature.properties.n}, ${feature.properties['pl']}`;
     dataCols.forEach(k => {
       const val = feature.properties[`${k}-${yearSuffix}`];
       if (val > -1) {

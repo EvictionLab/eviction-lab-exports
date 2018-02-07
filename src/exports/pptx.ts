@@ -106,7 +106,8 @@ export class PptxExport extends Export {
     titleSlide.addText(
       features.map((f, i) => {
         return {
-          text: f.properties.n, 
+          text: f.properties.layerId === 'states' ?
+            f.properties.n : `${f.properties.n}, ${f.properties['pl']}`, 
           options: {
             color: this.colors[i], font_size: 26, font_face: 'Helvetica', bold: true
           }
