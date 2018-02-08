@@ -237,6 +237,8 @@ export class Chart {
     private loadFont(font: string) {
         const fontPath = path.join(__dirname, fs.existsSync(path.join(__dirname, '../assets')) ?
             '../assets/fonts' : '../../assets/fonts');
+        console.log(fontPath);
+        console.log(fs.readdirSync(fontPath));
         return new Canvas.Font(font, path.join(fontPath, `${font}.ttf`));
     }
 
