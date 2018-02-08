@@ -427,8 +427,8 @@
         <ul>
             <li><span>Number of evictions per day:</span> <span>{{properties.epd}}</span></li>
             <li><span>Overall eviction rate:</span> <span>{{properties.er}}</span></li>
-            {{#if dataProp}}
-            <li><span>{{dataPropText}}:</span> <span>{{properties.dataProp}}</span></li>
+            {{#if @root.dataProp}}
+            <li><span>{{@root.dataPropText}}:</span> <span>{{properties.dataProp}}</span></li>
             {{/if}}
         </ul>
     </div>
@@ -445,8 +445,8 @@
         <ul>
             <li><span>Number of evictions per day:</span> <span>{{properties.epd}}</span></li>
             <li><span>Overall eviction rate:</span> <span>{{properties.er}}</span></li>
-            {{#if dataProp}}
-            <li><span>{{dataPropText}}:</span> <span>{{properties.dataProp}}</span></li>
+            {{#if @root.dataProp}}
+            <li><span>{{@root.dataPropText}}:</span> <span>{{properties.dataProp}}</span></li>
             {{/if}}
         </ul>
     </div>
