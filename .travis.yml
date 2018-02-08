@@ -9,6 +9,6 @@ before_deploy:
 deploy:
 - provider: script
   skip_cleanup: true
-  script: npm run deploy && npm run deploy-dev
+  script: mkdir -p src/assets/fonts && cp -r assets/fonts/ src/assets/fonts && npm run deploy && npm run deploy-dev
   on:
     branch: master
