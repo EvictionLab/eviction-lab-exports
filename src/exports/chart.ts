@@ -1,11 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Feature } from '../data/feature';
-import * as Canvas from 'canvas-aws-prebuilt';
-// Need to use original canvas for local development
-// import * as Canvas from 'canvas';
 import { scaleLinear, scaleBand } from 'd3-scale';
 import { line } from 'd3-shape';
+const Canvas = require(process.env['IS_OFFLINE'] === 'true' ? 'canvas' : 'canvas-aws-prebuilt');
 
 export class Chart {
     constructor(
@@ -17,10 +15,7 @@ export class Chart {
         public colors: string[],
         public evictionText: string,
         public translate
-    ) {
-        process.env.FONTCONFIG_PATH = path.join(__dirname, fs.existsSync(path.join(__dirname, '../assets')) ?
-            '../assets/fonts' : '../../assets/fonts');
-    }
+    ) { }
 
     createBarChart(features: Feature[]): string {
         const margin = { top: 20, left: 120, right: 20, bottom: 80 };
@@ -30,6 +25,7 @@ export class Chart {
         const height = fullHeight - margin.top - margin.bottom;
         const canvas = new Canvas(fullWidth, fullHeight);
         const context = canvas.getContext('2d');
+        context.addFont(this.loadFont('Akkurat'));
         context.fillStyle = 'white';
         context.fillRect(0, 0, fullWidth, fullHeight);
         context.translate(margin.left, margin.top);
@@ -52,8 +48,7 @@ export class Chart {
 
         context.textAlign = "center";
         context.textBaseline = "top";
-        context._setFont('700', 'normal', 22, 'px', 'Akkurat');
-        // context.font = "22px Helvetica";
+        context.font = "22px Akkurat";
         context.fillStyle = "#666666";
 
         context.beginPath();
@@ -66,8 +61,7 @@ export class Chart {
 
         context.textAlign = "right";
         context.textBaseline = "middle";
-        // context.font = "20px Helvetica";
-        context._setFont('700', 'normal', 20, 'px', 'Akkurat');
+        context.font = "20px Akkurat";
         yTicks.forEach(function (d) {
             context.fillText(d, -15, y(d));
         });
@@ -76,14 +70,12 @@ export class Chart {
         context.rotate(-Math.PI / 2);
         context.textAlign = "center";
         context.textBaseline = "top";
-        // context.font = "24px Helvetica";
-        context._setFont('700', 'normal', 24, 'px', 'Akkurat');
+        context.font = "24px Akkurat";
         context.fillText(`${this.evictionText} Rate`, -(height / 2), -70);
         context.restore();
 
         features.forEach((f, i) => {
             context.fillStyle = '#' + this.getColor(f, i);
-
             // Set minimum bar height if null
             // TODO: Does this still apply for static image?
             const val = f.properties[`${this.bubbleProp}-${this.year.toString().slice(2)}`];
@@ -108,6 +100,7 @@ export class Chart {
         const height = fullHeight - margin.top - margin.bottom;
         const canvas = new Canvas(fullWidth, fullHeight);
         const context = canvas.getContext('2d');
+        context.addFont(this.loadFont('Akkurat'));
         context.fillStyle = 'white';
         context.fillRect(0, 0, fullWidth, fullHeight);
         context.translate(margin.left, margin.top);
@@ -142,8 +135,7 @@ export class Chart {
 
         context.textAlign = "center";
         context.textBaseline = "top";
-        // context.font = "22px Helvetica";
-        context._setFont('700', 'normal', 22, 'px', 'Akkurat');
+        context.font = "22px Akkurat";
         context.fillStyle = "#666666";
         xTicks.forEach(d => {
             context.fillText(d, x(d), height + tickSize + 10);
@@ -159,8 +151,7 @@ export class Chart {
 
         context.textAlign = "right";
         context.textBaseline = "middle";
-        // context.font = "20px Helvetica";
-        context._setFont('700', 'normal', 20, 'px', 'Akkurat');
+        context.font = "20px Akkurat";
         yTicks.forEach(d => {
             context.fillText(d, -15, y(d));
         });
@@ -173,8 +164,7 @@ export class Chart {
         context.rotate(-Math.PI / 2);
         context.textAlign = "center";
         context.textBaseline = "top";
-        // context.font = "24px Helvetica";
-        context._setFont('700', 'normal', 24, 'px', 'Akkurat');
+        context.font = "24px Akkurat";
         context.fillText(axisText, -(height / 2), -70);
         context.restore();
 
@@ -242,6 +232,12 @@ export class Chart {
         context.lineTo(37, 2);
         context.stroke();
         return canvas.toDataURL();
+    }
+
+    private loadFont(font: string) {
+        const fontPath = path.join(__dirname, fs.existsSync(path.join(__dirname, '../assets')) ?
+            '../assets/fonts' : '../../assets/fonts');
+        return new Canvas.Font(font, path.join(fontPath, `${font}.ttf`));
     }
 
     private getColor(f: Feature, i: number): string {

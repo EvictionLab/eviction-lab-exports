@@ -65,7 +65,7 @@ export class XlsxExport extends Export {
           year: this.getYearFromSuffix(s)
         };
         propKeys.forEach(pk => {
-          feat[ColMap[pk]] = f.properties[`${pk}-${s}`];
+          feat[ColMap[pk]] = f.properties[`${pk}-${s}`] > -1 ? f.properties[`${pk}-${s}`] : null;
         });
         return feat;
       })
