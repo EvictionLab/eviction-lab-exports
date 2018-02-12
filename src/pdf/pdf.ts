@@ -79,7 +79,8 @@ export class PdfExport extends Export {
       }),
       showUsAverage: this.showUsAverage,
       dataProp: this.dataProp.startsWith('none') ? null : this.dataProp,
-      dataPropText: this.dataProps[this.dataProp],
+      dataPropText: this.dataProps.hasOwnProperty(this.dataProp) ?
+        this.dataProps[this.dataProp] : this.demDataProps[this.dataProp],
       dataProps: this.dataProps,
       demDataProps: this.demDataProps,
       lineChart: this.chart.createLineChart(chartFeatures),
