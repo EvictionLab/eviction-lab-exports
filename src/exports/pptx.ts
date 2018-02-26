@@ -220,30 +220,31 @@ export class PptxExport extends Export {
       { ...this.statTitleParams, x: xVal }
     );
 
+    const evictionsAvailable = feature.properties[`e-${yearSuffix}`] >= 0;
     slide.addText(
       [{
-        text: `${feature.properties[`e-${yearSuffix}`] >= 0 ?
+        text: `${evictionsAvailable ?
           (+(feature.properties[`e-${yearSuffix}`] / daysInYear).toFixed(2)).toLocaleString('en-US') :
           unavailable}`,
-        options: { font_size: 12 }
+        options: { font_size: 12, bold: evictionsAvailable }
       },
       {
         text: this.translate['EVICTIONS_PER_DAY']().toUpperCase(),
-        options: { font_size: 6 }
+        options: { font_size: 6, bold: true }
       }],
-      { align: 'c', x: xVal, y: 0.75, w: width / 2, h: 0.65, bold: true, font_face: 'Helvetica' }
+      { align: 'c', x: xVal, y: 0.75, w: width / 2, h: 0.65, font_face: 'Helvetica' }
     );
     slide.addText(
       [{
-        text: `${feature.properties[`e-${yearSuffix}`] >= 0 ?
+        text: `${evictionsAvailable ?
             `${feature.properties[`er-${yearSuffix}`]}%` : unavailable}`,
-        options: { font_size: 12 }
+        options: { font_size: 12, bold: evictionsAvailable }
       },
       {
         text: this.translate['EVICTION_RATE']().toUpperCase(),
-        options: { font_size: 6 }
+        options: { font_size: 6, bold: true }
       }],
-      { align: 'c', x: xVal + (width / 2), y: 0.75, w: width / 2, h: 0.65, bold: true, font_face: 'Helvetica'}
+      { align: 'c', x: xVal + (width / 2), y: 0.75, w: width / 2, h: 0.65, font_face: 'Helvetica'}
     );
 
     slide.addTable(
