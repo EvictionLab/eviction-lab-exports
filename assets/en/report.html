@@ -251,7 +251,7 @@
             margin-bottom: 180px;
         }
         .page.stats.three-features .stat-table {
-            margin-top: 15px;
+            margin-top: 0;
             width: 220px;
             height: 520px;
         }
@@ -280,6 +280,21 @@
         .data-props p:first-child { float: left; }
         .data-props p:nth-child(2) { float: right; font-weight: bold; }
         .data-props:nth-child(even) { background-color: #ddd; }
+
+        /* STYLES FOR UNAVAILABLE */
+        .page.stats > .stat-table > .epd.unavailable p:first-child,
+        .page.stats > .stat-table > .er.unavailable p:first-child,
+        .page.stats .data-props.unavailable > p:nth-child(2) {
+            font-weight: normal;
+            margin-left: 0;
+        }
+        .page.stats .data-props.unavailable > p:first-child {
+            width: 65%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         p.divider { text-align: center; margin: 16px; font-weight: bold; color: #000; }
 
         .page.stats.one-feature .data-props { height: 28px; }
@@ -475,20 +490,20 @@
     <div class="stat-table">
         <h3>{{properties.n}}</h3>
         <p class="year">{{@root.year}}</p>
-        <div class="epd">
+        <div class="epd {{#if (lookup unavailable 'e')}}unavailable{{/if}}">
             <p>{{properties.epd}}</p>
             <p>Evictions per Day</p>
         </div>
-        <div class="er">
+        <div class="er {{#if (lookup unavailable 'er')}}unavailable{{/if}}">
             <p>{{properties.er}}</p>
             <p>Eviction Rate</p>
         </div>
         {{#each dataProps}}
-        <div class="data-props"><p>{{@key}}</p><p>{{this}}</p></div>
+        <div class="data-props {{#if (lookup ../unavailable key)}}unavailable{{/if}}"><p>{{@key}}</p><p>{{val}}</p></div>
         {{/each}}
         <p class="divider">Demographic Breakdown</p>
         {{#each demDataProps}}
-        <div class="data-props"><p>{{@key}}</p><p>{{this}}</p></div>
+        <div class="data-props {{#if (lookup ../unavailable key)}}unavailable{{/if}}"><p>{{@key}}</p><p>{{val}}</p></div>
         {{/each}}
     </div>
     {{/each}}

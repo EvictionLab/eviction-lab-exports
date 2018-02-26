@@ -90,6 +90,7 @@ export class PdfExport extends Export {
     const pdfStr = await chromeless
       .setHtml(compiledData)
       .wait(500)
+      .html()
       .pdf({
         displayHeaderFooter: false,
         printBackground: true,
@@ -111,6 +112,8 @@ export class PdfExport extends Export {
     const unavailable = this.translate['UNAVAILABLE']();
     feature.properties.name = feature.properties.layerId === 'states' ?
       feature.properties.n : `${feature.properties.n}, ${feature.properties['pl']}`;
+    // Object to check for unavailable properties
+    feature.unavailable = {};
     dataCols.forEach(k => {
       const val = feature.properties[`${k}-${yearSuffix}`];
       if (val > -1) {
@@ -123,6 +126,7 @@ export class PdfExport extends Export {
         }
       } else {
         feature.properties[k] = unavailable;
+        feature.unavailable[k] = true;
       }
     });
     const daysInYear = this.year % 4 === 0 ? 366 : 365;
@@ -140,10 +144,10 @@ export class PdfExport extends Export {
     feature.dataProps = {};
     feature.demDataProps = {};
     Object.keys(this.dataProps).forEach(k => {
-      feature.dataProps[this.dataProps[k]] = feature.properties[k];
+      feature.dataProps[this.dataProps[k]] = { key: k, val: feature.properties[k] };
     });
     Object.keys(this.demDataProps).forEach(k => {
-      feature.demDataProps[this.demDataProps[k]] = feature.properties[k];
+      feature.demDataProps[this.demDataProps[k]] = { key: k, val: feature.properties[k] };
     });
     return feature;
   }
