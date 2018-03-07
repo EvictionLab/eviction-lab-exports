@@ -258,9 +258,6 @@ export class PptxExport extends Export {
         colW: [width * 0.66, width * 0.33], valign: 'm', autoPage: false },
       { font_face: 'Helvetica', font_size: 9, border: { pt: '0', color: 'ffffff' } }
     );
-    slide.addText(this.translate['RACE_ETHNICITY']().toUpperCase(), {
-      align: 'c', font_size: 6, h: 0.17, w: width, x: xVal, y: 3.15, bold: true, color: '666666'
-    });
     slide.addTable(
       Object.keys(this.demDataProps).map((k, i) => [
         { text: this.demDataProps[k], options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff' } },
@@ -272,6 +269,9 @@ export class PptxExport extends Export {
         colW: [width * 0.66, width * 0.33], autoPage: false, valign: 'm' },
       { font_face: 'Helvetica', font_size: 9, border: { pt: '0', color: 'ffffff' } }
     );
+    slide.addText(this.translate['RACE_ETHNICITY']().toUpperCase(), {
+      align: 'c', font_size: 6, h: 0.17, w: width, x: xVal, y: 3.3, bold: true, color: '666666'
+    });
   }
 
   createDataSlides(features: Feature[]): void {

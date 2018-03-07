@@ -27,7 +27,8 @@ export const Translations: Object = {
             'pr': 'Poverty Rate',
             'mgr': 'Median Gross Rent',
             'mhi': 'Median Household Income',
-            'mpv': 'Median Property Value'
+            'mpv': 'Median Property Value',
+            'rb': 'Rent Burden'
         },
         'DEM_DATA_PROPS': {
             'paa': 'Black',
@@ -68,7 +69,8 @@ export const Translations: Object = {
             'pr': 'Tasa de Pobreza',
             'mgr': 'Renta Bruta Mediana',
             'mhi': 'Ingreso Bruto Mediano',
-            'mpv': 'Valor de Propiedad Mediano'
+            'mpv': 'Valor de Propiedad Mediano',
+            'rb': 'Rent Burden'
         },
         'DEM_DATA_PROPS': {
             'paa': 'Negro',
