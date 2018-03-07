@@ -7,6 +7,7 @@ export const ColMap: Object = {
     'mgr': 'median-gross-rent',
     'mhi': 'median-household-income',
     'mpv': 'median-property-value',
+    'rb': 'rent-burden',
     'pw': 'pct-white',
     'paa': 'pct-af-am',
     'ph': 'pct-hispanic',
