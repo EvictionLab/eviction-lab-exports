@@ -1,5 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import * as geoViewport from '@mapbox/geo-viewport';
+import { scales } from '../data/scales';
 import { Feature } from '../data/feature';
 import { scaleLinear, scaleBand } from 'd3-scale';
 import { line } from 'd3-shape';
@@ -234,6 +236,71 @@ export class Chart {
         return canvas.toDataURL();
     }
 
+    createMapBubbleLegend(feat: Feature, mapWidth: number, mapHeight: number) {
+        const zoom = geoViewport.viewport(
+            [+feat.properties.w, +feat.properties.s, +feat.properties.e, +feat.properties.n],
+            [mapWidth / 2.5, mapHeight / 2.5]
+        );
+        const bubbleAttr = scales.bubbleAttributes.find(a => a.id === this.bubbleProp);
+        const bubbleSizes = this.propBubbleSize(feat.properties.layerId, zoom, bubbleAttr);
+
+        const width = 150;
+        const height = 150;
+        const canvas = new Canvas(width, height);
+        const context = canvas.getContext('2d');
+        const centerY = height / 2;
+        context.addFont(this.loadFont('Akkurat'));
+        context.font = '16px Akkurat';
+        context.fillStyle = 'rgba(255,4,0,0.65)';
+        context.strokeStyle = '#fff';
+        context.lineWidth = 2;
+
+        context.beginPath();
+        context.arc(width * 0.25, centerY, bubbleSizes[0][1], 0, 2 * Math.PI, false);
+        context.fill();
+        context.stroke();
+
+        context.beginPath();
+        context.arc(width * 0.75, centerY, bubbleSizes[1][1], 0, 2 * Math.PI, false);
+        context.fill();
+        context.stroke();
+
+        context.fillStyle = '#666666';
+        context.textAlign = 'center';
+
+        context.strokeText(`${bubbleSizes[0][0]}%`, width * 0.25, 25);
+        context.fillText(`${bubbleSizes[0][0]}%`, width * 0.25, 25);
+        context.strokeText(`${bubbleSizes[1][0]}%`, width * 0.75, 25);
+        context.fillText(`${bubbleSizes[1][0]}%`, width * 0.75, 25);
+        context.strokeText('Property Description', width * 0.5, height - 25);
+        context.fillText('Property Description', width * 0.5, height - 25);
+    }
+
+    createMapChoroplethLegend(dataProp: string, layerId: string) {
+        const canvas = new Canvas(250, 100);
+        const context = canvas.getContext('2d');
+        const gradient = context.createLinearGradient(0, 0, 250, 0);
+        gradient.addColorStop(0, 'rgba(215, 227, 244, 0.7)');
+        gradient.addColorStop(1, 'rgba(37, 51, 132, 0.9)');
+
+        context.fillStyle = gradient;
+        context.fillRect(0, 30, 250, 20);
+
+        context.addFont(this.loadFont('Akkurat'));
+        context.font = '16px Akkurat';
+        context.fillStyle = '#666666';
+
+        context.textAlign = 'left';
+        context.fillText('0%', 5, 25);
+
+        context.textAlign = 'right';
+        context.fillText('100%', 245, 25);
+
+        context.textAlign = 'center';
+        context.fillText('Property Description', 125, 65);
+        return canvas.toDataURL();
+    }
+
     private loadFont(font: string) {
         const fontPath = path.join(__dirname, fs.existsSync(path.join(__dirname, '../assets')) ?
             '../assets/fonts' : '../../assets/fonts');
@@ -246,5 +313,40 @@ export class Chart {
         } else {
             return this.colors[i];
         }
+    }
+
+    private propBubbleSize(layerId: string, mapZoom: number, attr: Object): number[][] {
+        let div;
+        const expr = layerId in attr['expressions'] ? attr['expressions'][layerId] :
+            attr['expressions']['default'];
+
+        const maxVal = expr[2][1];
+        const steps = expr[3].slice(3);
+        const minZoom = steps[0];
+        const maxZoom = steps[steps.length - 2];
+        const zoom = Math.min(mapZoom, maxZoom);
+
+        if (zoom <= minZoom) {
+            div = this.exprVal(steps[1][2]);
+        } else if (zoom === maxZoom) {
+            div = this.exprVal(steps[steps.length][2]);
+        } else {
+            // Interpolate if not found
+            const z2Idx = steps.findIndex(v => !Array.isArray(v) && v > zoom);
+            const z1 = steps[z2Idx - 2];
+            const z1Val = this.exprVal(steps[z2Idx - 1][2]);
+            const z2 = steps[z2Idx];
+            const z2Val = this.exprVal(steps[z2Idx + 1][2]);
+            div = z1Val + ((zoom - z1) * ((z2Val - z1Val) / (z2 - z1)));
+        }
+
+        return [
+            [2.5, 2.5 / div],
+            [maxVal, maxVal / div]
+        ];
+    }
+
+    private exprVal(val: Array<any> | number): number {
+        return Array.isArray(val) ? val[1] * val[2] : val;
     }
 }

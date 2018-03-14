@@ -10,6 +10,7 @@
     "postinstall": "cd ./node_modules/pptxgenjs && npm install && cd ../.."
   },
   "dependencies": {
+    "@mapbox/geo-viewport": "^0.2.2",
     "@types/handlebars": "^4.0.36",
     "aws-sdk": "^2.122.0",
     "axios": "^0.16.2",
