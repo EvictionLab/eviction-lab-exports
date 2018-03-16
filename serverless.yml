@@ -36,7 +36,8 @@ functions:
         - node_modules/is-buffer/**
         - node_modules/axios/**
         - node_modules/xlsx/**
-    timeout: 300
+    memorySize: 2048
+    timeout: 30
     handler: src/exports/xlsx.fileHandler
     events:
       - http:
@@ -77,7 +78,8 @@ functions:
         - node_modules/follow-redirects/**
         - node_modules/is-buffer/**
         - node_modules/axios/**
-    timeout: 300
+    memorySize: 2048
+    timeout: 30
     handler: src/exports/pptx.fileHandler
     events:
       - http:
@@ -123,7 +125,8 @@ functions:
         - node_modules/follow-redirects/**
         - node_modules/is-buffer/**
         - node_modules/axios/**
-    timeout: 300
+    memorySize: 2048
+    timeout: 30
     handler: src/exports/zip.fileHandler
     events:
       - http:

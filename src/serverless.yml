@@ -24,7 +24,8 @@ package:
 
 functions:
   pdf:
-    timeout: 300
+    memorySize: 2048
+    timeout: 30
     handler: pdf/pdf.fileHandler
     events:
       - http:
