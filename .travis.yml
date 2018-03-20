@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-- '6'
+- '6.10'
 before_deploy:
 - npm install -g serverless@1.24.0
 - cd ./src && npm install && cd ..

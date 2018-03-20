@@ -40,7 +40,9 @@ export class Chart {
             .rangeRound([height, 0]);
 
         x.domain(features.map(f => f.properties.n));
-        let maxY = Math.max(...features.map(f => f.properties[`${this.bubbleProp}-${this.year.toString().slice(2)}`]));
+        const valueProp = `${this.bubbleProp}-${this.year.toString().slice(2)}`;
+        const values = features.map(f => f.hasOwnProperty(valueProp) ? f[valueProp] : -1);
+        let maxY = Math.max(...values);
         // Minimum value of 1/1.1
         maxY = Math.max(maxY, 1 / 1.1);
         y.domain([0, maxY]);
@@ -80,7 +82,7 @@ export class Chart {
             context.fillStyle = '#' + this.getColor(f, i);
             // Set minimum bar height if null
             // TODO: Does this still apply for static image?
-            const val = f.properties[`${this.bubbleProp}-${this.year.toString().slice(2)}`];
+            const val = f.properties[valueProp];
             const barDisplayVal = val >= 0.1 ? val : y.domain()[y.domain().length - 1] * 0.005;
             context.fillRect(
                 x(f.properties.n),

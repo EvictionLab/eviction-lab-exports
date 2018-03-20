@@ -306,14 +306,14 @@ export class PptxExport extends Export {
       const yVal = (4.38 + (0.3 * i)) + chartPad;
 
       // Add bar chart legend
-      chartSlide.addText(i + 1, { x: 0.53, w: 0.4, align: 'c', y: yVal, h: 0.1, color: this.colors[i], font_size: 12, bold: true });
-      chartSlide.addText(f.properties.n, { x: 0.93, y: yVal, w: 4, h: 0.1, color: this.colors[i], font_size: 12, bold: true });
+      chartSlide.addText(i + 1, { x: 0.53, w: 0.4, align: 'c', y: yVal, h: 0.1, color: this.getColor(i), font_size: 12, bold: true });
+      chartSlide.addText(f.properties.n, { x: 0.93, y: yVal, w: 4, h: 0.1, color: this.getColor(i), font_size: 12, bold: true });
 
       // Add line chart legend
       chartSlide.addImage({
         data: this.chart.createLineChartLegend(f, i), x: 5.22, y: yVal, w: 0.5, h: 0.06
       });
-      chartSlide.addText(f.properties.n, { x: 5.89, y: yVal, w: 4, h: 0.1, color: this.colors[i], font_size: 12, bold: true });
+      chartSlide.addText(f.properties.n, { x: 5.89, y: yVal, w: 4, h: 0.1, color: this.getColor(i), font_size: 12, bold: true });
     });
 
     // Create general stats slide
@@ -349,6 +349,14 @@ export class PptxExport extends Export {
       return '$' + val;
     }
     return val;
+  }
+
+  private getColor(idx: number) {
+    if (this.showUsAverage && idx === this.features.length) {
+      return this.colors[3];
+    } else {
+      return this.colors[idx];
+    }
   }
 }
 
