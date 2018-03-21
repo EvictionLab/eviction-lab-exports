@@ -148,8 +148,11 @@ export class PptxExport extends Export {
     featSlide.addImage({ data: this.backgroundImage, ...this.fullSlideParams });
 
     const imageParams = { w: 8.94, h: 2.94, y: 0.36, x: 0.52 };
+    const legendParams = { w: 2.99, h: 0.48, y: 2.72, x: 6.37 };
     if (screenshot !== null) {
       featSlide.addImage({ ...imageParams, data: screenshot });
+      const legendCanvas = this.chart.createMapLegend(feature, 1340, 440, this.dataProp);
+      featSlide.addImage({ data: legendCanvas, ...legendParams });
     } else {
       featSlide.addShape(this.pptx.shapes.RECTANGLE, { ...imageParams, fill: '666666' });
     }

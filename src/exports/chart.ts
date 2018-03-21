@@ -238,68 +238,81 @@ export class Chart {
         return canvas.toDataURL();
     }
 
-    createMapBubbleLegend(feat: Feature, mapWidth: number, mapHeight: number) {
-        const zoom = geoViewport.viewport(
-            [+feat.properties.w, +feat.properties.s, +feat.properties.e, +feat.properties.n],
-            [mapWidth / 2.5, mapHeight / 2.5]
-        );
-        const bubbleAttr = scales.bubbleAttributes.find(a => a.id === this.bubbleProp);
-        const bubbleSizes = this.propBubbleSize(feat.properties.layerId, zoom, bubbleAttr);
-
-        const width = 150;
-        const height = 150;
+    createMapLegend(feat: Feature, mapWidth: number, mapHeight: number, dataProp: string) {
+        const width = 448;
+        const sectionWidth = width / 2;
+        const height = 72;
         const canvas = new Canvas(width, height);
         const context = canvas.getContext('2d');
-        const centerY = height / 2;
         context.addFont(this.loadFont('Akkurat'));
-        context.font = '16px Akkurat';
-        context.fillStyle = 'rgba(255,4,0,0.65)';
-        context.strokeStyle = '#fff';
-        context.lineWidth = 2;
+        context.fillStyle = 'rgba(255,255,255,0.8)';
+        context.fillRect(0, 0, width, height);
+
+        const padding = 8;
+        const barHeight = 20;
+        const nullWidth = 56;
+
+        // const zoom = geoViewport.viewport(
+        //     [+feat.properties.w, +feat.properties.s, +feat.properties.e, +feat.properties.n],
+        //     [mapWidth / 2.5, mapHeight / 2.5]
+        // );
+        // const bubbleAttr = scales.bubbleAttributes.find(a => a.id === this.bubbleProp);
+        // const bubbleSizes = this.propBubbleValue(feat.properties.layerId, zoom, bubbleAttr);
 
         context.beginPath();
-        context.arc(width * 0.25, centerY, bubbleSizes[0][1], 0, 2 * Math.PI, false);
+        context.arc((padding * 2) + sectionWidth * 0.1, height / 2 + padding, 8, 0, 2 * Math.PI);
+        context.fillStyle = 'transparent';
         context.fill();
+        context.lineWidth = 1;
+        context.strokeStyle = 'gray';
         context.stroke();
 
         context.beginPath();
-        context.arc(width * 0.75, centerY, bubbleSizes[1][1], 0, 2 * Math.PI, false);
+        context.arc((padding * 2) + sectionWidth * 0.4, height / 2 + padding, 4, 0, 2 * Math.PI);
+        context.fillStyle = 'red';
         context.fill();
-        context.stroke();
 
-        context.fillStyle = '#666666';
+        context.beginPath();
+        context.arc((padding * 2) + sectionWidth * 0.75, height / 2 + padding, 20, 0, 2 * Math.PI);
+        context.fillStyle = 'red';
+        context.fill();
+
         context.textAlign = 'center';
+        context.font = '16px Akkurat';
+        context.fillStyle = '#666666';
+        context.fillText('Eviction Rate', sectionWidth * 0.5, height - padding);
+        context.fillText('No data', (padding * 2) + sectionWidth * 0.1, height / 4);
+        context.fillText('1%', (padding * 2) + sectionWidth * 0.35, height / 4);
+        context.fillText('>=20%', (padding * 2) + sectionWidth * 0.75, height / 4);
 
-        context.strokeText(`${bubbleSizes[0][0]}%`, width * 0.25, 25);
-        context.fillText(`${bubbleSizes[0][0]}%`, width * 0.25, 25);
-        context.strokeText(`${bubbleSizes[1][0]}%`, width * 0.75, 25);
-        context.fillText(`${bubbleSizes[1][0]}%`, width * 0.75, 25);
-        context.strokeText('Property Description', width * 0.5, height - 25);
-        context.fillText('Property Description', width * 0.5, height - 25);
-    }
-
-    createMapChoroplethLegend(dataProp: string, layerId: string) {
-        const canvas = new Canvas(250, 100);
-        const context = canvas.getContext('2d');
-        const gradient = context.createLinearGradient(0, 0, 250, 0);
+        const gradientX = sectionWidth + (nullWidth + (padding * 2));
+        const gradientWidth = width - (gradientX + padding);
+        const gradient = context.createLinearGradient(gradientX, 0, gradientX + gradientWidth, 0);
         gradient.addColorStop(0, 'rgba(215, 227, 244, 0.7)');
         gradient.addColorStop(1, 'rgba(37, 51, 132, 0.9)');
 
         context.fillStyle = gradient;
-        context.fillRect(0, 30, 250, 20);
+        context.fillRect(gradientX, (height / 2) - padding, gradientWidth, barHeight);
 
-        context.addFont(this.loadFont('Akkurat'));
         context.font = '16px Akkurat';
         context.fillStyle = '#666666';
 
         context.textAlign = 'left';
-        context.fillText('0%', 5, 25);
+        context.fillText('0%', gradientX, height / 4);
 
+        context.font = '16px Akkurat';
         context.textAlign = 'right';
-        context.fillText('100%', 245, 25);
+        context.fillText('100%', width - padding, height / 4);
 
         context.textAlign = 'center';
-        context.fillText('Property Description', 125, 65);
+        context.font = '16px Akkurat';
+        context.fillText('Property Description', sectionWidth + (sectionWidth / 2), height - padding);
+        context.fillText('No data', sectionWidth + ((padding + nullWidth) / 2), height / 4);
+
+        const pattern = context.createPattern(this.createStripePattern(), 'repeat');
+        context.fillStyle = pattern;
+        context.fillRect(sectionWidth + (padding * 2), (height / 2) - padding, nullWidth - (padding * 2), barHeight);
+
         return canvas.toDataURL();
     }
 
@@ -317,7 +330,52 @@ export class Chart {
         }
     }
 
-    private propBubbleSize(layerId: string, mapZoom: number, attr: Object): number[][] {
+    private createStripePattern() {
+        // Pulled from https://stackoverflow.com/a/47288427
+        const color = "#C6CCCF";
+
+        const CANVAS_SIDE_LENGTH = 8;
+        const WIDTH = CANVAS_SIDE_LENGTH;
+        const HEIGHT = CANVAS_SIDE_LENGTH;
+        const DIVISIONS = 4;
+        const canvas = new Canvas(WIDTH, HEIGHT);
+        const context = canvas.getContext('2d');
+
+        canvas.width = WIDTH;
+        canvas.height = HEIGHT;
+        context.fillStyle = color;
+
+        // Top line
+        context.beginPath();
+        context.moveTo(0, HEIGHT * (1 / DIVISIONS));
+        context.lineTo(WIDTH * (1 / DIVISIONS), 0);
+        context.lineTo(0, 0);
+        context.lineTo(0, HEIGHT * (1 / DIVISIONS));
+        context.fill();
+
+        // Middle line
+        context.beginPath();
+        context.moveTo(WIDTH, HEIGHT * (1 / DIVISIONS));
+        context.lineTo(WIDTH * (1 / DIVISIONS), HEIGHT);
+        context.lineTo(0, HEIGHT);
+        context.lineTo(0, HEIGHT * ((DIVISIONS - 1) / DIVISIONS));
+        context.lineTo(WIDTH * ((DIVISIONS - 1) / DIVISIONS), 0);
+        context.lineTo(WIDTH, 0);
+        context.lineTo(WIDTH, HEIGHT * (1 / DIVISIONS));
+        context.fill();
+
+        // Bottom line
+        context.beginPath();
+        context.moveTo(WIDTH, HEIGHT * ((DIVISIONS - 1) / DIVISIONS));
+        context.lineTo(WIDTH * ((DIVISIONS - 1) / DIVISIONS), HEIGHT);
+        context.lineTo(WIDTH, HEIGHT);
+        context.lineTo(WIDTH, HEIGHT * ((DIVISIONS - 1) / DIVISIONS));
+        context.fill();
+
+        return canvas;
+    }
+
+    private propBubbleValue(layerId: string, mapZoom: number, attr: Object): number[][] {
         let div;
         const expr = layerId in attr['expressions'] ? attr['expressions'][layerId] :
             attr['expressions']['default'];
