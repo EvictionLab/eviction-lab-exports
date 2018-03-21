@@ -139,6 +139,21 @@
         .page.feature-details .details:nth-child(4) h3 { color: #434878; }
         .page.feature-details .details:nth-child(6) h3 { color: #2C897F; }
 
+        /* MAP LEGEND */
+        .map-legend {
+            width: 112px;
+            height: 36px;
+            position: absolute;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        .map-legend.data-prop { width: 224px; }
+        .screenshot .map-legend {
+            bottom: 8px;
+            right: 8px;
+        }
+
         /* ONE FEATURE */
         .page.one-feature .screenshot { height: 520px; }
         .page.one-feature .details { top: 586px; }
@@ -420,7 +435,9 @@
 </div>
 {{#if oneFeature }}
 <div class="page one-feature feature-details">
-    <div class="screenshot" {{#if features.0.screenshot}}style="background-image:url('data:{{features.0.screenshot}}')"{{/if}}></div>
+    <div class="screenshot" {{#if features.0.screenshot}}style="background-image:url('data:{{features.0.screenshot}}')"{{/if}}>
+        {{#if features.0.mapLegend}}<div class="map-legend {{#if dataProp}}data-prop{{/if}}" style="background-image:url('data:{{features.0.mapLegend}}')"></div>{{/if}}
+    </div>
     <div class="details">
         <h3>{{title}}</h3>
         <ul>
@@ -437,7 +454,9 @@
 {{#if twoFeatures}}
 <div class="page two-features feature-details">
     {{#each features}}
-    <div class="screenshot" {{#if screenshot}}style="background-image:url('data:{{screenshot}}')"{{/if}}></div>
+    <div class="screenshot" {{#if screenshot}}style="background-image:url('data:{{screenshot}}')"{{/if}}>
+        {{#if mapLegend}}<div class="map-legend {{#if @root.dataProp}}data-prop{{/if}}" style="background-image:url('data:{{mapLegend}}')"></div>{{/if}}
+    </div>
     <div class="details">
         <h3>{{title}}</h3>
         <ul>
@@ -465,6 +484,7 @@
             <li><span>{{@root.dataPropText}}:</span> <span>{{properties.dataProp}}</span></li>
             {{/if}}
         </ul>
+        {{#if mapLegend}}<div class="map-legend {{#if @root.dataProp}}data-prop{{/if}}" style="background-image:url('data:{{mapLegend}}')"></div>{{/if}}
     </div>
     {{/each}}
     <p class="footer">An eviction rate is the number of evictions over the number of renter-occupied households.</div>

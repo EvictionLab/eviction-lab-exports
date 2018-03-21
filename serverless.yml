@@ -47,6 +47,7 @@ functions:
   pptx:
     package:
       include:
+        - node_modules/@mapbox/geo-viewport/**
         - node_modules/d3-array/**
         - node_modules/d3-collection/**
         - node_modules/d3-color/**
@@ -89,6 +90,7 @@ functions:
   zip:
     package:
       include:
+        - node_modules/@mapbox/geo-viewport/**
         - node_modules/handlebars/**
         - node_modules/pako/**
         - node_modules/core-js/**
