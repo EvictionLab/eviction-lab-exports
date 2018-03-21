@@ -5,6 +5,7 @@ import { scales } from '../data/scales';
 import { Feature } from '../data/feature';
 import { scaleLinear, scaleBand } from 'd3-scale';
 import { line } from 'd3-shape';
+import { PercentCols, DollarCols } from '../data/propData';
 const Canvas = require(process.env['IS_OFFLINE'] === 'true' ? 'canvas' : 'canvas-aws-prebuilt');
 
 export class Chart {
@@ -238,52 +239,73 @@ export class Chart {
         return canvas.toDataURL();
     }
 
-    createMapLegend(feat: Feature, mapWidth: number, mapHeight: number, dataProp: string) {
-        const width = 448;
+    createMapLegend(
+        feat: Feature, mapWidth: number, mapHeight: number,
+        dataProp: string, bubbleProp: string,
+        dataText: string, evictionText: string
+    ) {
+        let width = 448 * 2;
         const sectionWidth = width / 2;
-        const height = 72;
+        if (dataProp.startsWith('none')) {
+            width = sectionWidth;
+        }
+        const height = 72 * 2;
         const canvas = new Canvas(width, height);
         const context = canvas.getContext('2d');
         context.addFont(this.loadFont('Akkurat'));
         context.fillStyle = 'rgba(255,255,255,0.8)';
         context.fillRect(0, 0, width, height);
 
-        const padding = 8;
-        const barHeight = 20;
-        const nullWidth = 56;
+        const padding = 8 * 2;
+        const barHeight = 20 * 2;
+        const nullWidth = 56 * 2;
 
-        // const zoom = geoViewport.viewport(
-        //     [+feat.properties.w, +feat.properties.s, +feat.properties.e, +feat.properties.n],
-        //     [mapWidth / 2.5, mapHeight / 2.5]
-        // );
-        // const bubbleAttr = scales.bubbleAttributes.find(a => a.id === this.bubbleProp);
-        // const bubbleSizes = this.propBubbleValue(feat.properties.layerId, zoom, bubbleAttr);
+        const nullBubbleSize = 8;
+        const lowBubbleSize = 2.5;
+        const highBubbleSize = 20;
+        const zoom = geoViewport.viewport(
+            [+feat.properties.west, +feat.properties.south, +feat.properties.east, +feat.properties.north],
+            [mapWidth / 2.5, mapHeight / 2.5]
+        ).zoom;
+        const bubbleAttr = scales.bubbleAttributes.find(a => a.id === bubbleProp);
+        const lowBubbleVal = this.propBubbleValue(lowBubbleSize, feat.properties.layerId, zoom, bubbleAttr);
+        const highBubbleVal = this.propBubbleValue(highBubbleSize, feat.properties.layerId, zoom, bubbleAttr);
 
         context.beginPath();
-        context.arc((padding * 2) + sectionWidth * 0.1, height / 2 + padding, 8, 0, 2 * Math.PI);
+        context.arc((padding * 2) + sectionWidth * 0.1, height / 2 + padding, nullBubbleSize * 2, 0, 2 * Math.PI);
         context.fillStyle = 'transparent';
         context.fill();
         context.lineWidth = 1;
-        context.strokeStyle = 'gray';
+        context.strokeStyle = 'rgba(128,128,128,1)';
         context.stroke();
 
         context.beginPath();
-        context.arc((padding * 2) + sectionWidth * 0.4, height / 2 + padding, 4, 0, 2 * Math.PI);
-        context.fillStyle = 'red';
+        context.arc((padding * 2) + sectionWidth * 0.4, height / 2 + padding, lowBubbleSize * 2, 0, 2 * Math.PI);
+        context.fillStyle = 'rgba(255,4,0,0.65)';
         context.fill();
 
         context.beginPath();
-        context.arc((padding * 2) + sectionWidth * 0.75, height / 2 + padding, 20, 0, 2 * Math.PI);
-        context.fillStyle = 'red';
+        context.arc((padding * 2) + sectionWidth * 0.75, height / 2 + padding, highBubbleSize * 2, 0, 2 * Math.PI);
+        context.fillStyle = 'rgba(255,4,0,0.65)';
         context.fill();
 
         context.textAlign = 'center';
-        context.font = '16px Akkurat';
+        context.font = '28px Akkurat';
         context.fillStyle = '#666666';
-        context.fillText('Eviction Rate', sectionWidth * 0.5, height - padding);
-        context.fillText('No data', (padding * 2) + sectionWidth * 0.1, height / 4);
-        context.fillText('1%', (padding * 2) + sectionWidth * 0.35, height / 4);
-        context.fillText('>=20%', (padding * 2) + sectionWidth * 0.75, height / 4);
+        context.fillText(evictionText, sectionWidth * 0.5, height - padding);
+        context.fillText(this.translate['NO_DATA'](), (padding * 2) + sectionWidth * 0.1, height / 4);
+        context.fillText(`${lowBubbleVal.toFixed(1)}%`, (padding * 2) + sectionWidth * 0.4, height / 4);
+        context.fillText(`>=${highBubbleVal.toFixed(1)}%`, (padding * 2) + sectionWidth * 0.75, height / 4);
+
+        if (dataProp.startsWith('none')) {
+            return canvas.toDataURL();
+        }
+
+        const dataAttr = scales.dataAttributes.find(a => a.id === dataProp);
+        const dataScale = dataAttr.stops.hasOwnProperty(feat.properties.layerId) ?
+            dataAttr.stops[feat.properties.layerId] : dataAttr.stops['default'];
+        const minDataVal = dataScale[1][0];
+        const maxDataVal = dataScale[dataScale.length - 1][0];
 
         const gradientX = sectionWidth + (nullWidth + (padding * 2));
         const gradientWidth = width - (gradientX + padding);
@@ -294,20 +316,20 @@ export class Chart {
         context.fillStyle = gradient;
         context.fillRect(gradientX, (height / 2) - padding, gradientWidth, barHeight);
 
-        context.font = '16px Akkurat';
+        context.font = '28px Akkurat';
         context.fillStyle = '#666666';
 
         context.textAlign = 'left';
-        context.fillText('0%', gradientX, height / 4);
+        context.fillText(this.formatValue(dataProp, minDataVal), gradientX, height / 4);
 
-        context.font = '16px Akkurat';
+        context.font = '28px Akkurat';
         context.textAlign = 'right';
-        context.fillText('100%', width - padding, height / 4);
+        context.fillText(this.formatValue(dataProp, maxDataVal), width - padding, height / 4);
 
         context.textAlign = 'center';
-        context.font = '16px Akkurat';
-        context.fillText('Property Description', sectionWidth + (sectionWidth / 2), height - padding);
-        context.fillText('No data', sectionWidth + ((padding + nullWidth) / 2), height / 4);
+        context.font = '28px Akkurat';
+        context.fillText(dataText, sectionWidth + (sectionWidth / 2), height - padding);
+        context.fillText(this.translate['NO_DATA'](), sectionWidth + ((padding + nullWidth) / 2), height / 4);
 
         const pattern = context.createPattern(this.createStripePattern(), 'repeat');
         context.fillStyle = pattern;
@@ -334,7 +356,7 @@ export class Chart {
         // Pulled from https://stackoverflow.com/a/47288427
         const color = "#C6CCCF";
 
-        const CANVAS_SIDE_LENGTH = 8;
+        const CANVAS_SIDE_LENGTH = 16;
         const WIDTH = CANVAS_SIDE_LENGTH;
         const HEIGHT = CANVAS_SIDE_LENGTH;
         const DIVISIONS = 4;
@@ -375,38 +397,48 @@ export class Chart {
         return canvas;
     }
 
-    private propBubbleValue(layerId: string, mapZoom: number, attr: Object): number[][] {
-        let div;
+    private propBubbleValue(size: number, layerId: string, mapZoom: number, attr: Object): number {
         const expr = layerId in attr['expressions'] ? attr['expressions'][layerId] :
             attr['expressions']['default'];
 
-        const maxVal = expr[2][1];
         const steps = expr[3].slice(3);
         const minZoom = steps[0];
+        const minVal = this.interpolateValue(size, steps[1].slice(5));
         const maxZoom = steps[steps.length - 2];
-        const zoom = Math.min(mapZoom, maxZoom);
+        const maxVal = this.interpolateValue(size, steps[steps.length - 1].slice(5));
 
-        if (zoom <= minZoom) {
-            div = this.exprVal(steps[1][2]);
-        } else if (zoom === maxZoom) {
-            div = this.exprVal(steps[steps.length][2]);
-        } else {
-            // Interpolate if not found
-            const z2Idx = steps.findIndex(v => !Array.isArray(v) && v > zoom);
-            const z1 = steps[z2Idx - 2];
-            const z1Val = this.exprVal(steps[z2Idx - 1][2]);
-            const z2 = steps[z2Idx];
-            const z2Val = this.exprVal(steps[z2Idx + 1][2]);
-            div = z1Val + ((zoom - z1) * ((z2Val - z1Val) / (z2 - z1)));
-        }
-
-        return [
-            [2.5, 2.5 / div],
-            [maxVal, maxVal / div]
-        ];
+        return this.interpolateValue(mapZoom, [minVal, minZoom, maxVal, maxZoom]);
     }
 
-    private exprVal(val: Array<any> | number): number {
-        return Array.isArray(val) ? val[1] * val[2] : val;
+    private interpolateValue(x: number, steps: number[]): number {
+        const y1 = steps[0];
+        const x1 = steps[1];
+        const y2 = steps[steps.length - 2];
+        const x2 = steps[steps.length - 1];
+        const rateOfChange = (y2 - y1) / (x2 - x1);
+        return y1 + ((x - x1) * rateOfChange);
+    }
+
+    private formatValue(prop: string, value: number): string {
+        let formattedValue: number | string = value;
+        switch (true) {
+            case (value >= 10000 && value < 1000000):
+                formattedValue = (Math.round((value / 1000) * 100) / 100) + 'k';
+                break;
+            case (value >= 1000000):
+                formattedValue = (Math.round((value / 1000000) * 100) / 100) + 'm';
+                break;
+        }
+        return this.formatType(prop, formattedValue);
+    }
+
+    private formatType(prop: string, value: number | string): any {
+        if (PercentCols.indexOf(prop) !== -1) {
+            return value + '%';
+        }
+        if (DollarCols.indexOf(prop) !== -1) {
+            return '$' + value;
+        }
+        return value;
     }
 }

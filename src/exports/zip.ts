@@ -48,7 +48,7 @@ export class ZipExport extends Export {
     createKey(requestData: RequestData): string {
         const idPath = requestData.features.map(f => f.properties.GEOID).join('/');
         const formatPath = requestData.formats.sort().join('/');
-        return `${this.years[0]}-${this.years[1]}/${idPath}/${formatPath}/eviction_lab_export.${this.fileExt}`;
+        return `${this.lang}/${this.year}/${this.years[0]}-${this.years[1]}/${idPath}/${formatPath}/eviction_lab_export.${this.fileExt}`;
     }
 
     /**

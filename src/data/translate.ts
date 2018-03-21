@@ -18,7 +18,8 @@ export const Translations: Object = {
             'FEATURE_RATE_DESCRIPTION': () => '* An eviction rate is the number of evictions per 100 renter-occupied households',
             'RACE_ETHNICITY': () => 'Race/Ethnicity',
             'BAR_CHART_TITLE': (subject, year) => `Comparison of ${subject} rates in ${year}`,
-            'LINE_CHART_TITLE': (subject) => `Comparison of ${subject} rates over time`
+            'LINE_CHART_TITLE': (subject) => `Comparison of ${subject} rates over time`,
+            'NO_DATA': () => 'No data'
         },
         'DATA_PROPS': {
             'e': 'Total Evictions',
@@ -60,7 +61,8 @@ export const Translations: Object = {
             'FEATURE_RATE_DESCRIPTION': () => '* An eviction rate is the number of evictions per 100 renter-occupied households',
             'RACE_ETHNICITY': () => 'Race/Ethnicity',
             'BAR_CHART_TITLE': (subject, year) => `Comparison of ${subject} rates in ${year}`,
-            'LINE_CHART_TITLE': (subject) => `Comparison of ${subject} rates over time`
+            'LINE_CHART_TITLE': (subject) => `Comparison of ${subject} rates over time`,
+            'NO_DATA': () => 'No data'
         },
         'DATA_PROPS': {
             'e': 'Total Evictions',

@@ -63,6 +63,17 @@ export class PdfExport extends Export {
       });
     }));
 
+    const dataText = this.dataProp in this.dataProps ?
+      this.dataProps[this.dataProp] : this.demDataProps[this.dataProp];
+    const evictionText = this.bubbleProp === 'er' ?
+      this.translate['EVICTION_RATE']() : this.translate['EVICTION_FILING_RATE']();
+
+    features.forEach(f => {
+      f.mapLegend = this.chart.createMapLegend(
+        f, params.width * 2, params.height * 2, this.dataProp, this.bubbleProp, dataText, evictionText
+      );
+    });
+
     const chartFeatures = this.getFeatures(this.features);
 
     const template = Handlebars.compile(htmlRes.Body.toString());

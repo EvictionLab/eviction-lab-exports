@@ -151,7 +151,19 @@ export class PptxExport extends Export {
     const legendParams = { w: 2.99, h: 0.48, y: 2.72, x: 6.37 };
     if (screenshot !== null) {
       featSlide.addImage({ ...imageParams, data: screenshot });
-      const legendCanvas = this.chart.createMapLegend(feature, 1340, 440, this.dataProp);
+
+      if (this.dataProp.startsWith('none')) {
+        legendParams.w /= 2;
+        legendParams.x += legendParams.w;
+      }
+      const dataPropText = this.dataProps.hasOwnProperty(this.dataProp) ?
+        this.dataProps[this.dataProp] : this.demDataProps[this.dataProp];
+      const evictionRateText = this.bubbleProp === 'er' ?
+        this.translate['EVICTION_RATE']() : this.translate['EVICTION_FILING_RATE'];
+
+      const legendCanvas = this.chart.createMapLegend(
+        feature, 1340 * 2, 440 * 2, this.dataProp, this.bubbleProp, dataPropText, evictionRateText
+      );
       featSlide.addImage({ data: legendCanvas, ...legendParams });
     } else {
       featSlide.addShape(this.pptx.shapes.RECTANGLE, { ...imageParams, fill: '666666' });
