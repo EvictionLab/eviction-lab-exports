@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as path from 'path';
 import { S3 } from 'aws-sdk';
 import axios from 'axios';
 import { RequestData } from '../data/requestData';
@@ -20,6 +21,7 @@ export abstract class Export {
     templateKey: string | undefined;
     assetBucket: string = process.env['asset_bucket'];
     exportBucket: string = process.env['export_bucket'];
+    assetPath: string;
     screenshotBase = 'https://screenshot.evictionlab.org';
 
     constructor(requestData: RequestData) {
@@ -33,6 +35,8 @@ export abstract class Export {
         // If 'none' is supplied as eviction prop, default to eviction rate
         this.bubbleProp = requestData.bubbleProp.startsWith('none') ? 'er' :
             requestData.bubbleProp.split('-')[0];
+        this.assetPath = path.join(__dirname, fs.existsSync(path.join(__dirname, '../assets')) ?
+            '../assets' : '../../assets');
         this.key = this.createKey(requestData);
     };
 

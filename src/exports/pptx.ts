@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { RequestData } from '../data/requestData';
 import { Feature } from '../data/feature';
 import { Export } from './export';
@@ -52,23 +54,17 @@ export class PptxExport extends Export {
     this.demDataProps = Translations[this.lang]['DEM_DATA_PROPS'];
     this.evictionText = this.bubbleProp === 'er' ? this.translate['EVICTION']() : this.translate['EVICTION_FILING']();
     this.chart = new Chart(
-      945, 795, this.year, this.makeYearArr(this.years), this.bubbleProp,
-      this.colors, this.evictionText, this.translate
+      this.assetPath, 945, 795, this.year, this.makeYearArr(this.years),
+      this.bubbleProp, this.colors, this.evictionText, this.translate
     );
   };
 
-  async readImages(): Promise<void> {
-    const s3 = new S3();
-    const mainImage = await s3.getObject({ Bucket: this.assetBucket, Key: 'assets/evictionlab.jpg' }).promise();
-    const titleImage = await s3.getObject({ Bucket: this.assetBucket, Key: 'assets/evictionlab-title.png' }).promise();
-    const backgroundImage = await s3.getObject({ Bucket: this.assetBucket, Key: 'assets/evictionlab-bg.png' }).promise();
-    const logoImage = await s3.getObject({ Bucket: this.assetBucket, Key: 'assets/evictionlab-logo.png' }).promise();
-
+  loadImages() {
     const dataPrefix = 'image/png;base64,';
-    this.mainImage = 'image/jpg;base64,' + (mainImage.Body as Buffer).toString('base64');
-    this.titleImage = dataPrefix + (titleImage.Body as Buffer).toString('base64');
-    this.backgroundImage = dataPrefix + (backgroundImage.Body as Buffer).toString('base64');
-    this.logoImage = dataPrefix + (logoImage.Body as Buffer).toString('base64');
+    this.mainImage = 'image/jpg;base64,' + (fs.readFileSync(path.join(this.assetPath, 'evictionlab.jpg'))).toString('base64');
+    this.titleImage = dataPrefix + (fs.readFileSync(path.join(this.assetPath, 'evictionlab-title.png'))).toString('base64');
+    this.backgroundImage = dataPrefix + (fs.readFileSync(path.join(this.assetPath, 'evictionlab-bg.png'))).toString('base64');
+    this.logoImage = dataPrefix + (fs.readFileSync(path.join(this.assetPath, 'evictionlab-logo.png'))).toString('base64');
   }
 
   createIntroSlide(): void {
@@ -159,7 +155,7 @@ export class PptxExport extends Export {
       const dataPropText = this.dataProps.hasOwnProperty(this.dataProp) ?
         this.dataProps[this.dataProp] : this.demDataProps[this.dataProp];
       const evictionRateText = this.bubbleProp === 'er' ?
-        this.translate['EVICTION_RATE']() : this.translate['EVICTION_FILING_RATE'];
+        this.translate['EVICTION_RATE']() : this.translate['EVICTION_FILING_RATE']();
 
       const legendCanvas = this.chart.createMapLegend(
         feature, 1340 * 2, 440 * 2, this.dataProp, this.bubbleProp, dataPropText, evictionRateText
@@ -345,7 +341,7 @@ export class PptxExport extends Export {
   }
 
   async createFile(): Promise<Buffer> {
-    await this.readImages();
+    this.loadImages();
     this.createIntroSlide();
     this.createTitleSlide(this.features);
     for (let i = 0; i < this.features.length; ++i) {

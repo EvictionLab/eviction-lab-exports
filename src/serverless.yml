@@ -20,7 +20,7 @@ plugins:
 
 package:
   include:
-    - ./assets
+    - assets
 
 functions:
   pdf:
@@ -36,7 +36,7 @@ functions:
 custom:
   optimize:
     includePaths:
-      - ../assets/fonts
+      - ../assets
 # custom:
 #   customDomain:
 #     domainName: 'exports.evictionlab.org'

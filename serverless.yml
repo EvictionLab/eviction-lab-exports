@@ -23,7 +23,7 @@ package:
   exclude:
     - node_modules/**
   include:
-    - ./assets/fonts
+    - ./assets
     - node_modules/aws-sdk/**
 
 functions:
@@ -139,7 +139,7 @@ functions:
 custom:
   optimize:
     includePaths:
-      - ./assets/fonts
+      - ./assets
 
 # custom:
 #   customDomain:

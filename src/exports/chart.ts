@@ -10,6 +10,7 @@ const Canvas = require(process.env['IS_OFFLINE'] === 'true' ? 'canvas' : 'canvas
 
 export class Chart {
     constructor(
+        public assetPath: string,
         public width: number,
         public height: number,
         public year: number,
@@ -42,7 +43,7 @@ export class Chart {
 
         x.domain(features.map(f => f.properties.n));
         const valueProp = `${this.bubbleProp}-${this.year.toString().slice(2)}`;
-        const values = features.map(f => f.hasOwnProperty(valueProp) ? f[valueProp] : -1);
+        const values = features.map(f => f.properties.hasOwnProperty(valueProp) ? f.properties[valueProp] : -1);
         let maxY = Math.max(...values);
         // Minimum value of 1/1.1
         maxY = Math.max(maxY, 1 / 1.1);
@@ -295,7 +296,7 @@ export class Chart {
         context.fillText(evictionText, sectionWidth * 0.5, height - padding);
         context.fillText(this.translate['NO_DATA'](), (padding * 2) + sectionWidth * 0.1, height / 4);
         context.fillText(`${lowBubbleVal.toFixed(1)}%`, (padding * 2) + sectionWidth * 0.4, height / 4);
-        context.fillText(`>=${highBubbleVal.toFixed(1)}%`, (padding * 2) + sectionWidth * 0.75, height / 4);
+        context.fillText(`${highBubbleVal.toFixed(1)}%`, (padding * 2) + sectionWidth * 0.75, height / 4);
 
         if (dataProp.startsWith('none')) {
             return canvas.toDataURL();
@@ -339,9 +340,7 @@ export class Chart {
     }
 
     private loadFont(font: string) {
-        const fontPath = path.join(__dirname, fs.existsSync(path.join(__dirname, '../assets')) ?
-            '../assets/fonts' : '../../assets/fonts');
-        return new Canvas.Font(font, path.join(fontPath, `${font}.ttf`));
+        return new Canvas.Font(font, path.join(this.assetPath, `fonts/${font}.ttf`));
     }
 
     private getColor(f: Feature, i: number): string {

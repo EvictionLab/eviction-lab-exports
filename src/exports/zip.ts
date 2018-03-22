@@ -13,7 +13,7 @@ import { handler } from './handler';
  */
 class PdfStub extends Export {
     fileExt = 'pdf';
-    get templateKey() { return `assets/${this.lang}/report.html`; }
+    get templateKey() { return `${this.lang}/report.html`; }
 
     constructor(requestData: RequestData) {
         super(requestData);

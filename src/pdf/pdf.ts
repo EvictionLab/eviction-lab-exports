@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as path from 'path';
 import * as launchChrome from '@serverless-chrome/lambda';
 import { S3 } from 'aws-sdk';
 import { Chromeless } from 'chromeless';
@@ -19,7 +20,7 @@ export class PdfExport extends Export {
   dataProps: Object;
   demDataProps: Object;
   translate;
-  get templateKey() { return `assets/${this.lang}/report.html`; }
+  get templateKey() { return `${this.lang}/report.html`; }
 
   constructor(requestData: RequestData) {
     super(requestData);
@@ -29,7 +30,7 @@ export class PdfExport extends Export {
     this.demDataProps = Translations[this.lang]['DEM_DATA_PROPS'];
     const evictionText = this.bubbleProp === 'er' ? this.translate['EVICTION']() : this.translate['EVICTION_FILING']();
     this.chart = new Chart(
-      975, 750, this.year, this.makeYearArr(this.years), this.bubbleProp,
+      this.assetPath, 975, 750, this.year, this.makeYearArr(this.years), this.bubbleProp,
       ['e24000', '434878', '2c897f', '94aabd'], evictionText, this.translate
     );
   };
@@ -43,10 +44,7 @@ export class PdfExport extends Export {
       launchChrome: false
     });
 
-    const htmlRes = await s3.getObject({
-      Bucket: this.assetBucket,
-      Key: this.templateKey
-    }).promise();
+    const htmlBody = fs.readFileSync(path.join(this.assetPath, this.templateKey)).toString();
 
     // Get screenshots for each feature
     const yearSuffix = this.year.toString().slice(2);
@@ -76,7 +74,7 @@ export class PdfExport extends Export {
 
     const chartFeatures = this.getFeatures(this.features);
 
-    const template = Handlebars.compile(htmlRes.Body.toString());
+    const template = Handlebars.compile(htmlBody);
     const compiledData = template({
       date: new Date().toISOString().slice(0, 10),
       year: this.year,
