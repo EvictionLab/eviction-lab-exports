@@ -245,8 +245,9 @@ export class Chart {
         dataProp: string, bubbleProp: string,
         dataText: string, evictionText: string
     ) {
-        let width = 448 * 2;
-        const sectionWidth = width / 2;
+        const sectionGap = 32;
+        let width = (448 + sectionGap) * 2;
+        const sectionWidth = (width - sectionGap) / 2;
         if (dataProp.startsWith('none')) {
             width = sectionWidth;
         }
@@ -317,7 +318,7 @@ export class Chart {
         const minDataVal = dataScale[1][0];
         const maxDataVal = dataScale[dataScale.length - 1][0];
 
-        const gradientX = sectionWidth + (nullWidth + (padding * 2));
+        const gradientX = sectionWidth + sectionGap + (nullWidth + (padding * 2));
         const gradientWidth = width - (gradientX + padding);
         const gradient = context.createLinearGradient(gradientX, 0, gradientX + gradientWidth, 0);
         gradient.addColorStop(0, 'rgba(215, 227, 244, 0.7)');
@@ -341,17 +342,17 @@ export class Chart {
 
         // Draw divider line
         context.beginPath();
-        context.moveTo(sectionWidth + padding, padding * 3.5);
+        context.moveTo(sectionWidth + padding + sectionGap, padding * 3.5);
         context.lineTo(width - padding, padding * 3.5);
         context.stroke();
 
-        context.fillText(dataText, sectionWidth + (sectionWidth / 2), padding * 2.5);
+        context.fillText(dataText, sectionWidth + sectionGap + (sectionWidth / 2), padding * 2.5);
         context.fillStyle = '#666666';
-        context.fillText(this.translate['NO_DATA'](), sectionWidth + ((padding + nullWidth) / 2), topPadding + (padding * 3));
+        context.fillText(this.translate['NO_DATA'](), sectionWidth + sectionGap + ((padding + nullWidth) / 2), topPadding + (padding * 3));
 
         const pattern = context.createPattern(this.createStripePattern(), 'repeat');
         context.fillStyle = pattern;
-        context.fillRect(sectionWidth + (padding * 2), ((height / 2) - padding) + topPadding, nullWidth - (padding * 2), barHeight);
+        context.fillRect(sectionWidth + sectionGap + (padding * 2), ((height / 2) - padding) + topPadding, nullWidth - (padding * 2), barHeight);
 
         return canvas.toDataURL();
     }

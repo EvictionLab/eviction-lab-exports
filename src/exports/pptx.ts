@@ -144,13 +144,14 @@ export class PptxExport extends Export {
     featSlide.addImage({ data: this.backgroundImage, ...this.fullSlideParams });
 
     const imageParams = { w: 8.94, h: 2.94, y: 0.36, x: 0.52 };
-    const legendParams = { w: 2.99, h: 0.64, y: 2.56, x: 6.37 };
+    const legendParams = { w: 3.2, h: 0.64, y: 2.56, x: 6.16 };
     if (screenshot !== null) {
       featSlide.addImage({ ...imageParams, data: screenshot });
 
       if (this.dataProp.startsWith('none')) {
-        legendParams.w /= 2;
-        legendParams.x += legendParams.w;
+        const legendW = 1.5;
+        legendParams.x += (legendParams.w - legendW);
+        legendParams.w = legendW;
       }
       const dataPropText = this.dataProps.hasOwnProperty(this.dataProp) ?
         this.dataProps[this.dataProp] : this.demDataProps[this.dataProp];
