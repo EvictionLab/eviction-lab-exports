@@ -144,7 +144,7 @@ export class PptxExport extends Export {
     featSlide.addImage({ data: this.backgroundImage, ...this.fullSlideParams });
 
     const imageParams = { w: 8.94, h: 2.94, y: 0.36, x: 0.52 };
-    const legendParams = { w: 2.99, h: 0.48, y: 2.72, x: 6.37 };
+    const legendParams = { w: 2.99, h: 0.64, y: 2.56, x: 6.37 };
     if (screenshot !== null) {
       featSlide.addImage({ ...imageParams, data: screenshot });
 
@@ -294,7 +294,7 @@ export class PptxExport extends Export {
     const chartTitleParams = {
       w: 3.89, h: 0.27, y: 0.27 + chartPad, align: 'l', font_face: 'Helvetica', font_size: 12, bold: true
     }
-    // TODO: Should this be included regardless of how many features are selected?
+
     // Create comparison if more than one feature provided
     chartSlide.addText(this.translate['BAR_CHART_TITLE'](this.evictionText.toLowerCase(), this.year), {
       ...chartTitleParams, x: 0.86

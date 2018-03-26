@@ -250,18 +250,19 @@ export class Chart {
         if (dataProp.startsWith('none')) {
             width = sectionWidth;
         }
-        const height = 72 * 2;
+        const height = 96 * 2;
         const canvas = new Canvas(width, height);
         const context = canvas.getContext('2d');
         context.addFont(this.loadFont('Akkurat'));
         context.fillStyle = 'rgba(255,255,255,0.8)';
         context.fillRect(0, 0, width, height);
 
+        const topPadding = 24 * 2;
         const padding = 8 * 2;
         const barHeight = 20 * 2;
         const nullWidth = 56 * 2;
 
-        const nullBubbleSize = 8;
+        const nullBubbleSize = 6;
         const lowBubbleSize = 2.5;
         const highBubbleSize = 20;
         const zoom = geoViewport.viewport(
@@ -273,7 +274,7 @@ export class Chart {
         const highBubbleVal = this.propBubbleValue(highBubbleSize, feat.properties.layerId, zoom, bubbleAttr);
 
         context.beginPath();
-        context.arc((padding * 2) + sectionWidth * 0.1, height / 2 + padding, nullBubbleSize * 2, 0, 2 * Math.PI);
+        context.arc((padding * 2) + sectionWidth * 0.1, height / 2 + topPadding, nullBubbleSize * 2, 0, 2 * Math.PI);
         context.fillStyle = 'transparent';
         context.fill();
         context.lineWidth = 1;
@@ -281,22 +282,30 @@ export class Chart {
         context.stroke();
 
         context.beginPath();
-        context.arc((padding * 2) + sectionWidth * 0.4, height / 2 + padding, lowBubbleSize * 2, 0, 2 * Math.PI);
+        context.arc((padding * 2) + sectionWidth * 0.4, height / 2 + topPadding, lowBubbleSize * 2, 0, 2 * Math.PI);
         context.fillStyle = 'rgba(255,4,0,0.65)';
         context.fill();
 
         context.beginPath();
-        context.arc((padding * 2) + sectionWidth * 0.75, height / 2 + padding, highBubbleSize * 2, 0, 2 * Math.PI);
+        context.arc((padding * 2) + sectionWidth * 0.75, height / 2 + topPadding, highBubbleSize * 2, 0, 2 * Math.PI);
         context.fillStyle = 'rgba(255,4,0,0.65)';
         context.fill();
 
         context.textAlign = 'center';
         context.font = '28px Akkurat';
+        context.fillStyle = '#050403';
+        context.fillText(evictionText, sectionWidth * 0.5, padding * 2.5);
+
+        // Draw divider line
+        context.beginPath();
+        context.moveTo(padding, padding * 3.5);
+        context.lineTo(sectionWidth - padding, padding * 3.5);
+        context.stroke();
+
         context.fillStyle = '#666666';
-        context.fillText(evictionText, sectionWidth * 0.5, height - padding);
-        context.fillText(this.translate['NO_DATA'](), (padding * 2) + sectionWidth * 0.1, height / 4);
-        context.fillText(`${lowBubbleVal.toFixed(1)}%`, (padding * 2) + sectionWidth * 0.4, height / 4);
-        context.fillText(`${highBubbleVal.toFixed(1)}%`, (padding * 2) + sectionWidth * 0.75, height / 4);
+        context.fillText(this.translate['NO_DATA'](), (padding * 2) + sectionWidth * 0.1, topPadding + (padding * 3));
+        context.fillText(`${lowBubbleVal.toFixed(1)}%`, (padding * 2) + sectionWidth * 0.4, topPadding + (padding * 3));
+        context.fillText(`${highBubbleVal.toFixed(1)}%`, (padding * 2) + sectionWidth * 0.75, topPadding + (padding * 3));
 
         if (dataProp.startsWith('none')) {
             return canvas.toDataURL();
@@ -315,26 +324,34 @@ export class Chart {
         gradient.addColorStop(1, 'rgba(37, 51, 132, 0.9)');
 
         context.fillStyle = gradient;
-        context.fillRect(gradientX, (height / 2) - padding, gradientWidth, barHeight);
+        context.fillRect(gradientX, ((height / 2) - padding) + topPadding, gradientWidth, barHeight);
 
         context.font = '28px Akkurat';
         context.fillStyle = '#666666';
-
         context.textAlign = 'left';
-        context.fillText(this.formatValue(dataProp, minDataVal), gradientX, height / 4);
+        context.fillText(this.formatValue(dataProp, minDataVal), gradientX, topPadding + (padding * 3));
 
         context.font = '28px Akkurat';
         context.textAlign = 'right';
-        context.fillText(this.formatValue(dataProp, maxDataVal), width - padding, height / 4);
+        context.fillText(this.formatValue(dataProp, maxDataVal), width - padding, topPadding + (padding * 3));
 
         context.textAlign = 'center';
         context.font = '28px Akkurat';
-        context.fillText(dataText, sectionWidth + (sectionWidth / 2), height - padding);
-        context.fillText(this.translate['NO_DATA'](), sectionWidth + ((padding + nullWidth) / 2), height / 4);
+        context.fillStyle = '#050403';
+
+        // Draw divider line
+        context.beginPath();
+        context.moveTo(sectionWidth + padding, padding * 3.5);
+        context.lineTo(width - padding, padding * 3.5);
+        context.stroke();
+
+        context.fillText(dataText, sectionWidth + (sectionWidth / 2), padding * 2.5);
+        context.fillStyle = '#666666';
+        context.fillText(this.translate['NO_DATA'](), sectionWidth + ((padding + nullWidth) / 2), topPadding + (padding * 3));
 
         const pattern = context.createPattern(this.createStripePattern(), 'repeat');
         context.fillStyle = pattern;
-        context.fillRect(sectionWidth + (padding * 2), (height / 2) - padding, nullWidth - (padding * 2), barHeight);
+        context.fillRect(sectionWidth + (padding * 2), ((height / 2) - padding) + topPadding, nullWidth - (padding * 2), barHeight);
 
         return canvas.toDataURL();
     }
