@@ -140,6 +140,12 @@ export class PptxExport extends Export {
     const evictionTotal = feature.properties[`e-${yearSuffix}`];
     const evictionRate = feature.properties[`er-${yearSuffix}`];
     const evictionsPerDay = +(feature.properties[`e-${yearSuffix}`] / daysInYear).toFixed(2);
+    const dataPropText = this.dataProps.hasOwnProperty(this.dataProp) ?
+      this.dataProps[this.dataProp] : this.demDataProps[this.dataProp];
+    const evictionKindText = this.bubbleProp === 'er' ?
+      this.translate['EVICTIONS']() : this.translate['EVICTION_FILINGS']();
+    const evictionRateText = this.bubbleProp === 'er' ?
+      this.translate['EVICTION_RATE']() : this.translate['EVICTION_FILING_RATE']();
 
     featSlide.addImage({ data: this.backgroundImage, ...this.fullSlideParams });
 
@@ -153,10 +159,6 @@ export class PptxExport extends Export {
         legendParams.x += (legendParams.w - legendW);
         legendParams.w = legendW;
       }
-      const dataPropText = this.dataProps.hasOwnProperty(this.dataProp) ?
-        this.dataProps[this.dataProp] : this.demDataProps[this.dataProp];
-      const evictionRateText = this.bubbleProp === 'er' ?
-        this.translate['EVICTION_RATE']() : this.translate['EVICTION_FILING_RATE']();
 
       const legendCanvas = this.chart.createMapLegend(
         feature, 1340 * 2, 440 * 2, this.dataProp, this.bubbleProp, dataPropText, evictionRateText
@@ -168,9 +170,11 @@ export class PptxExport extends Export {
 
     let featTitleText;
     if (evictionTotal >= 0) {
-      featTitleText = this.translate['FEATURE_TITLE'](feature.properties.n, evictionTotal.toLocaleString('en-US'), this.year);
+      featTitleText = this.translate['FEATURE_TITLE'](
+        feature.properties.n, evictionTotal.toLocaleString('en-US'), evictionKindText.toLowerCase(), this.year
+      );
     } else {
-      featTitleText = this.translate['FEATURE_TITLE_UNAVAILABLE'](feature.properties.n, this.year);
+      featTitleText = this.translate['FEATURE_TITLE_UNAVAILABLE'](feature.properties.n, evictionKindText.toLowerCase(), this.year);
     }
 
     featSlide.addText(
@@ -184,7 +188,10 @@ export class PptxExport extends Export {
         options: { bullet: true }
       },
       {
-        text: this.translate['FEATURE_BULLET_TWO'](evictionRate >= 0 ? evictionRate.toString() + '%' : unavailable),
+        text: this.translate['FEATURE_BULLET_TWO'](
+          evictionRateText.toLowerCase(),
+          evictionRate >= 0 ? evictionRate.toString() + '%' : unavailable
+        ),
         options: { bullet: true }
       }
     ];
@@ -200,8 +207,10 @@ export class PptxExport extends Export {
     });
 
     featSlide.addText(slideBullets, this.bulletParams);
+    const rateDescTranslate = this.bubbleProp === 'er' ?
+      'FEATURE_EVICTION_RATE_DESCRIPTION' : 'FEATURE_EVICTION_FILING_RATE_DESCRIPTION';
     featSlide.addText(
-      this.translate['FEATURE_RATE_DESCRIPTION'](),
+      this.translate[rateDescTranslate](),
       { w: 9.15, h: 0.24, isTextBox: true, x: 0.44, y: 5.1, font_size: 11, font_face: 'Georgia', color: '666666' }
     );
   }

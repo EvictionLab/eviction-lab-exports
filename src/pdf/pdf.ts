@@ -20,6 +20,9 @@ export class PdfExport extends Export {
   dataProps: Object;
   demDataProps: Object;
   translate;
+  evictionRateText: string;
+  evictionKind: string;
+  evictionKindPlural: string;
   get templateKey() { return `${this.lang}/report.html`; }
 
   constructor(requestData: RequestData) {
@@ -48,6 +51,17 @@ export class PdfExport extends Export {
 
     // Get screenshots for each feature
     const yearSuffix = this.year.toString().slice(2);
+    const dataText = this.dataProp in this.dataProps ?
+      this.dataProps[this.dataProp] : this.demDataProps[this.dataProp];
+    if (this.bubbleProp === 'er') {
+      this.evictionKind = this.translate['EVICTION']();
+      this.evictionKindPlural = this.translate['EVICTIONS']();
+      this.evictionRateText = this.translate['EVICTION_RATE']();
+    } else {
+      this.evictionKind = this.translate['EVICTION_FILING']();
+      this.evictionKindPlural = this.translate['EVICTION_FILINGS']();
+      this.evictionRateText = this.translate['EVICTION_FILING_RATE']();
+    }
     const features = this.features.map(f => this.processFeature(f));
     let params = { width: 520, height: 520 };
     if (features.length === 2) {
@@ -61,14 +75,9 @@ export class PdfExport extends Export {
       });
     }));
 
-    const dataText = this.dataProp in this.dataProps ?
-      this.dataProps[this.dataProp] : this.demDataProps[this.dataProp];
-    const evictionText = this.bubbleProp === 'er' ?
-      this.translate['EVICTION_RATE']() : this.translate['EVICTION_FILING_RATE']();
-
     features.forEach(f => {
       f.mapLegend = this.chart.createMapLegend(
-        f, params.width * 2, params.height * 2, this.dataProp, this.bubbleProp, dataText, evictionText
+        f, params.width * 2, params.height * 2, this.dataProp, this.bubbleProp, dataText, this.evictionRateText
       );
     });
 
@@ -87,6 +96,9 @@ export class PdfExport extends Export {
         f.properties.idx = i + 1; return f;
       }),
       showUsAverage: this.showUsAverage,
+      evictionRateText: this.evictionRateText.toLowerCase(),
+      evictionKind: this.evictionKind.toLowerCase(),
+      evictionKindPlural: this.evictionKindPlural.toLowerCase(),
       dataProp: this.dataProp.startsWith('none') ? null : this.dataProp,
       dataPropText: this.dataProps.hasOwnProperty(this.dataProp) ?
         this.dataProps[this.dataProp] : this.demDataProps[this.dataProp],
@@ -119,6 +131,8 @@ export class PdfExport extends Export {
     const dataCols = Object.keys(ColMap).filter(k => ['n', 'pl'].indexOf(k) === -1);
     const yearSuffix = this.year.toString().slice(2);
     const unavailable = this.translate['UNAVAILABLE']();
+    const eProp = this.bubbleProp.slice(0, -1);
+
     feature.properties.name = feature.properties.layerId === 'states' ?
       feature.properties.n : `${feature.properties.n}, ${feature.properties['pl']}`;
     // Object to check for unavailable properties
@@ -139,14 +153,23 @@ export class PdfExport extends Export {
       }
     });
     const daysInYear = this.year % 4 === 0 ? 366 : 365;
+
     if (feature.properties.e === unavailable) {
-      feature.title = this.translate['FEATURE_TITLE_UNAVAILABLE'](feature.properties.n, this.year);
       feature.properties.epd = unavailable;
     } else {
-      feature.title = this.translate['FEATURE_TITLE'](feature.properties.n, feature.properties.e, this.year);
       const daysInYear = this.year % 4 === 0 ? 366 : 365;
       feature.properties.epd = +(feature.properties[`e-${yearSuffix}`] / daysInYear).toFixed(2);
     }
+
+    feature.properties.bubbleProp = feature.properties[this.bubbleProp];
+    if (feature.properties[eProp] === unavailable) {
+      feature.title = this.translate['FEATURE_TITLE_UNAVAILABLE'](feature.properties.n, this.evictionKind.toLowerCase(), this.year);
+    } else {
+      feature.title = this.translate['FEATURE_TITLE'](
+        feature.properties.n, feature.properties[eProp], this.evictionKindPlural.toLowerCase(), this.year
+      );
+    }
+
     if (this.dataProp && !this.dataProp.startsWith('none')) {
       feature.properties['dataProp'] = feature.properties[this.dataProp];
     }

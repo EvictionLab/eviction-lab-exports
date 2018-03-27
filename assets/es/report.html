@@ -298,11 +298,11 @@
         /* STYLES FOR UNAVAILABLE */
         .page.stats > .stat-table > .epd.unavailable p:first-child,
         .page.stats > .stat-table > .er.unavailable p:first-child,
-        .page.stats .data-props.unavailable > p:nth-child(2) {
+        .page.stats .data-props > p:nth-child(2) {
             font-weight: normal;
             margin-left: 0;
         }
-        .page.stats .data-props.unavailable > p:first-child {
+        .page.stats .data-props > p:first-child {
             width: 65%;
             white-space: nowrap;
             overflow: hidden;
@@ -441,13 +441,13 @@
         <h3>{{title}}</h3>
         <ul>
             <li><span>Number of evictions per day:</span> <span>{{features.0.properties.epd}}</span></li>
-            <li><span>Overall eviction rate:</span> <span>{{features.0.properties.er}}</span></li>
+            <li><span>Overall {{evictionRateText}}:</span> <span>{{features.0.properties.bubbleProp}}</span></li>
             {{#if dataProp}}
             <li><span>{{dataPropText}}:</span> <span>{{features.0.properties.dataProp}}</span></li>
             {{/if}}
         </ul>
     </div>
-    <p class="footer">An eviction rate is the number of evictions over the number of renter-occupied households.</div>
+    <p class="footer">An {{evictionRateText}} is the number of {{evictionKindPlural}} over the number of renter-occupied households.</div>
 </div>
 {{/if}}
 {{#if twoFeatures}}
@@ -460,14 +460,14 @@
         <h3>{{title}}</h3>
         <ul>
             <li><span>Number of evictions per day:</span> <span>{{properties.epd}}</span></li>
-            <li><span>Overall eviction rate:</span> <span>{{properties.er}}</span></li>
+            <li><span>Overall {{@root.evictionRateText}}:</span> <span>{{properties.bubbleProp}}</span></li>
             {{#if @root.dataProp}}
             <li><span>{{@root.dataPropText}}:</span> <span>{{properties.dataProp}}</span></li>
             {{/if}}
         </ul>
     </div>
     {{/each}}
-    <p class="footer">An eviction rate is the number of evictions over the number of renter-occupied households.</div>
+    <p class="footer">An {{evictionRateText}} is the number of {{evictionKindPlural}} over the number of renter-occupied households.</div>
 </div>
 {{/if}}
 {{#if threeFeatures}}
@@ -478,7 +478,7 @@
         <h3>{{title}}</h3>
         <ul>
             <li><span>Number of evictions per day:</span> <span>{{properties.epd}}</span></li>
-            <li><span>Overall eviction rate:</span> <span>{{properties.er}}</span></li>
+            <li><span>Overall {{@root.evictionRateText}}:</span> <span>{{properties.bubbleProp}}</span></li>
             {{#if @root.dataProp}}
             <li><span>{{@root.dataPropText}}:</span> <span>{{properties.dataProp}}</span></li>
             {{/if}}
@@ -486,7 +486,7 @@
         {{#if mapLegend}}<div class="map-legend {{#if @root.dataProp}}data-prop{{/if}}" style="background-image:url('data:{{mapLegend}}')"></div>{{/if}}
     </div>
     {{/each}}
-    <p class="footer">An eviction rate is the number of evictions over the number of renter-occupied households.</div>
+    <p class="footer">An {{evictionRateText}} is the number of {{evictionKindPlural}} over the number of renter-occupied households.</div>
 </div>
 {{/if}}
 <div class="page charts">
