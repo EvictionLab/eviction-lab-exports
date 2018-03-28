@@ -23,6 +23,7 @@ export class PdfExport extends Export {
   evictionRateText: string;
   evictionKind: string;
   evictionKindPlural: string;
+  evictionTotalText: string;
   get templateKey() { return `${this.lang}/report.html`; }
 
   constructor(requestData: RequestData) {
@@ -53,15 +54,24 @@ export class PdfExport extends Export {
     const yearSuffix = this.year.toString().slice(2);
     const dataText = this.dataProp in this.dataProps ?
       this.dataProps[this.dataProp] : this.demDataProps[this.dataProp];
+    const eProp = this.bubbleProp.slice(0, -1);
+    
     if (this.bubbleProp === 'er') {
       this.evictionKind = this.translate['EVICTION']();
       this.evictionKindPlural = this.translate['EVICTIONS']();
       this.evictionRateText = this.translate['EVICTION_RATE']();
+      this.evictionTotalText = this.translate['TOTAL_EVICTIONS']();
     } else {
       this.evictionKind = this.translate['EVICTION_FILING']();
       this.evictionKindPlural = this.translate['EVICTION_FILINGS']();
       this.evictionRateText = this.translate['EVICTION_FILING_RATE']();
+      this.evictionTotalText = this.translate['TOTAL_EVICTION_FILINGS']();
     }
+
+    const ePropObj = {};
+    ePropObj[eProp] = this.evictionTotalText;
+    this.dataProps = { ...ePropObj, ...this.dataProps };
+
     const features = this.features.map(f => this.processFeature(f));
     let params = { width: 520, height: 520 };
     if (features.length === 2) {
@@ -96,6 +106,7 @@ export class PdfExport extends Export {
         f.properties.idx = i + 1; return f;
       }),
       showUsAverage: this.showUsAverage,
+      evictionRateTextProper: this.evictionRateText,
       evictionRateText: this.evictionRateText.toLowerCase(),
       evictionKind: this.evictionKind.toLowerCase(),
       evictionKindPlural: this.evictionKindPlural.toLowerCase(),
@@ -138,10 +149,15 @@ export class PdfExport extends Export {
     // Object to check for unavailable properties
     feature.unavailable = {};
     dataCols.forEach(k => {
-      const val = feature.properties[`${k}-${yearSuffix}`];
+      let val = feature.properties[`${k}-${yearSuffix}`];
       if (val > -1) {
         if (PercentCols.indexOf(k) !== -1) {
-          feature.properties[k] = val.toLocaleString('en-US') + '%';
+          if (['er', 'efr'].indexOf(k) !== -1) {
+            val = this.capRateValue(val);
+          } else {
+            val = val.toLocaleString('en-US');
+          }
+          feature.properties[k] = val + '%';
         } else if (DollarCols.indexOf(k) !== -1) {
           feature.properties[k] = '$' + val.toLocaleString('en-US');
         } else if (dataCols.indexOf(k) !== -1) {

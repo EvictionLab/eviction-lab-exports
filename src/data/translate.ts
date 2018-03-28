@@ -8,8 +8,10 @@ export const Translations: Object = {
             'UNAVAILABLE': () => 'Unavailable',
             'EVICTION': () => 'Eviction',
             'EVICTIONS': () => 'Evictions',
+            'TOTAL_EVICTIONS': () => 'Total Evictions',
             'EVICTION_FILING': () => 'Eviction Filing',
             'EVICTION_FILINGS': () => 'Eviction Filings',
+            'TOTAL_EVICTION_FILINGS': () => 'Total Eviction Filings',
             'EVICTION_RATE': () => 'Eviction Rate',
             'EVICTION_FILING_RATE': () => 'Eviction Filing Rate',
             'EVICTIONS_PER_DAY': () => 'Evictions Per Day',
@@ -25,7 +27,6 @@ export const Translations: Object = {
             'NO_DATA': () => 'No data'
         },
         'DATA_PROPS': {
-            'e': 'Total Evictions',
             'p': 'Population',
             'pro': '% Renter-Occupied Households',
             'pr': 'Poverty Rate',
@@ -54,8 +55,10 @@ export const Translations: Object = {
             'UNAVAILABLE': () => 'Unavailable',
             'EVICTION': () => 'Eviction',
             'EVICTIONS': () => 'Evictions',
+            'TOTAL_EVICTIONS': () => 'Total Evictions',
             'EVICTION_FILING': () => 'Eviction Filing',
             'EVICTION_FILINGS': () => 'Eviction Filings',
+            'TOTAL_EVICTION_FILINGS': () => 'Total Eviction Filings',
             'EVICTION_RATE': () => 'Eviction Rate',
             'EVICTION_FILING_RATE': () => 'Eviction Filing Rate',
             'EVICTIONS_PER_DAY': () => 'Desalojos por Día',
@@ -71,7 +74,6 @@ export const Translations: Object = {
             'NO_DATA': () => 'No data'
         },
         'DATA_PROPS': {
-            'e': 'Total Evictions',
             'p': 'Población',
             'pro': '% Casas Ocupadas por Inquilinos',
             'pr': 'Tasa de Pobreza',

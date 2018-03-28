@@ -518,7 +518,7 @@
         </div>
         <div class="er {{#if (lookup unavailable 'er')}}unavailable{{/if}}">
             <p>{{properties.er}}</p>
-            <p>Eviction Rate</p>
+            <p>{{@root.evictionRateTextProper}}</p>
         </div>
         {{#each dataProps}}
         <div class="data-props {{#if (lookup ../unavailable key)}}unavailable{{/if}}"><p>{{@key}}</p><p>{{val}}</p></div>

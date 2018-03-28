@@ -193,7 +193,7 @@ export class PptxExport extends Export {
       {
         text: this.translate['FEATURE_BULLET_TWO'](
           evictionRateText.toLowerCase(),
-          evictionRate >= 0 ? evictionRate.toString() + '%' : unavailable
+          evictionRate >= 0 ? this.capRateValue(evictionRate) + '%' : unavailable
         ),
         options: { bullet: true }
       }
@@ -228,6 +228,15 @@ export class PptxExport extends Export {
     }
     const daysInYear = +yearSuffix % 4 === 0 ? 366 : 365;
     const unavailable = this.translate['UNAVAILABLE']();
+    const eProp = this.bubbleProp.slice(0, -1);
+    const eTotal = feature.properties[`${eProp}-${yearSuffix}`];
+    const eRate = feature.properties[`${this.bubbleProp}-${yearSuffix}`];
+    const evictionTotalText = this.bubbleProp === 'er' ?
+      this.translate['TOTAL_EVICTIONS']() : this.translate['TOTAL_EVICTION_FILINGS']();
+    const evictionKindText = this.bubbleProp === 'er' ?
+      this.translate['EVICTIONS']() : this.translate['EVICTION_FILINGS']();
+    const evictionRateText = this.bubbleProp === 'er' ?
+      this.translate['EVICTION_RATE']() : this.translate['EVICTION_FILING_RATE']();
 
     slide.addShape(this.pptx.shapes.RECTANGLE, {
       x: xVal - (shapePadding / 2), y: 0.36, w: width + shapePadding, h: 5, fill: 'ffffff'
@@ -244,10 +253,10 @@ export class PptxExport extends Export {
       { ...this.statTitleParams, x: xVal }
     );
 
-    const evictionsAvailable = feature.properties[`e-${yearSuffix}`] >= 0;
+    const evictionsAvailable = eTotal >= 0;
     slide.addText(
       [{
-        text: `${evictionsAvailable ?
+        text: `${feature.properties[`e-${yearSuffix}`] > 0 ?
           (+(feature.properties[`e-${yearSuffix}`] / daysInYear).toFixed(2)).toLocaleString('en-US') :
           unavailable}`,
         options: { font_size: 12, bold: evictionsAvailable }
@@ -260,20 +269,22 @@ export class PptxExport extends Export {
     );
     slide.addText(
       [{
-        text: `${evictionsAvailable ?
-            `${feature.properties[`er-${yearSuffix}`]}%` : unavailable}`,
+        text: `${evictionsAvailable ? `${this.capRateValue(eRate)}%` : unavailable}`,
         options: { font_size: 12, bold: evictionsAvailable }
       },
       {
-        text: this.translate['EVICTION_RATE']().toUpperCase(),
+        text: evictionRateText.toUpperCase(),
         options: { font_size: 6, bold: true }
       }],
       { align: 'c', x: xVal + (width / 2), y: 0.75, w: width / 2, h: 0.65, font_face: 'Helvetica'}
     );
 
+    const ePropObj = {};
+    ePropObj[eProp] = evictionTotalText;
+    const fullDataProps = { ...ePropObj, ...this.dataProps };
     slide.addTable(
-      Object.keys(this.dataProps).map((k, i) => [
-        { text: this.dataProps[k], options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff' } },
+      Object.keys(fullDataProps).map((k, i) => [
+        { text: fullDataProps[k], options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff' } },
         { text: feature.properties[`${k}-${yearSuffix}`] >= 0 ?
             this.getPropString(k, feature.properties[`${k}-${yearSuffix}`]) : unavailable,
           options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff', align: 'r' } }
@@ -365,8 +376,11 @@ export class PptxExport extends Export {
   }
 
   private getPropString(prop: string, propVal: number): string {
-    const val = propVal.toLocaleString('en-US');
+    let val = propVal.toLocaleString('en-US');
     if (PercentCols.indexOf(prop) !== -1) {
+      if (['er', 'efr'].indexOf(prop) !== -1) {
+        val = this.capRateValue(propVal);
+      }
       return val + '%';
     }
     if (DollarCols.indexOf(prop) !== -1) {
