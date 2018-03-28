@@ -420,13 +420,13 @@ export class Chart {
 
         const steps = expr[3].slice(3);
         const minZoom = steps[0];
-        const minVal = this.interpolateValue(size, steps[1].slice(5));
+        const minVal = this.interpolateValue(size, steps[1].slice(5, -2));
         const maxZoom = steps[steps.length - 2];
-        const maxVal = this.interpolateValue(size, steps[steps.length - 1].slice(5));
+        const maxVal = this.interpolateValue(size, steps[steps.length - 1].slice(5, -2));
         // Clamp zoom to range
         const zoom = Math.max(minZoom, Math.min(mapZoom, maxZoom));
 
-        return this.interpolateValue(zoom, [minVal, minZoom, maxVal, maxZoom]);
+        return Math.max(0, this.interpolateValue(zoom, [minVal, minZoom, maxVal, maxZoom]));
     }
 
     private interpolateValue(x: number, steps: number[]): number {
