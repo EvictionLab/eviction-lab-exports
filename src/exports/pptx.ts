@@ -137,6 +137,9 @@ export class PptxExport extends Export {
     const screenshot = await this.getMapScreenshot(feature, yearSuffix, index, {
       width: 1340 * 2, height: 440 * 2
     });
+    const eProp = this.bubbleProp.slice(0, -1);
+    const eTotal = feature.properties[`${eProp}-${yearSuffix}`];
+    const eRate = feature.properties[`${this.bubbleProp}-${yearSuffix}`];
     const evictionTotal = feature.properties[`e-${yearSuffix}`];
     const evictionRate = feature.properties[`er-${yearSuffix}`];
     const evictionsPerDay = +(feature.properties[`e-${yearSuffix}`] / daysInYear).toFixed(2);
@@ -169,9 +172,9 @@ export class PptxExport extends Export {
     }
 
     let featTitleText;
-    if (evictionTotal >= 0) {
+    if (eTotal >= 0) {
       featTitleText = this.translate['FEATURE_TITLE'](
-        feature.properties.n, evictionTotal.toLocaleString('en-US'), evictionKindText.toLowerCase(), this.year
+        feature.properties.n, eTotal.toLocaleString('en-US'), evictionKindText.toLowerCase(), this.year
       );
     } else {
       featTitleText = this.translate['FEATURE_TITLE_UNAVAILABLE'](feature.properties.n, evictionKindText.toLowerCase(), this.year);
