@@ -420,22 +420,78 @@ export class Chart {
 
         const steps = expr[3].slice(3);
         const minZoom = steps[0];
-        const minVal = this.interpolateValue(size, steps[1].slice(5, -2));
+        const minVal = this.interpolateSteps(size, steps[1].slice(3));
         const maxZoom = steps[steps.length - 2];
-        const maxVal = this.interpolateValue(size, steps[steps.length - 1].slice(5, -2));
+        const maxVal = this.interpolateSteps(size, steps[steps.length - 1].slice(3));
         // Clamp zoom to range
         const zoom = Math.max(minZoom, Math.min(mapZoom, maxZoom));
 
-        return Math.max(0, this.interpolateValue(zoom, [minVal, minZoom, maxVal, maxZoom]));
+        return Math.max(0, this.interpolateSteps(zoom, [minVal, minZoom, maxVal, maxZoom]));
     }
 
-    private interpolateValue(x: number, steps: number[]): number {
-        const y1 = steps[0];
-        const x1 = steps[1];
-        const y2 = steps[steps.length - 2];
-        const x2 = steps[steps.length - 1];
-        const rateOfChange = (y2 - y1) / (x2 - x1);
-        return y1 + ((x - x1) * rateOfChange);
+    /**
+     * Linear interpolation function, based on Mapbox GL JS implementation
+     * https://github.com/mapbox/mapbox-gl-js/blob/03680eb57489cf442f8c538141ea27c73d98d532/
+     * src/style-spec/expression/definitions/interpolate.js
+     * @param steps
+     * @param value
+     */
+    private interpolateSteps(value: number, steps: any[]) {
+        const labels = [];
+        const outputs = [];
+        for (let i = 0; i < steps.length; i += 2) {
+            labels.push(steps[i]);
+            outputs.push(steps[i + 1]);
+        }
+        const stepCount = labels.length;
+
+        if (value <= outputs[0]) {
+            return outputs[0];
+        }
+        if (value >= outputs[stepCount - 1]) {
+            return outputs[stepCount - 1];
+        }
+
+        const index = this.findClosestStop(outputs, value);
+        const lower = outputs[index];
+        const upper = outputs[index + 1];
+
+        const difference = upper - lower;
+        const progress = value - lower;
+        const t = difference === 0 ? 0 : progress / difference;
+
+        const valLower = labels[index];
+        const valUpper = labels[index + 1];
+        return (valLower * (1 - t)) + (valUpper * t);
+    }
+
+    /**
+     * Pulled from Mapbox GL JS, finds index of closest stop
+     * @param steps
+     * @param value
+     */
+    private findClosestStop(steps: number[], input: number) {
+        const n = steps.length;
+        let lowerIdx = 0;
+        let upperIdx = n - 1;
+        let idx = 0;
+        let val, upper;
+
+        while (lowerIdx <= upperIdx) {
+            idx = Math.floor((lowerIdx + upperIdx) / 2);
+            val = steps[idx];
+            upper = steps[idx + 1];
+            if (input === val || input > val && input < upper) {
+                return idx;
+            } else if (val < input) {
+                lowerIdx = idx + 1;
+            } else if (val > input) {
+                upperIdx = idx - 1;
+            } else {
+                throw new Error('Input is not a number');
+            }
+        }
+        return Math.max(idx - 1, 0);
     }
 
     private formatValue(prop: string, value: number): string {
