@@ -35,7 +35,7 @@ export class PptxExport extends Export {
     dataBorder: { pt: 2, color: 'FFFFFF' }, fill: 'ffffff'
   };
   statTitleParams = {
-    align: 'l', font_size: 11, w: 2.3, h: 0.5, x: 1.14, y: 0.33, font_face: 'Helvetica'
+    align: 'l', font_size: 11, w: 2.3, h: 0.5, x: 1.14, y: 0.25, font_face: 'Helvetica'
   };
   dataProps: Object;
   demDataProps: Object;
@@ -193,7 +193,7 @@ export class PptxExport extends Export {
       {
         text: this.translate['FEATURE_BULLET_TWO'](
           evictionRateText.toLowerCase(),
-          evictionRate >= 0 ? evictionRate.toString() + '%' : unavailable
+          evictionRate >= 0 ? this.capRateValue(evictionRate) + '%' : unavailable
         ),
         options: { bullet: true }
       }
@@ -230,7 +230,7 @@ export class PptxExport extends Export {
     const unavailable = this.translate['UNAVAILABLE']();
 
     slide.addShape(this.pptx.shapes.RECTANGLE, {
-      x: xVal - (shapePadding / 2), y: 0.36, w: width + shapePadding, h: 5, fill: 'ffffff'
+      x: xVal - (shapePadding / 2), y: 0.26, w: width + shapePadding, h: 5.2, fill: 'ffffff'
     });
     slide.addText(
       [{
@@ -256,19 +256,19 @@ export class PptxExport extends Export {
         text: this.translate['EVICTIONS_PER_DAY']().toUpperCase(),
         options: { font_size: 6, bold: true }
       }],
-      { align: 'c', x: xVal, y: 0.75, w: width / 2, h: 0.65, font_face: 'Helvetica' }
+      { align: 'c', x: xVal, y: 0.71, w: width / 2, h: 0.4, font_face: 'Helvetica' }
     );
     slide.addText(
       [{
         text: `${evictionsAvailable ?
-            `${feature.properties[`er-${yearSuffix}`]}%` : unavailable}`,
+            `${this.capRateValue(feature.properties[`er-${yearSuffix}`])}%` : unavailable}`,
         options: { font_size: 12, bold: evictionsAvailable }
       },
       {
         text: this.translate['EVICTION_RATE']().toUpperCase(),
         options: { font_size: 6, bold: true }
       }],
-      { align: 'c', x: xVal + (width / 2), y: 0.75, w: width / 2, h: 0.65, font_face: 'Helvetica'}
+      { align: 'c', x: xVal + (width / 2), y: 0.71, w: width / 2, h: 0.4, font_face: 'Helvetica'}
     );
 
     slide.addTable(
@@ -278,9 +278,9 @@ export class PptxExport extends Export {
             this.getPropString(k, feature.properties[`${k}-${yearSuffix}`]) : unavailable,
           options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff', align: 'r' } }
       ]),
-      { align: 'l', w: width, h: 1.8, x: xVal, y: 1.38, rowH: [0.08, 0.08, 0.16, 0.08, 0.08, 0.16, 0.16],
+      { align: 'l', w: width, h: 2.26, x: xVal, y: 1.17, rowH: 0.08,
         colW: [width * 0.66, width * 0.33], valign: 'm', autoPage: false },
-      { font_face: 'Helvetica', font_size: 9, border: { pt: '0', color: 'ffffff' } }
+      { font_face: 'Helvetica', font_size: 8, border: { pt: '0', color: 'ffffff' } }
     );
     slide.addTable(
       Object.keys(this.demDataProps).map((k, i) => [
@@ -289,12 +289,12 @@ export class PptxExport extends Export {
             this.getPropString(k, feature.properties[`${k}-${yearSuffix}`]) : unavailable,
           options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff', align: 'r' } }
       ]),
-      { align: 'l', w: width, h: 1.6, x: xVal, y: 3.38, rowH: [0.08, 0.08, 0.08, 0.08, 0.16, 0.16, 0.08, 0.16],
+      { align: 'l', w: width, h: 1.8, x: xVal, y: 3.56, rowH: 0.08,
         colW: [width * 0.66, width * 0.33], autoPage: false, valign: 'm' },
-      { font_face: 'Helvetica', font_size: 9, border: { pt: '0', color: 'ffffff' } }
+      { font_face: 'Helvetica', font_size: 8, border: { pt: '0', color: 'ffffff' } }
     );
     slide.addText(this.translate['RACE_ETHNICITY']().toUpperCase(), {
-      align: 'c', font_size: 6, h: 0.17, w: width, x: xVal, y: 3.3, bold: true, color: '666666'
+      align: 'c', font_size: 6, h: 0.17, w: width, x: xVal, y: 3.46, bold: true, color: '666666'
     });
   }
 
@@ -365,8 +365,11 @@ export class PptxExport extends Export {
   }
 
   private getPropString(prop: string, propVal: number): string {
-    const val = propVal.toLocaleString('en-US');
+    let val = propVal.toLocaleString('en-US');
     if (PercentCols.indexOf(prop) !== -1) {
+      if (['er', 'efr'].indexOf(prop) !== -1) {
+        val = this.capRateValue(propVal);
+      }
       return val + '%';
     }
     if (DollarCols.indexOf(prop) !== -1) {
