@@ -271,8 +271,13 @@ export class Chart {
             [mapWidth / 2.5, mapHeight / 2.5]
         ).zoom;
         const bubbleAttr = scales.bubbleAttributes.find(a => a.id === bubbleProp);
-        const lowBubbleVal = this.propBubbleValue(lowBubbleSize, feat.properties.layerId, zoom, bubbleAttr);
-        const highBubbleVal = this.propBubbleValue(highBubbleSize, feat.properties.layerId, zoom, bubbleAttr);
+
+        const expr = feat.properties.layerId in bubbleAttr['expressions'] ?
+            bubbleAttr['expressions'][feat.properties.layerId] :
+            bubbleAttr['expressions']['default'];
+        const steps = expr[3].slice(3);
+        const lowBubbleVal = this.propBubbleValue(lowBubbleSize, zoom, steps);
+        const highBubbleVal = this.propBubbleValue(highBubbleSize, zoom, steps);
 
         context.beginPath();
         context.arc((padding * 2) + sectionWidth * 0.1, height / 2 + topPadding, nullBubbleSize * 2, 0, 2 * Math.PI);
@@ -414,18 +419,13 @@ export class Chart {
         return canvas;
     }
 
-    private propBubbleValue(size: number, layerId: string, mapZoom: number, attr: Object): number {
-        const expr = layerId in attr['expressions'] ? attr['expressions'][layerId] :
-            attr['expressions']['default'];
-
-        const steps = expr[3].slice(3);
+    private propBubbleValue(size: number, zoom: number, steps: any[]): number {
         const minZoom = steps[0];
         const minVal = this.interpolateSteps(size, steps[1].slice(3));
         const maxZoom = steps[steps.length - 2];
         const maxVal = this.interpolateSteps(size, steps[steps.length - 1].slice(3));
-        // Clamp zoom to range
-        const zoom = Math.max(minZoom, Math.min(mapZoom, maxZoom));
 
+        // Don't return less than 0
         return Math.max(0, this.interpolateSteps(zoom, [minVal, minZoom, maxVal, maxZoom]));
     }
 
@@ -446,10 +446,10 @@ export class Chart {
         const stepCount = labels.length;
 
         if (value <= outputs[0]) {
-            return outputs[0];
+            return labels[0];
         }
         if (value >= outputs[stepCount - 1]) {
-            return outputs[stepCount - 1];
+            return labels[stepCount - 1];
         }
 
         const index = this.findClosestStop(outputs, value);
