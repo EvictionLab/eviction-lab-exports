@@ -25,7 +25,9 @@ export const Translations: Object = {
             'NO_DATA': () => 'No data'
         },
         'DATA_PROPS': {
-            'e': 'Total Evictions',
+            'e': 'Evictions',
+            'efr': 'Eviction Filing Rate',
+            'ef': 'Eviction Filings',
             'p': 'Population',
             'pro': '% Renter-Occupied Households',
             'pr': 'Poverty Rate',
@@ -71,7 +73,9 @@ export const Translations: Object = {
             'NO_DATA': () => 'No data'
         },
         'DATA_PROPS': {
-            'e': 'Total Evictions',
+            'e': 'Evictions',
+            'efr': 'Eviction Filing Rate',
+            'ef': 'Eviction Filings',
             'p': 'Población',
             'pro': '% Casas Ocupadas por Inquilinos',
             'pr': 'Tasa de Pobreza',

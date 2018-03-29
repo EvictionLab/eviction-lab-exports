@@ -138,10 +138,15 @@ export class PdfExport extends Export {
     // Object to check for unavailable properties
     feature.unavailable = {};
     dataCols.forEach(k => {
-      const val = feature.properties[`${k}-${yearSuffix}`];
+      let val = feature.properties[`${k}-${yearSuffix}`];
       if (val > -1) {
         if (PercentCols.indexOf(k) !== -1) {
-          feature.properties[k] = val.toLocaleString('en-US') + '%';
+          if (['er', 'efr'].indexOf(k) !== -1) {
+            val = this.capRateValue(val);
+          } else {
+            val = val.toLocaleString('en-US');
+          }
+          feature.properties[k] = val + '%';
         } else if (DollarCols.indexOf(k) !== -1) {
           feature.properties[k] = '$' + val.toLocaleString('en-US');
         } else if (dataCols.indexOf(k) !== -1) {

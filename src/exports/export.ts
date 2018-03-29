@@ -120,4 +120,8 @@ export abstract class Export {
             ContentDisposition: 'attachment'
         }).promise();
     }
+
+    capRateValue(val: number): string {
+        return val > 100 ? '>100' : val.toLocaleString('en-US');
+    }
 }
