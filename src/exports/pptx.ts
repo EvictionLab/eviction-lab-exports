@@ -141,7 +141,6 @@ export class PptxExport extends Export {
     const eTotal = feature.properties[`${eProp}-${yearSuffix}`];
     const eRate = feature.properties[`${this.bubbleProp}-${yearSuffix}`];
     const evictionTotal = feature.properties[`e-${yearSuffix}`];
-    const evictionRate = feature.properties[`er-${yearSuffix}`];
     const evictionsPerDay = +(feature.properties[`e-${yearSuffix}`] / daysInYear).toFixed(2);
     const dataPropText = this.dataProps.hasOwnProperty(this.dataProp) ?
       this.dataProps[this.dataProp] : this.demDataProps[this.dataProp];
@@ -193,7 +192,7 @@ export class PptxExport extends Export {
       {
         text: this.translate['FEATURE_BULLET_TWO'](
           evictionRateText.toLowerCase(),
-          evictionRate >= 0 ? this.capRateValue(evictionRate) + '%' : unavailable
+          eRate >= 0 ? this.capRateValue(eRate) + '%' : unavailable
         ),
         options: { bullet: true }
       }
