@@ -47,7 +47,7 @@ export class Chart {
         let maxY = Math.max(...values);
         // Minimum value of 1/1.1
         maxY = Math.max(maxY, 1 / 1.1);
-        y.domain([0, maxY]);
+        y.domain([0, Math.min(100, maxY)]);
 
         const yTicksCount = 5;
         const yTicks = y.ticks(yTicksCount);
@@ -123,7 +123,7 @@ export class Chart {
                 return f.properties[`${this.bubbleProp}-${y.toString().slice(2)}`] || 0;
             }));
         }));
-        y.domain([0, maxY]);
+        y.domain([0, Math.min(100, maxY)]);
 
         const tickSize = 16;
         const xTicksCount = Math.floor((yearArr.length - 1) / 3);
