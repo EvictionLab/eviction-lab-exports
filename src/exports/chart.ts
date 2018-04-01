@@ -72,12 +72,16 @@ export class Chart {
             context.fillText(d, -15, y(d));
         });
 
+        const axisText = this.bubbleProp === 'er' ?
+            this.translate['EVICTION_RATE']() :
+            this.translate['EVICTION_FILING_RATE']();
+
         context.save();
         context.rotate(-Math.PI / 2);
         context.textAlign = "center";
         context.textBaseline = "top";
         context.font = "24px Akkurat";
-        context.fillText(`${this.evictionText} Rate`, -(height / 2), -70);
+        context.fillText(`${axisText} (%)`, -(height / 2), -70);
         context.restore();
 
         features.forEach((f, i) => {
@@ -171,7 +175,7 @@ export class Chart {
         context.textAlign = "center";
         context.textBaseline = "top";
         context.font = "24px Akkurat";
-        context.fillText(axisText, -(height / 2), -70);
+        context.fillText(`${axisText} (%)`, -(height / 2), -70);
         context.restore();
 
         const lineChart = line()
