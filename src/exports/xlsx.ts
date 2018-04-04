@@ -6,6 +6,7 @@ import { RequestData } from '../data/requestData';
 import { handler } from './handler';
 import { Feature } from '../data/feature';
 import { ColMap } from '../data/colMap';
+import { Translations } from '../data/translate';
 
 export class XlsxExport extends Export {
   fileExt = 'xlsx';
@@ -26,9 +27,16 @@ export class XlsxExport extends Export {
   }
 
   async createFile(): Promise<Buffer> {
-    const worksheet = XLSX.utils.json_to_sheet(this.formatFeatures(this.features));
+    const codebook = Translations[this.lang]['CODEBOOK'];
     const workbook = XLSX.utils.book_new();
+
+    const worksheet = XLSX.utils.json_to_sheet(this.formatFeatures(this.features));
+    const codebookSheet = XLSX.utils.json_to_sheet(codebook['VALUES']);
+    codebookSheet['!ref'] = `A1:D${codebook['VALUES'].length + 1}`;
+    codebookSheet['D1'] = { t: 's', v: codebook['DISCLAIMER'] };
+
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
+    XLSX.utils.book_append_sheet(workbook, codebookSheet, 'Codebook');
 
     return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
   }

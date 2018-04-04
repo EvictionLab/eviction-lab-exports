@@ -19,7 +19,7 @@ export const Translations: Object = {
             'FEATURE_BULLET_TWO': (rateDesc, rate) => `Overall ${rateDesc}: ${rate}*`,
             'FEATURE_EVICTION_RATE_DESCRIPTION': () => '* An eviction rate is the number of evictions per 100 renter-occupied households',
             'FEATURE_EVICTION_FILING_RATE_DESCRIPTION': () => '* An eviction filing rate is the number of eviction filings per 100 renter-occupied households',
-            'RACE_ETHNICITY': () => 'Race/Ethnicity',
+            'DEMOGRAPHIC_BREAKDOWN': () => 'Demographic Breakdown',
             'BAR_CHART_TITLE': (subject, year) => `Comparison of ${subject} rates in ${year}`,
             'LINE_CHART_TITLE': (subject) => `Comparison of ${subject} rates over time`,
             'NO_DATA': () => 'No data'
@@ -45,6 +45,103 @@ export const Translations: Object = {
             'pnp': 'Native Hawaiian/Pacific Islander',
             'pm': 'Multiple Races',
             'po': 'Other Races'
+        },
+        'CODEBOOK': {
+            'DISCLAIMER': 'NOTE: Demographic variables are provided for context, but do not change every year because they are pulled from the 2000 and 2010 Census, as well as the 2009, 2012, and 2015 American Community Survey 5-year estimates',
+            'VALUES': [
+                {
+                    'Column': 'GEOID',
+                    'Description': 'Census FIPS code for 2010 geography'
+                },
+                {
+                    'Column': 'name',
+                    'Description': 'Census location name'
+                },
+                {
+                    'Column': 'parent-location',
+                    'Description': 'Parent location in Census hierarchy'
+                },
+                {
+                    'Column': 'population',
+                    'Description': 'Total population'
+                },
+                {
+                    'Column': 'poverty-rate',
+                    'Description': '% of the population with income in the last 12 months below the poverty level'
+                },
+                {
+                    'Column': 'pct-renter-occupied',
+                    'Description': '% of occupied housing units that are renter-occupied'
+                },
+                {
+                    'Column': 'median-gross-rent',
+                    'Description': 'Median gross rent'
+                },
+                {
+                    'Column': 'median-household-income',
+                    'Description': 'Median household income'
+                },
+                {
+                    'Column': 'median-property-value',
+                    'Description': 'Median property value'
+                },
+                {
+                    'Column': 'rent-burden',
+                    'Description': 'Median gross rent as a percentage of household income. The max value is 50%, representing >= 50%'
+                },
+                {
+                    'Column': 'pct-white',
+                    'Description': '% population that is White alone and not Hispanic or Latino'
+                },
+                {
+                    'Column': 'pct-af-am',
+                    'Description': '% population that is Black or African American alone and not Hispanic or Latino'
+                },
+                {
+                    'Column': 'pct-hispanic',
+                    'Description': '% population that is of Hispanic or Latino origin'
+                },
+                {
+                    'Column': 'pct-am-ind',
+                    'Description': '% population that is American Indian and Alaska Native alone and not Hispanic or Latino'
+                },
+                {
+                    'Column': 'pct-asian',
+                    'Description': '% population that is Asian alone and not Hispanic or Latino'
+                },
+                {
+                    'Column': 'pct-nh-pi',
+                    'Description': '% population that is Native Hawaiian and Other Pacific Islander alone and not Hispanic or Latino'
+                },
+                {
+                    'Column': 'pct-other',
+                    'Description': '% population that is other race alone and not Hispanic or Latino'
+                },
+                {
+                    'Column': 'pct-multiple',
+                    'Description': '% population that is two or more races and not Hispanic or Latino'
+                },
+                {
+                    'Column': 'evictions',
+                    'Description': 'Number of eviction judgments in which renters were ordered to leave in a given area and year. Only counts a single address which received an eviction judgment per year.'
+                },
+                {
+                    'Column': 'eviction-filings',
+                    'Description': 'All eviction cases filed in an area, including multiple cases filed against the same address in the same year'
+                },
+                {
+                    'Column': 'eviction-rate',
+                    'Description': 'Ratio of the number of renter-occupied households in an area that received an eviction judgement in which renters were ordered to leave. Only counts a single address which received an eviction judgment per year.'
+                },
+                {
+                    'Column': 'eviction-filing-rate',
+                    'Description': 'Ratio of the number of evictions filed in an area over the number of renter-occupied homes in that area. Counts all eviction cases filed in an area, including multiple cases filed against the same address in the same year.'
+                },
+                {
+                    'Column': 'evictions-per-day',
+                    'Description': 'The number of eviction judgments per day'
+                }
+            ]
         }
     },
     'es': {
@@ -67,7 +164,7 @@ export const Translations: Object = {
             'FEATURE_BULLET_TWO': (rateDesc, rate) => `Overall ${rateDesc}: ${rate}*`,
             'FEATURE_EVICTION_RATE_DESCRIPTION': () => '* An eviction rate is the number of evictions per 100 renter-occupied households',
             'FEATURE_EVICTION_FILING_RATE_DESCRIPTION': () => '* An eviction filing rate is the number of eviction filings per 100 renter-occupied households',
-            'RACE_ETHNICITY': () => 'Race/Ethnicity',
+            'DEMOGRAPHIC_BREAKDOWN': () => 'Demographic Breakdown',
             'BAR_CHART_TITLE': (subject, year) => `Comparison of ${subject} rates in ${year}`,
             'LINE_CHART_TITLE': (subject) => `Comparison of ${subject} rates over time`,
             'NO_DATA': () => 'No data'
@@ -93,6 +190,103 @@ export const Translations: Object = {
             'pnp': 'Nativo de Hawaii/Isleños del Pacífico',
             'pm': 'Dos o Más Razas',
             'po': 'Otra Raza'
+        },
+        'CODEBOOK': {
+            'DISCLAIMER': 'NOTE: Demographic variables are provided for context, but do not change every year because they are pulled from the 2000 and 2010 Census, as well as the 2009, 2012, and 2015 American Community Survey 5-year estimates',
+            'VALUES': [
+                {
+                    'Column': 'GEOID',
+                    'Description': 'Census FIPS code for 2010 geography'
+                },
+                {
+                    'Column': 'name',
+                    'Description': 'Census location name'
+                },
+                {
+                    'Column': 'parent-location',
+                    'Description': 'Parent location in Census hierarchy'
+                },
+                {
+                    'Column': 'population',
+                    'Description': 'Total population'
+                },
+                {
+                    'Column': 'poverty-rate',
+                    'Description': '% of the population with income in the last 12 months below the poverty level'
+                },
+                {
+                    'Column': 'pct-renter-occupied',
+                    'Description': '% of occupied housing units that are renter-occupied'
+                },
+                {
+                    'Column': 'median-gross-rent',
+                    'Description': 'Median gross rent'
+                },
+                {
+                    'Column': 'median-household-income',
+                    'Description': 'Median household income'
+                },
+                {
+                    'Column': 'median-property-value',
+                    'Description': 'Median property value'
+                },
+                {
+                    'Column': 'rent-burden',
+                    'Description': 'Median gross rent as a percentage of household income. The max value is 50%, representing >= 50%'
+                },
+                {
+                    'Column': 'pct-white',
+                    'Description': '% population that is White alone and not Hispanic or Latino'
+                },
+                {
+                    'Column': 'pct-af-am',
+                    'Description': '% population that is Black or African American alone and not Hispanic or Latino'
+                },
+                {
+                    'Column': 'pct-hispanic',
+                    'Description': '% population that is of Hispanic or Latino origin'
+                },
+                {
+                    'Column': 'pct-am-ind',
+                    'Description': '% population that is American Indian and Alaska Native alone and not Hispanic or Latino'
+                },
+                {
+                    'Column': 'pct-asian',
+                    'Description': '% population that is Asian alone and not Hispanic or Latino'
+                },
+                {
+                    'Column': 'pct-nh-pi',
+                    'Description': '% population that is Native Hawaiian and Other Pacific Islander alone and not Hispanic or Latino'
+                },
+                {
+                    'Column': 'pct-other',
+                    'Description': '% population that is other race alone and not Hispanic or Latino'
+                },
+                {
+                    'Column': 'pct-multiple',
+                    'Description': '% population that is two or more races and not Hispanic or Latino'
+                },
+                {
+                    'Column': 'evictions',
+                    'Description': 'Number of eviction judgments in which renters were ordered to leave in a given area and year. Only counts a single address which received an eviction judgment per year.'
+                },
+                {
+                    'Column': 'eviction-filings',
+                    'Description': 'All eviction cases filed in an area, including multiple cases filed against the same address in the same year'
+                },
+                {
+                    'Column': 'eviction-rate',
+                    'Description': 'Ratio of the number of renter-occupied households in an area that received an eviction judgement in which renters were ordered to leave. Only counts a single address which received an eviction judgment per year.'
+                },
+                {
+                    'Column': 'eviction-filing-rate',
+                    'Description': 'Ratio of the number of evictions filed in an area over the number of renter-occupied homes in that area. Counts all eviction cases filed in an area, including multiple cases filed against the same address in the same year.'
+                },
+                {
+                    'Column': 'evictions-per-day',
+                    'Description': 'The number of eviction judgments per day'
+                }
+            ]
         }
     }
 };

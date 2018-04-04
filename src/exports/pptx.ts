@@ -292,7 +292,7 @@ export class PptxExport extends Export {
         colW: [width * 0.66, width * 0.33], autoPage: false, valign: 'm' },
       { font_face: 'Helvetica', font_size: 8, border: { pt: '0', color: 'ffffff' } }
     );
-    slide.addText(this.translate['RACE_ETHNICITY']().toUpperCase(), {
+    slide.addText(this.translate['DEMOGRAPHIC_BREAKDOWN']().toUpperCase(), {
       align: 'c', font_size: 6, h: 0.17, w: width, x: xVal, y: 3.46, bold: true, color: '666666'
     });
   }
