@@ -135,7 +135,7 @@ export class PptxExport extends Export {
     const daysInYear = this.year % 4 === 0 ? 366 : 365;
     const yearSuffix = this.year.toString().slice(2);
     const screenshot = await this.getMapScreenshot(feature, yearSuffix, index, {
-      width: 1340 * 2, height: 440 * 2
+      width: 670 * 2, height: 220 * 2
     });
     const eProp = this.bubbleProp.slice(0, -1);
     const eTotal = feature.properties[`${eProp}-${yearSuffix}`];
@@ -163,7 +163,7 @@ export class PptxExport extends Export {
       }
 
       const legendCanvas = this.chart.createMapLegend(
-        feature, 1340 * 2, 440 * 2, this.dataProp, this.bubbleProp, dataPropText, evictionRateText
+        feature, 660 * 2, 220 * 2, this.dataProp, this.bubbleProp, dataPropText, evictionRateText
       );
       featSlide.addImage({ data: legendCanvas, ...legendParams });
     } else {
