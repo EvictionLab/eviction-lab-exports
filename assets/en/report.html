@@ -184,6 +184,7 @@
             font-family: 'GT Eesti Display', Helvetica, sans-serif;
             font-weight: bold;
             color: #000000;
+            z-index: 1;
         }
         .page.charts .chart {
             width: 325px;
@@ -508,7 +509,7 @@
 </div>
 {{/if}}
 <div class="page charts">
-    <p class="title">Comparison of Eviction Rates Over Time</p>
+    <p class="title">Comparison of {{evictionRateTextPlural}} Over Time</p>
     <div class="chart" id="line-chart" {{#if lineChart}}style="background-color: inherit; background-image:url('data:{{lineChart}}')"{{/if}}></div>
     <div class="line legend {{#if showUsAverage}}us-avg{{/if}}">
         {{#each chartFeatures}}

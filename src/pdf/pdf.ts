@@ -31,10 +31,9 @@ export class PdfExport extends Export {
     this.translate = Translations[this.lang]['EXPORT'];
     this.dataProps = Translations[this.lang]['DATA_PROPS'];
     this.demDataProps = Translations[this.lang]['DEM_DATA_PROPS'];
-    const evictionText = this.bubbleProp === 'er' ? this.translate['EVICTION']() : this.translate['EVICTION_FILING']();
     this.chart = new Chart(
       this.assetPath, 975, 750, this.year, this.makeYearArr(this.years), this.bubbleProp,
-      ['e24000', '434878', '2c897f', '94aabd'], evictionText, this.translate
+      ['e24000', '434878', '2c897f', '94aabd'], this.translate
     );
   };
 
@@ -77,12 +76,14 @@ export class PdfExport extends Export {
 
     features.forEach(f => {
       f.mapLegend = this.chart.createMapLegend(
-        f, params.width * 2, params.height * 2, this.dataProp, this.bubbleProp, dataText, this.evictionRateText
+        f, params.width * 2, params.height * 2, this.dataProp, this.bubbleProp, dataText
       );
     });
 
     const chartFeatures = this.getFeatures(this.features);
 
+    const ratePlural = this.bubbleProp === 'er' ?
+      this.translate['EVICTION_RATES']() : this.translate['EVICTION_FILING_RATES']();
     const template = Handlebars.compile(htmlBody);
     const compiledData = template({
       date: new Date().toISOString().slice(0, 10),
@@ -97,6 +98,7 @@ export class PdfExport extends Export {
       }),
       showUsAverage: this.showUsAverage,
       evictionRateText: this.evictionRateText.toLowerCase(),
+      evictionRateTextPlural: ratePlural,
       evictionKind: this.evictionKind.toLowerCase(),
       evictionKindPlural: this.evictionKindPlural.toLowerCase(),
       dataProp: this.dataProp.startsWith('none') ? null : this.dataProp,
