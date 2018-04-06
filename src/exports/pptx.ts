@@ -11,7 +11,6 @@ import { S3 } from 'aws-sdk';
 
 export class PptxExport extends Export {
   pptx;
-  evictionText: string;
   fileExt = 'pptx';
 
   colors = ['e24000', '434878', '2c897f', '94aabd'];
@@ -52,10 +51,8 @@ export class PptxExport extends Export {
     this.translate = Translations[this.lang]['EXPORT'];
     this.dataProps = Translations[this.lang]['DATA_PROPS'];
     this.demDataProps = Translations[this.lang]['DEM_DATA_PROPS'];
-    this.evictionText = this.bubbleProp === 'er' ? this.translate['EVICTION']() : this.translate['EVICTION_FILING']();
     this.chart = new Chart(
-      this.assetPath, 945, 795, this.year, this.makeYearArr(this.years),
-      this.bubbleProp, this.colors, this.evictionText, this.translate
+      this.assetPath, 945, 795, this.year, this.makeYearArr(this.years), this.bubbleProp, this.colors, this.translate
     );
   };
 
@@ -163,7 +160,7 @@ export class PptxExport extends Export {
       }
 
       const legendCanvas = this.chart.createMapLegend(
-        feature, 660 * 2, 220 * 2, this.dataProp, this.bubbleProp, dataPropText, evictionRateText
+        feature, 660 * 2, 220 * 2, this.dataProp, this.bubbleProp, dataPropText
       );
       featSlide.addImage({ data: legendCanvas, ...legendParams });
     } else {
@@ -191,7 +188,7 @@ export class PptxExport extends Export {
       },
       {
         text: this.translate['FEATURE_BULLET_TWO'](
-          evictionRateText.toLowerCase(),
+          evictionRateText,
           eRate >= 0 ? this.capRateValue(eRate) + '%' : unavailable
         ),
         options: { bullet: true }
@@ -307,8 +304,10 @@ export class PptxExport extends Export {
       w: 3.89, h: 0.27, y: 0.27 + chartPad, align: 'l', font_face: 'Helvetica', font_size: 12, bold: true
     }
 
+    const rateKey = this.bubbleProp === 'er' ? 'EVICTION_RATES' : 'EVICTION_FILING_RATES';
+    const ratesText = this.translate[rateKey]();
     // Create comparison if more than one feature provided
-    chartSlide.addText(this.translate['BAR_CHART_TITLE'](this.evictionText.toLowerCase(), this.year), {
+    chartSlide.addText(this.translate['BAR_CHART_TITLE'](ratesText.toLowerCase(), this.year), {
       ...chartTitleParams, x: 0.86
     });
 
@@ -316,7 +315,7 @@ export class PptxExport extends Export {
     chartSlide.addImage({ data: barChartCanvas, x: 0.53, y: 0.67 + chartPad, w: 4.21, h: 3.54, valign: 'middle' });
 
     // Create line chart
-    chartSlide.addText(this.translate['LINE_CHART_TITLE'](this.evictionText.toLowerCase()), {
+    chartSlide.addText(this.translate['LINE_CHART_TITLE'](ratesText.toLowerCase()), {
       ...chartTitleParams, x: 5.57
     });
 

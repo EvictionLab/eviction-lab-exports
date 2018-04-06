@@ -17,7 +17,6 @@ export class Chart {
         public years: number[],
         public bubbleProp: string,
         public colors: string[],
-        public evictionText: string,
         public translate
     ) { }
 
@@ -246,8 +245,7 @@ export class Chart {
 
     createMapLegend(
         feat: Feature, mapWidth: number, mapHeight: number,
-        dataProp: string, bubbleProp: string,
-        dataText: string, evictionText: string
+        dataProp: string, bubbleProp: string, dataText: string
     ) {
         const sectionGap = 32;
         let width = (448 + sectionGap) * 2;
@@ -302,9 +300,10 @@ export class Chart {
         context.fill();
 
         context.textAlign = 'center';
-        context.font = '28px Akkurat';
+        context.font = '26px Akkurat';
         context.fillStyle = '#050403';
-        context.fillText(evictionText, sectionWidth * 0.5, padding * 2.5);
+        const propKey = this.bubbleProp === 'er' ? 'EVICTION_RATE' : 'EVICTION_FILING_RATE';
+        context.fillText(this.translate[propKey](), sectionWidth * 0.5, padding * 2.5);
 
         // Draw divider line
         context.beginPath();
