@@ -300,7 +300,7 @@ export class Chart {
         context.fill();
 
         context.textAlign = 'center';
-        context.font = '28px Akkurat';
+        context.font = '26px Akkurat';
         context.fillStyle = '#050403';
         const propKey = this.bubbleProp === 'er' ? 'EVICTION_RATE' : 'EVICTION_FILING_RATE';
         context.fillText(this.translate[propKey](), sectionWidth * 0.5, padding * 2.5);

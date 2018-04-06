@@ -188,7 +188,7 @@ export class PptxExport extends Export {
       },
       {
         text: this.translate['FEATURE_BULLET_TWO'](
-          evictionRateText.toLowerCase(),
+          evictionRateText,
           eRate >= 0 ? this.capRateValue(eRate) + '%' : unavailable
         ),
         options: { bullet: true }

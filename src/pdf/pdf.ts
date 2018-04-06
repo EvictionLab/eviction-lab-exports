@@ -82,8 +82,10 @@ export class PdfExport extends Export {
 
     const chartFeatures = this.getFeatures(this.features);
 
-    const ratePlural = this.bubbleProp === 'er' ?
-      this.translate['EVICTION_RATES']() : this.translate['EVICTION_FILING_RATES']();
+    const ratePluralKey = this.bubbleProp === 'er' ?
+      'EVICTION_RATES' : 'EVICTION_FILING_RATES';
+    const footerNoteKey = this.bubbleProp === 'er' ?
+      'FEATURE_EVICTION_RATE_DESCRIPTION' : 'FEATURE_EVICTION_FILING_RATE_DESCRIPTION';
     const template = Handlebars.compile(htmlBody);
     const compiledData = template({
       date: new Date().toISOString().slice(0, 10),
@@ -97,8 +99,9 @@ export class PdfExport extends Export {
         f.properties.idx = i + 1; return f;
       }),
       showUsAverage: this.showUsAverage,
-      evictionRateText: this.evictionRateText.toLowerCase(),
-      evictionRateTextPlural: ratePlural,
+      evictionRateText: this.evictionRateText,
+      evictionRateTextPlural: this.translate[ratePluralKey](),
+      footerNote: this.translate[footerNoteKey](),
       evictionKind: this.evictionKind.toLowerCase(),
       evictionKindPlural: this.evictionKindPlural.toLowerCase(),
       dataProp: this.dataProp.startsWith('none') ? null : this.dataProp,
