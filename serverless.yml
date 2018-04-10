@@ -3,15 +3,19 @@ service: eviction-lab-exports
 provider:
   name: aws
   runtime: nodejs6.10
+  stage: dev
   environment:
-    asset_bucket: eviction-lab-exports
     export_bucket: eviction-lab-exports
     pdf_path: https://exports.evictionlab.org/pdf
+    stage: ${opt:stage, self:provider.stage}
 
   iamRoleStatements:
     - Effect: "Allow"
       Action: "s3:*"
       Resource: "arn:aws:s3:::eviction-lab-exports/*"
+    - Effect: "Allow"
+      Action: "s3:*"
+      Resource: "arn:aws:s3:::eviction-lab-exports-dev/*"
 
 plugins:
   - serverless-plugin-typescript

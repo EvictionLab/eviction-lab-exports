@@ -19,8 +19,8 @@ export abstract class Export {
     dataProp: string;
     bubbleProp: string;
     templateKey: string | undefined;
-    assetBucket: string = process.env['asset_bucket'];
-    exportBucket: string = process.env['export_bucket'];
+    exportBucket: string = process.env['stage'] === 'dev' ?
+        `${process.env['export_bucket']}-dev` : process.env['export_bucket'];
     assetPath: string;
     screenshotBase = 'https://screenshot.evictionlab.org';
 
@@ -123,5 +123,17 @@ export abstract class Export {
 
     capRateValue(val: number): string {
         return val > 100 ? '>100' : val.toLocaleString('en-US');
+    }
+
+    isLowFlag(feature: Feature, prop: string) {
+        return 'lowProps' in feature && feature.lowProps.indexOf(prop) > -1;
+    }
+
+    isHighFlag(feature: Feature, yearProp: string) {
+        return 'highProps' in feature && feature.highProps.split(',').indexOf(yearProp) > -1;
+    }
+
+    isMarylandFiling(feature: Feature, prop: string) {
+        return prop === 'efr' && feature.properties.GEOID === '24'
     }
 }

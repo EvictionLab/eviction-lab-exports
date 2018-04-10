@@ -21,24 +21,27 @@ export const Translations: Object = {
             'FEATURE_BULLET_TWO': (rateDesc, rate) => `${rateDesc}: ${rate}*`,
             'FEATURE_EVICTION_RATE_DESCRIPTION': () => '* An eviction rate is the number of evictions per 100 renter-occupied households',
             'FEATURE_EVICTION_FILING_RATE_DESCRIPTION': () => '* An eviction filing rate is the number of eviction filings per 100 renter-occupied households',
-            'DEMOGRAPHIC_BREAKDOWN': () => 'Demographic Breakdown',
+            'DEMOGRAPHIC_BREAKDOWN': () => 'Census Demographics',
             'BAR_CHART_TITLE': (subject, year) => `Comparison of ${subject} in ${year}`,
             'LINE_CHART_TITLE': (subject) => `Comparison of ${subject} over time`,
-            'NO_DATA': () => 'No data'
+            'NO_DATA': () => 'No data',
+            'FLAG_99TH': () => 'This area has an eviction/filing rate in the top 1%. Please see our FAQ section to better understand why https://evictionlab.org/help-faq/',
+            'FLAG_LOW': () => 'This area\'s estimated eviction/filing rate is too low. Please see our FAQ section to better understand why https://evictionlab.org/help-faq/',
+            'FLAG_MARYLAND_FILING': () => 'Because of the way Maryland records eviction notices, it has a much higher filing rate than everywhere else. Please see our FAQ section to better understand why https://evictionlab.org/help-faq/'
         },
         'DATA_PROPS': {
             'e': 'Evictions',
             'efr': 'Eviction Filing Rate',
             'ef': 'Eviction Filings',
+        },
+        'DEM_DATA_PROPS': {
             'p': 'Population',
             'pro': '% Renter-Occupied Households',
             'pr': 'Poverty Rate',
             'mgr': 'Median Gross Rent',
             'mhi': 'Median Household Income',
             'mpv': 'Median Property Value',
-            'rb': 'Rent Burden'
-        },
-        'DEM_DATA_PROPS': {
+            'rb': 'Rent Burden',
             'paa': 'Black',
             'pw': 'White',
             'ph': 'Hispanic/Latinx',
@@ -171,21 +174,24 @@ export const Translations: Object = {
             'DEMOGRAPHIC_BREAKDOWN': () => 'Desglose Demográfico',
             'BAR_CHART_TITLE': (subject, year) => `Comparación de las ${subject} en ${year}`,
             'LINE_CHART_TITLE': (subject) => `Comparación de las ${subject} a lo largo del tiempo`,
-            'NO_DATA': () => 'Sin datos'
+            'NO_DATA': () => 'Sin datos',
+            'FLAG_99TH': () => 'Esta área tiene una tasa de desalojo/presentaciones en el 1% superior. Por favor, consulte nuestra sección de preguntas frecuentes para comprender mejor por qué https://evictionlab.org/en/help-faq/',
+            'FLAG_LOW': () => 'La estimación de la tasa de desalojo/presentaciones de esta área es demasiado baja. Por favor, consulte nuestra sección de preguntas frecuentes para comprender mejor por qué https://evictionlab.org/en/help-faq/',
+            'FLAG_MARYLAND_FILING': () => 'Debido a la forma en que Maryland registra los avisos de desalojo, tiene una tasa de presentación mucho más alta que en cualquier otro lugar. Por favor, consulte nuestra sección de preguntas frecuentes para comprender mejor por qué https://evictionlab.org/en/help-faq/'
         },
         'DATA_PROPS': {
             'e': 'Desalojos',
             'efr': 'Tasa de presentaciones de desalojo',
-            'ef': 'Presentaciones de desalojo',
+            'ef': 'Presentaciones de desalojo'
+        },
+        'DEM_DATA_PROPS': {
             'p': 'Población',
             'pro': '% Casas ocupadas por inquilinos',
             'pr': 'Tasa de pobreza',
             'mgr': 'Renta bruta mediana',
             'mhi': 'Ingreso bruto mediano',
             'mpv': 'Valor de propiedad mediano',
-            'rb': 'Carga del alquiler'
-        },
-        'DEM_DATA_PROPS': {
+            'rb': 'Carga del alquiler',
             'paa': 'Negro',
             'pw': 'Blanco',
             'ph': 'Hispano/Latinx',

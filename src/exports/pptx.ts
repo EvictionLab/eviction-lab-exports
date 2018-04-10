@@ -14,7 +14,6 @@ export class PptxExport extends Export {
   fileExt = 'pptx';
 
   colors = ['e24000', '434878', '2c897f', '94aabd'];
-  assetBucket = process.env['asset_bucket'] || 'eviction-lab-exports';
 
   mainImage: string;
   titleImage: string;
@@ -36,6 +35,8 @@ export class PptxExport extends Export {
   statTitleParams = {
     align: 'l', font_size: 11, w: 2.3, h: 0.5, x: 1.14, y: 0.25, font_face: 'Helvetica'
   };
+  lowFlagColor = '737373';
+  highFlagColor = 'e24000';
   dataProps: Object;
   demDataProps: Object;
   translate: Object;
@@ -181,18 +182,17 @@ export class PptxExport extends Export {
     );
 
     const unavailable = this.translate['UNAVAILABLE']();
+    const bulletTwoText = this.translate['FEATURE_BULLET_TWO'](
+      evictionRateText, eRate >= 0 ? this.capRateValue(eRate) + '%' : unavailable
+    );
     const slideBullets = [
       {
         text: this.translate['FEATURE_BULLET_ONE'](evictionTotal >= 0 ? evictionsPerDay.toLocaleString('en-US') : unavailable),
         options: { bullet: true }
       },
-      {
-        text: this.translate['FEATURE_BULLET_TWO'](
-          evictionRateText,
-          eRate >= 0 ? this.capRateValue(eRate) + '%' : unavailable
-        ),
-        options: { bullet: true }
-      }
+      ...(this.getFlagText(
+        feature, this.bubbleProp, yearSuffix, [{ text: bulletTwoText, options: { bullet: true, breakLine: false } }]
+      ) as Object[])
     ];
 
     [this.dataProps, this.demDataProps].forEach(p => {
@@ -210,8 +210,24 @@ export class PptxExport extends Export {
       'FEATURE_EVICTION_RATE_DESCRIPTION' : 'FEATURE_EVICTION_FILING_RATE_DESCRIPTION';
     featSlide.addText(
       this.translate[rateDescTranslate](),
-      { w: 9.15, h: 0.24, isTextBox: true, x: 0.44, y: 5.1, font_size: 11, font_face: 'Georgia', color: '666666' }
+      { w: 9.15, h: 0.16, isTextBox: true, x: 0.44, y: 5, font_size: 10, font_face: 'Georgia', color: '666666' }
     );
+
+    let flagTextArr: any = [{ text: '! ', options: { font_face: 'Arial Black', bold: true, breakLine: false } }];
+    const flagTextOptions = {isTextBox: true, w: 9.15, h: 0.16, x: 0.44, y: 5.26, font_size: 10, font_face: 'Georgia'};
+    if (this.isLowFlag(feature, this.bubbleProp)) {
+      flagTextOptions['color'] = this.lowFlagColor;
+      flagTextArr = flagTextArr.concat([{ text: this.translate['FLAG_LOW'](), options: {} }]);
+    } else if (this.isMarylandFiling(feature, this.bubbleProp)) {
+      flagTextOptions['color'] = this.lowFlagColor;
+      flagTextArr = flagTextArr.concat([{ text: this.translate['FLAG_MARYLAND_FILING'](), options: {} }]);
+    } else if (this.isHighFlag(feature, `${this.bubbleProp}-${yearSuffix}`)) {
+      flagTextOptions['color'] = this.highFlagColor;
+      flagTextArr = flagTextArr.concat([{ text: this.translate['FLAG_99TH'](), options: {} }]);
+    }
+    if (flagTextArr.length > 1) {
+      featSlide.addText(flagTextArr, flagTextOptions)
+    }
   }
 
   createDataTable(slide: any, yearSuffix: string, feature: Feature, count: number, idx: number): void {
@@ -260,21 +276,25 @@ export class PptxExport extends Export {
             `${this.capRateValue(feature.properties[`er-${yearSuffix}`])}%` : unavailable}`,
         options: { font_size: 12, bold: evictionsAvailable }
       },
-      {
-        text: this.translate['EVICTION_RATE']().toUpperCase(),
-        options: { font_size: 6, bold: true }
-      }],
+      this.getFlagText(
+        feature, 'er', yearSuffix,
+        {
+          text: this.translate['EVICTION_RATE']().toUpperCase(),
+          options: { font_size: 6, bold: true }
+        }
+      )],
       { align: 'c', x: xVal + (width / 2), y: 0.71, w: width / 2, h: 0.4, font_face: 'Helvetica'}
     );
 
     slide.addTable(
       Object.keys(this.dataProps).map((k, i) => [
-        { text: this.dataProps[k], options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff' } },
+        { text: this.getFlagText(feature, k, yearSuffix, [{ text: this.dataProps[k], options: { breakLine: false } }]),
+          options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff' } },
         { text: feature.properties[`${k}-${yearSuffix}`] >= 0 ?
             this.getPropString(k, feature.properties[`${k}-${yearSuffix}`]) : unavailable,
           options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff', align: 'r' } }
       ]),
-      { align: 'l', w: width, h: 2.26, x: xVal, y: 1.17, rowH: 0.08,
+      { w: width, h: 2.26, x: xVal, y: 1.17, rowH: 0.08,
         colW: [width * 0.66, width * 0.33], valign: 'm', autoPage: false },
       { font_face: 'Helvetica', font_size: 8, border: { pt: '0', color: 'ffffff' } }
     );
@@ -285,12 +305,12 @@ export class PptxExport extends Export {
             this.getPropString(k, feature.properties[`${k}-${yearSuffix}`]) : unavailable,
           options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff', align: 'r' } }
       ]),
-      { align: 'l', w: width, h: 1.8, x: xVal, y: 3.56, rowH: 0.08,
+      { align: 'l', w: width, h: 1.8, x: xVal, y: 1.96, rowH: 0.08,
         colW: [width * 0.66, width * 0.33], autoPage: false, valign: 'm' },
       { font_face: 'Helvetica', font_size: 8, border: { pt: '0', color: 'ffffff' } }
     );
     slide.addText(this.translate['DEMOGRAPHIC_BREAKDOWN']().toUpperCase(), {
-      align: 'c', font_size: 6, h: 0.17, w: width, x: xVal, y: 3.46, bold: true, color: '666666'
+      align: 'c', font_size: 6, h: 0.17, w: width, x: xVal, y: 1.86, bold: true, color: '666666'
     });
   }
 
@@ -360,6 +380,28 @@ export class PptxExport extends Export {
     }
     this.createDataSlides(this.features);
     return await this.saveWrapper().then((f) => { return f; });
+  }
+
+  private getFlagText(feature: Feature, prop: string, yearSuffix: string, textObj: Object | Array<any>): Object | Object[] {
+    const flagText = { text: ' !', options: { font_face: 'Arial Black', bold: true } };
+    let outputObj = textObj;
+
+    if (this.isLowFlag(feature, prop) || this.isMarylandFiling(feature, prop)) {
+      flagText.options['color'] = this.lowFlagColor;
+    } else if (this.isHighFlag(feature, `${prop}-${yearSuffix}`)) {
+      flagText.options['color'] = this.highFlagColor;
+    }
+
+    if ('color' in flagText.options) {
+      if (outputObj instanceof Array) {
+        outputObj[0]['options'].color = flagText.options['color'];
+        outputObj = outputObj.concat([flagText]);
+      } else {
+        outputObj['options'].color = flagText.options['color'];
+        outputObj['text'] += flagText.text;
+      }
+    }
+    return outputObj;
   }
 
   private getPropString(prop: string, propVal: number): string {

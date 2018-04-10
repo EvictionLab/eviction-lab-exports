@@ -75,7 +75,7 @@ export class ZipExport extends Export {
                 const keyExists = await fileExport.keyExists();
                 if (keyExists) {
                     const s3Res = await s3.getObject({
-                        Bucket: fileExport.assetBucket,
+                        Bucket: fileExport.exportBucket,
                         Key: fileExport.key
                     }).promise();
                     fileBuffer = Buffer.from(<string>s3Res.Body);

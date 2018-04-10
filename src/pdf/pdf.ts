@@ -104,13 +104,17 @@ export class PdfExport extends Export {
       footerNote: this.translate[footerNoteKey](),
       evictionKind: this.evictionKind.toLowerCase(),
       evictionKindPlural: this.evictionKindPlural.toLowerCase(),
+      bubbleProp: this.bubbleProp,
       dataProp: this.dataProp.startsWith('none') ? null : this.dataProp,
       dataPropText: this.dataProps.hasOwnProperty(this.dataProp) ?
         this.dataProps[this.dataProp] : this.demDataProps[this.dataProp],
       dataProps: this.dataProps,
       demDataProps: this.demDataProps,
       lineChart: this.chart.createLineChart(chartFeatures),
-      barChart: this.chart.createBarChart(chartFeatures)
+      barChart: this.chart.createBarChart(chartFeatures),
+      lowFlag: features.some(f => Object.keys(f.lowFlags).length > 0),
+      highFlag: features.some(f => Object.keys(f.highFlags).length > 0),
+      marylandFiling: features.some(f => Object.keys(f.marylandFiling).length > 0)
     });
 
     const pdfStr = await chromeless
@@ -142,8 +146,14 @@ export class PdfExport extends Export {
       feature.properties.n : `${feature.properties.n}, ${feature.properties['pl']}`;
     // Object to check for unavailable properties
     feature.unavailable = {};
+    feature.lowFlags = {};
+    feature.highFlags = {};
+    feature.marylandFiling = {};
     dataCols.forEach(k => {
       let val = feature.properties[`${k}-${yearSuffix}`];
+      if (this.isLowFlag(feature, k)) { feature.lowFlags[k] = true; }
+      if (this.isHighFlag(feature, `${k}-${yearSuffix}`)) { feature.highFlags[k] = true }
+      if (this.isMarylandFiling(feature, k)) { feature.marylandFiling[k] = true }
       if (val > -1) {
         if (PercentCols.indexOf(k) !== -1) {
           if (['er', 'efr'].indexOf(k) !== -1) {
