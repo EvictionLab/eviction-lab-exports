@@ -22,11 +22,10 @@ export class PptxExport extends Export {
 
   fullSlideParams = { w: 10, h: 5.625, y: 0, x: 0 };
   titleParams = {
-    align: 'l', font_size: 20, font_face: 'Helvetica', isTextBox: true, w: 9.15, h: 0.44, x: 0.44, y: 0.5
+    align: 'l', font_size: 20, font_face: 'Helvetica', isTextBox: true, w: 4.3, h: 1.1, x: 5, y: 0.36
   };
   bulletParams = {
-    font_size: 12, color: '000000', w: 9.15, h: 0.56, x: 0.44, y: 4.15,
-    font_face: 'Georgia', lineSpacing: 22
+    font_size: 12, color: '000000', w: 4.3, h: 0.56, x: 5, y: 2, font_face: 'Georgia', lineSpacing: 22
   };
   chartParams = {
     x: 1.25, y: 1.5, w: 7.5, h: 5, chartColors: this.colors,
@@ -133,7 +132,7 @@ export class PptxExport extends Export {
     const daysInYear = this.year % 4 === 0 ? 366 : 365;
     const yearSuffix = this.year.toString().slice(2);
     const screenshot = await this.getMapScreenshot(feature, yearSuffix, index, {
-      width: 670 * 2, height: 220 * 2
+      width: 322 * 2, height: 322 * 2
     });
     const eProp = this.bubbleProp.slice(0, -1);
     const eTotal = feature.properties[`${eProp}-${yearSuffix}`];
@@ -149,8 +148,8 @@ export class PptxExport extends Export {
 
     featSlide.addImage({ data: this.backgroundImage, ...this.fullSlideParams });
 
-    const imageParams = { w: 8.94, h: 2.94, y: 0.36, x: 0.52 };
-    const legendParams = { w: 3.2, h: 0.64, y: 2.56, x: 6.16 };
+    const imageParams = { w: 4.3, h: 4.3, y: 0.36, x: 0.52 };
+    const legendParams = { w: 3.2, h: 0.64, y: 3.9, x: 1.52 };
     if (screenshot !== null) {
       featSlide.addImage({ ...imageParams, data: screenshot });
 
@@ -177,9 +176,7 @@ export class PptxExport extends Export {
       featTitleText = this.translate['FEATURE_TITLE_UNAVAILABLE'](feature.properties.n, evictionKindText.toLowerCase(), this.year);
     }
 
-    featSlide.addText(
-      featTitleText, { ...this.titleParams, y: 3.56, color: this.colors[index], bold: true }
-    );
+    featSlide.addText(featTitleText, { ...this.titleParams, color: this.colors[index], bold: true });
 
     const unavailable = this.translate['UNAVAILABLE']();
     const bulletTwoText = this.translate['FEATURE_BULLET_TWO'](
@@ -213,7 +210,7 @@ export class PptxExport extends Export {
       { w: 9.15, h: 0.16, isTextBox: true, x: 0.44, y: 5, font_size: 10, font_face: 'Georgia', color: '666666' }
     );
 
-    let flagTextArr: any = [{ text: '! ', options: { font_face: 'Arial Black', bold: true, breakLine: false } }];
+    let flagTextArr: any = [{ text: '! ', options: { font_face: 'Helvetica', bold: true, breakLine: false } }];
     const flagTextOptions = {isTextBox: true, w: 9.15, h: 0.16, x: 0.44, y: 5.26, font_size: 10, font_face: 'Georgia'};
     if (this.isLowFlag(feature, this.bubbleProp)) {
       flagTextOptions['color'] = this.lowFlagColor;
@@ -383,7 +380,7 @@ export class PptxExport extends Export {
   }
 
   private getFlagText(feature: Feature, prop: string, yearSuffix: string, textObj: Object | Array<any>): Object | Object[] {
-    const flagText = { text: ' !', options: { font_face: 'Arial Black', bold: true } };
+    const flagText = { text: ' !', options: { font_face: 'Helvetica', bold: true } };
     let outputObj = textObj;
 
     if (this.isLowFlag(feature, prop) || this.isMarylandFiling(feature, prop)) {
