@@ -25,7 +25,7 @@ export class PptxExport extends Export {
     align: 'l', font_size: 20, font_face: 'Helvetica', isTextBox: true, w: 4.3, h: 1.1, x: 5, y: 0.36
   };
   bulletParams = {
-    font_size: 12, color: '000000', w: 4.3, h: 0.56, x: 5, y: 2, font_face: 'Georgia', lineSpacing: 22
+    font_size: 12, color: '000000', w: 4.3, h: 0.56, x: 5, y: 2, font_face: 'Helvetica', lineSpacing: 22
   };
   chartParams = {
     x: 1.25, y: 1.5, w: 7.5, h: 5, chartColors: this.colors,
@@ -111,16 +111,16 @@ export class PptxExport extends Export {
     titleSlide.addText(
       [
         { text: this.translate['TITLE_SOURCE'](), 
-          options: { color: '000000', font_face: 'Georgia', font_size: 15, breakLine: true } },
+          options: { color: '000000', font_face: 'Helvetica', font_size: 15, breakLine: true } },
         { text: this.translate['TITLE_EXTRACT_DATE'](), 
-          options: { color: '666666', font_face: 'Georgia', font_size: 15 } }
+          options: { color: '666666', font_face: 'Helvetica', font_size: 15 } }
       ],
       { x: 0.44, y: 3.47, w: 8, h: 0.53, lineSpacing: 28 }
     );
 
     titleSlide.addText(
       this.translate['TITLE_WEB_LINK'](),
-      { x: 0.44, y: 4.87, w: 5.72, h: 0.24, color: '666666', font_face: 'Georgia', font_size: 15 }
+      { x: 0.44, y: 4.87, w: 5.72, h: 0.24, color: '666666', font_face: 'Helvetica', font_size: 15 }
     );
 
     titleSlide.addImage({ data: this.logoImage, x: 8.33, y: 3.99, w: 1.26, h: 1.21 });
@@ -206,11 +206,11 @@ export class PptxExport extends Export {
       'FEATURE_EVICTION_RATE_DESCRIPTION' : 'FEATURE_EVICTION_FILING_RATE_DESCRIPTION';
     featSlide.addText(
       this.translate[rateDescTranslate](),
-      { w: 9.15, h: 0.16, isTextBox: true, x: 0.44, y: 5, font_size: 10, font_face: 'Georgia', color: '666666' }
+      { w: 9.15, h: 0.16, isTextBox: true, x: 0.44, y: 5, font_size: 10, font_face: 'Helvetica', color: '666666' }
     );
 
     let flagTextArr: any = [{ text: '! ', options: { font_face: 'Helvetica', bold: true, breakLine: false } }];
-    const flagTextOptions = {isTextBox: true, w: 9.15, h: 0.16, x: 0.44, y: 5.26, font_size: 10, font_face: 'Georgia'};
+    const flagTextOptions = {isTextBox: true, w: 9.15, h: 0.16, x: 0.44, y: 5.26, font_size: 10, font_face: 'Helvetica'};
     if (this.isLowFlag(feature, this.bubbleProp)) {
       flagTextOptions['color'] = this.lowFlagColor;
       flagTextArr = flagTextArr.concat([{ text: this.translate['FLAG_LOW'](), options: {} }]);
@@ -247,7 +247,7 @@ export class PptxExport extends Export {
       },
       {
         text: '20' + yearSuffix,
-        options: { color: '666666', font_face: 'Georgia', font_size: 9 }
+        options: { color: '666666', font_face: 'Helvetica', font_size: 9 }
       }],
       { ...this.statTitleParams, x: xVal }
     );
