@@ -114,10 +114,14 @@
             font-family: 'Akkurat', Helvetica, sans-serif;
             /* color: #B2B5B7; */
             left: 46px;
-            top: 734px;
-            padding-top: 12px;
+            top: 712px;
+            padding-top: 6px;
             width: 520px;
             border-top: solid 1px #B2B5B7;
+        }
+        .page.feature-details .footer p {
+            font-size: 8px;
+            margin: 2px;
         }
         .page.feature-details .details h3 {
             margin: 0;
@@ -130,6 +134,7 @@
             font-family: 'Akkurat', Helvetica, sans-serif;
             font-size: 13px;
             line-height: 21px;
+            margin-bottom: 6px;
         }
         .page.feature-details .details ul li span:nth-child(2) { font-weight: bold; }
         .page.feature-details .screenshot:first-child { top: 46px; }
@@ -371,10 +376,28 @@
             color: #666;
             margin: 32px 46px;
         }
+        .low-flag, .high-flag {
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+            vertical-align: sub;
+        }
+        .footer .low-flag,
+        .footer .high-flag,
+        .data-props .low-flag,
+        .data-props .high-flag {
+            width: 10px;
+            height: 10px;
+        }
+        .low-flag { fill: #737373; }
+        .high-flag { fill: #e24000; }
     </style>
 </head>
 <body>
 <svg style="display:none" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <symbol id="flag" viewBox="2 0 22 24">
+        <path d="M12,22 C5.92486775,22 1,17.0751322 1,11 C1,4.92486775 5.92486775,0 12,0 C18.0751322,0 23,4.92486775 23,11 C23,17.0751322 18.0751322,22 12,22 Z M11.89,7.77999997 C12.65728,7.77999997 13.28,7.15727998 13.28,6.38999999 C13.28,5.62271999 12.65728,5 11.89,5 C11.12272,5 10.5,5.62271999 10.5,6.38999999 C10.5,7.15727998 11.12272,7.77999997 11.89,7.77999997 Z M10.5,9.47999954 L10.5,16.9799995 L13.28,16.9799995 L13.28,9.47999954 L10.5,9.47999954 Z"></path>
+    </symbol>
     <symbol id="eviction-lab-logo" width="711px" height="679px" viewBox="0 0 711 679">
         <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
             <g id="Vectorized-Logo-Unsized" fill-rule="nonzero">
@@ -457,13 +480,39 @@
         <h3>{{title}}</h3>
         <ul>
             <li><span>Number of evictions per day:</span> <span>{{features.0.properties.epd}}</span></li>  
-            <li><span>{{evictionRateText}}:</span> <span>{{features.0.properties.bubbleProp}}</span></li>
+            <li>
+                <span>{{evictionRateText}}:</span> <span>{{features.0.properties.bubbleProp}}</span>
+                {{#if (lookup features.0.lowFlags bubbleProp)}}
+                <svg class="low-flag"><use xlink:href="#flag" width="16" height="16" viewBox="0 0 16 16"></use></svg>
+                {{else if (lookup features.0.marylandFiling bubbleProp)}}
+                <svg class="low-flag"><use xlink:href="#flag" width="16" height="16" viewBox="0 0 16 16"></use></svg>
+                {{else if (lookup features.0.highFlags bubbleProp)}}
+                <svg class="high-flag"><use xlink:href="#flag" width="16" height="16" viewBox="0 0 16 16"></use></svg>
+                {{/if}}
+            </li>
             {{#if dataProp}}
             <li><span>{{dataPropText}}:</span> <span>{{features.0.properties.dataProp}}</span></li>
             {{/if}}
         </ul>
     </div>
-    <p class="footer">{{footerNote}}</p>
+    <div class="footer">
+        <p>{{@root.footerNote}}</p>
+        <p>
+            <svg class="low-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
+            Eviction/filing rate is too low.
+        </p>
+        <p>
+            <svg class="high-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
+            Eviction/filing rate in the top 1%.
+        </p>
+        {{#if marylandFiling}}
+        <p>
+            <svg class="low-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
+            Because of the way Maryland records eviction notices, it has a much higher filing rate than everywhere else.
+        </p>
+        {{/if}}
+        <p>Please see our FAQ section to better these issues https://evictionlab.org/help-faq/</p>
+    </div>
     </div>
 </div>
 {{/if}}
@@ -477,14 +526,39 @@
         <h3>{{title}}</h3>
         <ul>
             <li><span>Number of evictions per day:</span> <span>{{properties.epd}}</span></li>
-            <li><span>{{@root.evictionRateText}}:</span> <span>{{properties.bubbleProp}}</span></li>
+            <li>
+                <span>{{@root.evictionRateText}}:</span> <span>{{properties.bubbleProp}}</span>
+                {{#if (lookup lowFlags @root.bubbleProp)}}
+                <svg class="low-flag"><use xlink:href="#flag" width="16" height="16" viewBox="0 0 16 16"></use></svg>
+                {{else if (lookup marylandFiling @root.bubbleProp)}}
+                <svg class="low-flag"><use xlink:href="#flag" width="16" height="16" viewBox="0 0 16 16"></use></svg>
+                {{else if (lookup highFlags @root.bubbleProp)}}
+                <svg class="high-flag"><use xlink:href="#flag" width="16" height="16" viewBox="0 0 16 16"></use></svg>
+                {{/if}}
+            </li>
             {{#if @root.dataProp}}
             <li><span>{{@root.dataPropText}}:</span> <span>{{properties.dataProp}}</span></li>
             {{/if}}
         </ul>
     </div>
     {{/each}}
-    <p class="footer">{{@root.footerNote}}</p>
+    <div class="footer">
+        <p>{{@root.footerNote}}</p>
+        <p>
+            <svg class="low-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
+            Eviction/filing rate is too low.
+        </p>
+        <p>
+            <svg class="high-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
+            Eviction/filing rate in the top 1%.
+        </p>
+        {{#if marylandFiling}}
+        <p>
+            <svg class="low-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
+            Because of the way Maryland records eviction notices, it has a much higher filing rate than everywhere else.
+        </p>
+        {{/if}}
+        <p>Please see our FAQ section to better these issues https://evictionlab.org/help-faq/</p>
     </div>
 </div>
 {{/if}}
@@ -496,7 +570,16 @@
         <h3>{{title}}</h3>
         <ul>
             <li><span>Number of evictions per day:</span> <span>{{properties.epd}}</span></li>
-            <li><span>{{@root.evictionRateText}}:</span> <span>{{properties.bubbleProp}}</span></li>
+            <li>
+                <span>{{@root.evictionRateText}}:</span> <span>{{properties.bubbleProp}}</span>
+                {{#if (lookup lowFlags @root.bubbleProp)}}
+                <svg class="low-flag"><use xlink:href="#flag" width="16" height="16" viewBox="0 0 16 16"></use></svg>
+                {{else if (lookup marylandFiling @root.bubbleProp)}}
+                <svg class="low-flag"><use xlink:href="#flag" width="16" height="16" viewBox="0 0 16 16"></use></svg>
+                {{else if (lookup highFlags @root.bubbleProp)}}
+                <svg class="high-flag"><use xlink:href="#flag" width="16" height="16" viewBox="0 0 16 16"></use></svg>
+                {{/if}}
+            </li>
             {{#if @root.dataProp}}
             <li><span>{{@root.dataPropText}}:</span> <span>{{properties.dataProp}}</span></li>
             {{/if}}
@@ -504,7 +587,24 @@
         {{#if mapLegend}}<div class="map-legend {{#if @root.dataProp}}data-prop{{/if}}" style="background-image:url('data:{{mapLegend}}')"></div>{{/if}}
     </div>
     {{/each}}
-    <p class="footer">{{@root.footerNote}}</p>
+    <div class="footer">
+        <p>{{@root.footerNote}}</p>
+        <p>
+            <svg class="low-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
+            Eviction/filing rate is too low.
+        </p>
+        <p>
+            <svg class="high-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
+            Eviction/filing rate in the top 1%.
+        </p>
+        {{#if marylandFiling}}
+        <p>
+            <svg class="low-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
+            Because of the way Maryland records eviction notices, it has a much higher filing rate than everywhere else.
+        </p>
+        {{/if}}
+        <p>Please see our FAQ section to better understand these issues https://evictionlab.org/help-faq/</p>
+    </div>
     </div>
 </div>
 {{/if}}
@@ -534,12 +634,31 @@
         </div>
         <div class="er {{#if (lookup unavailable 'er')}}unavailable{{/if}}">
             <p>{{properties.er}}</p>
-            <p>Eviction Rate</p>
+            <p>
+                Eviction Rate
+                {{#if (lookup lowFlags 'er')}}
+                <svg class="low-flag"><use xlink:href="#flag" width="16" height="16" viewBox="0 0 16 16"></use></svg>
+                {{else if (lookup highFlags 'er')}}
+                <svg class="high-flag"><use xlink:href="#flag" width="16" height="16" viewBox="0 0 16 16"></use></svg>
+                {{/if}}
+            </p>
         </div>
         {{#each dataProps}}
-        <div class="data-props {{#if (lookup ../unavailable key)}}unavailable{{/if}}"><p>{{@key}}</p><p>{{val}}</p></div>
+        <div class="data-props {{#if (lookup ../unavailable key)}}unavailable{{/if}}">
+            <p>
+                {{@key}}
+                {{#if (lookup ../lowFlags key)}}
+                <svg class="low-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
+                {{else if (lookup ../marylandFiling key)}}
+                <svg class="low-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
+                {{else if (lookup ../highFlags key)}}
+                <svg class="high-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
+                {{/if}}
+            </p>
+            <p>{{val}}</p>
+        </div>
         {{/each}}
-        <p class="divider">Demographic Breakdown</p>
+        <p class="divider">Census Demographics</p>
         {{#each demDataProps}}
         <div class="data-props {{#if (lookup ../unavailable key)}}unavailable{{/if}}"><p>{{@key}}</p><p>{{val}}</p></div>
         {{/each}}

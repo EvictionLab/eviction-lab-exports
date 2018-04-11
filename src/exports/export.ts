@@ -19,8 +19,8 @@ export abstract class Export {
     dataProp: string;
     bubbleProp: string;
     templateKey: string | undefined;
-    assetBucket: string = process.env['asset_bucket'];
-    exportBucket: string = process.env['export_bucket'];
+    exportBucket: string = process.env['stage'] === 'dev' ?
+        `${process.env['export_bucket']}-dev` : process.env['export_bucket'];
     assetPath: string;
     screenshotBase = 'https://screenshot.evictionlab.org';
 
@@ -123,5 +123,29 @@ export abstract class Export {
 
     capRateValue(val: number): string {
         return val > 100 ? '>100' : val.toLocaleString('en-US');
+    }
+
+    titleName(feature: Feature, translate: Object): string {
+        if (feature.properties.layerId === 'states') {
+            return feature.properties.n;
+        } else if (feature.properties.layerId === 'tracts') {
+            return `${translate['TRACT_SINGULAR']()} ${feature.properties.n}, ${feature.properties['pl']}`;
+        } else if (feature.properties.layerId === 'block-groups') {
+            return `${translate['BLOCK_GROUP_SINGULAR']()} ${feature.properties.n}, ${feature.properties['pl']}`;
+        } else {
+            return `${feature.properties.n}, ${feature.properties['pl']}`;
+        }
+    }
+
+    isLowFlag(feature: Feature, prop: string) {
+        return 'lowProps' in feature && feature.lowProps.indexOf(prop) > -1;
+    }
+
+    isHighFlag(feature: Feature, yearProp: string) {
+        return 'highProps' in feature && feature.highProps.split(',').indexOf(yearProp) > -1;
+    }
+
+    isMarylandFiling(feature: Feature, prop: string) {
+        return prop === 'efr' && feature.properties.GEOID === '24'
     }
 }
