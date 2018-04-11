@@ -125,6 +125,18 @@ export abstract class Export {
         return val > 100 ? '>100' : val.toLocaleString('en-US');
     }
 
+    titleName(feature: Feature, translate: Object): string {
+        if (feature.properties.layerId === 'states') {
+            return feature.properties.n;
+        } else if (feature.properties.layerId === 'tracts') {
+            return `${translate['TRACT_SINGULAR']()} ${feature.properties.n}, ${feature.properties['pl']}`;
+        } else if (feature.properties.layerId === 'block-groups') {
+            return `${translate['BLOCK_GROUP_SINGULAR']()} ${feature.properties.n}, ${feature.properties['pl']}`;
+        } else {
+            return `${feature.properties.n}, ${feature.properties['pl']}`;
+        }
+    }
+
     isLowFlag(feature: Feature, prop: string) {
         return 'lowProps' in feature && feature.lowProps.indexOf(prop) > -1;
     }

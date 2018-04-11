@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as launchChrome from '@serverless-chrome/lambda';
-import { S3 } from 'aws-sdk';
 import { Chromeless } from 'chromeless';
 import * as Handlebars from 'handlebars';
 import { RequestData } from '../data/requestData';
@@ -38,7 +37,6 @@ export class PdfExport extends Export {
   };
 
   async createFile(): Promise<Buffer> {
-    const s3 = new S3();
     const chrome = await launchChrome({
       flags: ['--window-size=1280x1696', '--hide-scrollbars'],
     });
@@ -142,8 +140,7 @@ export class PdfExport extends Export {
     const unavailable = this.translate['UNAVAILABLE']();
     const eProp = this.bubbleProp.slice(0, -1);
 
-    feature.properties.name = feature.properties.layerId === 'states' ?
-      feature.properties.n : `${feature.properties.n}, ${feature.properties['pl']}`;
+    feature.properties.name = this.titleName(feature, this.translate);
     // Object to check for unavailable properties
     feature.unavailable = {};
     feature.lowFlags = {};
