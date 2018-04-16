@@ -211,13 +211,14 @@ export class PptxExport extends Export {
 
     let flagTextArr: any = [{ text: '! ', options: { font_face: 'Helvetica', bold: true, breakLine: false } }];
     const flagTextOptions = {isTextBox: true, w: 9.15, h: 0.16, x: 0.44, y: 5.26, font_size: 10, font_face: 'Helvetica'};
-    if (this.isLowFlag(feature, this.bubbleProp)) {
+    const flagProp = `${this.bubbleProp}-${yearSuffix}`;
+    if (this.isLowFlag(feature, flagProp)) {
       flagTextOptions['color'] = this.lowFlagColor;
       flagTextArr = flagTextArr.concat([{ text: this.translate['FLAG_LOW'](), options: {} }]);
-    } else if (this.isMarylandFiling(feature, this.bubbleProp)) {
+    } else if (this.isMarylandFiling(feature, flagProp)) {
       flagTextOptions['color'] = this.lowFlagColor;
       flagTextArr = flagTextArr.concat([{ text: this.translate['FLAG_MARYLAND_FILING'](), options: {} }]);
-    } else if (this.isHighFlag(feature, `${this.bubbleProp}-${yearSuffix}`)) {
+    } else if (this.isHighFlag(feature, flagProp)) {
       flagTextOptions['color'] = this.highFlagColor;
       flagTextArr = flagTextArr.concat([{ text: this.translate['FLAG_99TH'](), options: {} }]);
     }
@@ -382,9 +383,10 @@ export class PptxExport extends Export {
     const flagText = { text: ' !', options: { font_face: 'Helvetica', bold: true } };
     let outputObj = textObj;
 
-    if (this.isLowFlag(feature, prop) || this.isMarylandFiling(feature, prop)) {
+    const flagProp = `${prop}-${yearSuffix}`;
+    if (this.isLowFlag(feature, flagProp) || this.isMarylandFiling(feature, flagProp)) {
       flagText.options['color'] = this.lowFlagColor;
-    } else if (this.isHighFlag(feature, `${prop}-${yearSuffix}`)) {
+    } else if (this.isHighFlag(feature, flagProp)) {
       flagText.options['color'] = this.highFlagColor;
     }
 

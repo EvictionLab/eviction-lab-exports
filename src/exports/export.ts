@@ -137,15 +137,19 @@ export abstract class Export {
         }
     }
 
-    isLowFlag(feature: Feature, prop: string) {
-        return 'lowProps' in feature && feature.lowProps.indexOf(prop) > -1;
+    isLowFlag(feature: Feature, yearProp: string) {
+        const prop = yearProp.split('-')[0];
+        return 'lowProps' in feature && feature.lowProps.indexOf(prop) > -1 &&
+            !this.isHighFlag(feature, yearProp) &&
+            !this.isMarylandFiling(feature, yearProp);
     }
 
     isHighFlag(feature: Feature, yearProp: string) {
-        return 'highProps' in feature && feature.highProps.split(',').indexOf(yearProp) > -1;
+        return 'highProps' in feature && feature.highProps.split(',').indexOf(yearProp) > -1 &&
+            !this.isMarylandFiling(feature, yearProp);
     }
 
-    isMarylandFiling(feature: Feature, prop: string) {
-        return prop === 'efr' && feature.properties.GEOID === '24'
+    isMarylandFiling(feature: Feature, yearProp: string) {
+        return yearProp.split('-')[0] === 'efr' && feature.properties.GEOID.slice(0, 2) === '24'
     }
 }

@@ -148,9 +148,10 @@ export class PdfExport extends Export {
     feature.marylandFiling = {};
     dataCols.forEach(k => {
       let val = feature.properties[`${k}-${yearSuffix}`];
-      if (this.isLowFlag(feature, k)) { feature.lowFlags[k] = true; }
-      if (this.isHighFlag(feature, `${k}-${yearSuffix}`)) { feature.highFlags[k] = true }
-      if (this.isMarylandFiling(feature, k)) { feature.marylandFiling[k] = true }
+      const flagProp = `${k}-${yearSuffix}`;
+      if (this.isLowFlag(feature, flagProp)) { feature.lowFlags[k] = true; }
+      if (this.isHighFlag(feature, flagProp)) { feature.highFlags[k] = true }
+      if (this.isMarylandFiling(feature, flagProp)) { feature.marylandFiling[k] = true }
       if (val > -1) {
         if (PercentCols.indexOf(k) !== -1) {
           if (['er', 'efr'].indexOf(k) !== -1) {
