@@ -130,8 +130,8 @@ export class PdfExport extends Export {
         marginRight: 0
       });
 
-    await chrome.kill();
-    return fs.readFileSync(pdfStr);
+    return await chrome.kill()
+      .then(() => fs.readFileSync(pdfStr));
   }
 
   private processFeature(feature: Feature): Feature {
