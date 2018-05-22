@@ -23,6 +23,8 @@ export abstract class Export {
         `${process.env['export_bucket']}-dev` : process.env['export_bucket'];
     assetPath: string;
     screenshotBase = 'https://screenshot.evictionlab.org';
+    /** properties to flag with low-flag */
+    private lowFlagProps = ['e', 'er', 'ef', 'efr', 'epd'];
 
     constructor(requestData: RequestData) {
         this.features = requestData.features;
@@ -138,8 +140,10 @@ export abstract class Export {
     }
 
     isLowFlag(feature: Feature, yearProp: string) {
-        const prop = yearProp.split('-')[0];
-        return 'lowProps' in feature && feature.lowProps.indexOf(prop) > -1 &&
+        const propSplit = yearProp.split('-');
+        const prop = propSplit[0];
+        const yearSuffix = propSplit[1];
+        return (this.lowFlagProps.indexOf(prop) >= 0 && feature.properties[`lf-${yearSuffix}`] > 0) &&
             !this.isHighFlag(feature, yearProp) &&
             !this.isMarylandFiling(feature, yearProp);
     }
