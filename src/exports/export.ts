@@ -24,7 +24,7 @@ export abstract class Export {
     assetPath: string;
     screenshotBase = 'https://screenshot.evictionlab.org';
     /** properties to flag with low-flag */
-    private lowFlagProps = ['e', 'er', 'ef', 'efr', 'epd'];
+    private lowFlagProps = ['er', 'efr'];
 
     constructor(requestData: RequestData) {
         this.features = requestData.features;
