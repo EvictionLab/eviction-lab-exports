@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as launchChrome from '@serverless-chrome/lambda';
 import { Chromeless } from 'chromeless';
 import * as Handlebars from 'handlebars';
 import { RequestData } from '../data/requestData';
@@ -37,11 +36,8 @@ export class PdfExport extends Export {
   };
 
   async createFile(): Promise<Buffer> {
-    const chrome = await launchChrome({
-      flags: ['--window-size=1280x1696', '--hide-scrollbars'],
-    });
     const chromeless = new Chromeless({
-      launchChrome: false
+      viewport: {width: 1280, height: 1696}
     });
 
     const htmlBody = fs.readFileSync(path.join(this.assetPath, this.templateKey)).toString();
@@ -130,8 +126,8 @@ export class PdfExport extends Export {
         marginRight: 0
       });
 
-    return await chrome.kill()
-      .then(() => fs.readFileSync(pdfStr));
+    await chromeless.end();
+    return fs.readFileSync(pdfStr);
   }
 
   private processFeature(feature: Feature): Feature {
