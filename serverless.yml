@@ -1,12 +1,14 @@
 service: eviction-lab-exports
-
+app: evictionlabzip
+org: amygroshek
 provider:
   name: aws
-  runtime: nodejs6.10
+  runtime: nodejs12.x
   stage: dev
   environment:
     export_bucket: eviction-lab-exports
-    pdf_path: https://exports.evictionlab.org/pdf
+    # pdf_path: https://exports.evictionlab.org/pdf
+    pdf_path: https://localhost:3001 # Run both `npm run offline-zip` and `npm run offline-pdf` to use.
     stage: ${opt:stage, self:provider.stage}
 
   iamRoleStatements:

@@ -1,29 +1,31 @@
 {
   "name": "eviction-lab-exports-pdf",
   "description": "Generate PDF export for Eviction Lab in Serverless Lambda function",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Eviction Lab",
   "license": "MIT",
   "scripts": {
     "deploy": "sls deploy"
   },
   "dependencies": {
-    "@mapbox/geo-viewport": "^0.2.2",
-    "@types/handlebars": "^4.0.36",
-    "aws-sdk": "^2.122.0",
-    "axios": "^0.17.1",
+    "@mapbox/geo-viewport": "^0.4.0",
+    "@types/handlebars": "^4.1.0",
+    "aws-sdk": "^2.604.0",
+    "axios": "^0.19.1",
+    "canvas": "^2.6.1",
     "canvas-aws-prebuilt": "^2.0.2",
     "chromeless": "^1.5.2",
-    "d3-scale": "^2.0.0",
-    "d3-shape": "^1.2.0",
-    "handlebars": "^4.0.10"
+    "d3-scale": "^3.2.1",
+    "d3-shape": "^1.3.7",
+    "handlebars": "^4.7.2"
   },
   "devDependencies": {
-    "@types/node": "^8.0.31",
-    "serverless": "^1.23.0",
-    "serverless-domain-manager": "^1.1.12",
-    "serverless-offline": "^3.16.0",
-    "serverless-plugin-chrome": "^1.0.0-49",
-    "serverless-plugin-typescript": "^1.1.3"
+    "@types/node": "^13.1.7",
+    "serverless": "^1.61.1",
+    "serverless-domain-manager": "^3.3.0",
+    "serverless-offline": "^5.12.1",
+    "serverless-plugin-chrome": "^1.0.0-55.1",
+    "serverless-plugin-typescript": "^1.1.9",
+    "typescript": "^3.7.4"
   }
 }
