@@ -17,6 +17,19 @@ npm run offline-zip
 npm run offline-pdf
 ```
 
+Add a `.env` file with the following: 
+
+```
+SLS_DEBUG=*
+IS_OFFLINE=true
+```
+
+Invoke functions like so: 
+
+```bash
+serverless invoke local --function zip --path /Users/[username]/testfile/testdata.json
+```
+
 ## Deployment
 
 To deploy the service, you'll need to update the environment variables in both `serverless.yml` files.

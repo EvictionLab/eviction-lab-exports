@@ -47,7 +47,8 @@ export class PptxExport extends Export {
     // Recreating each time to avoid appending to previous buffer based on this issue:
     // https://github.com/gitbrent/PptxGenJS/issues/38#issuecomment-279001048
     delete require.cache[require.resolve('pptxgenjs')];
-    this.pptx = require('pptxgenjs');
+    let PptxGenJS = require("pptxgenjs");
+    this.pptx = new PptxGenJS();
     this.translate = Translations[this.lang]['EXPORT'];
     this.dataProps = Translations[this.lang]['DATA_PROPS'];
     this.demDataProps = Translations[this.lang]['DEM_DATA_PROPS'];
@@ -65,7 +66,7 @@ export class PptxExport extends Export {
   }
 
   createIntroSlide(): void {
-    this.pptx.setLayout('LAYOUT_16x9');
+    this.pptx.layout = 'LAYOUT_16x9';
     const introSlide = this.pptx.addNewSlide();
 
     const fullSlide = { w: 10, h: 5.625, y: 0, x: 0 };
@@ -363,9 +364,7 @@ export class PptxExport extends Export {
   }
 
   async saveWrapper(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.pptx.save('jszip', f => { resolve(f); }, 'nodebuffer');
-    });
+    return await this.pptx.write('nodebuffer');
   }
 
   async createFile(): Promise<Buffer> {

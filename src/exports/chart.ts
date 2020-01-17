@@ -6,6 +6,9 @@ import { Feature } from '../data/feature';
 import { scaleLinear, scaleBand } from 'd3-scale';
 import { line } from 'd3-shape';
 import { PercentCols, DollarCols } from '../data/propData';
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
 const Canvas = require(process.env['IS_OFFLINE'] === 'true' ? 'canvas' : 'canvas-aws-prebuilt');
 
 export class Chart {
@@ -26,9 +29,9 @@ export class Chart {
         const fullHeight = this.height;
         const width = fullWidth - margin.left - margin.right;
         const height = fullHeight - margin.top - margin.bottom;
-        const canvas = new Canvas(fullWidth, fullHeight);
+        const canvas = new Canvas.createCanvas(fullWidth, fullHeight);
         const context = canvas.getContext('2d');
-        context.addFont(this.loadFont('Akkurat'));
+        context.font = this.loadFont('Akkurat');
         context.fillStyle = 'white';
         context.fillRect(0, 0, fullWidth, fullHeight);
         context.translate(margin.left, margin.top);
@@ -107,9 +110,9 @@ export class Chart {
         const fullHeight = 795;
         const width = fullWidth - margin.left - margin.right;
         const height = fullHeight - margin.top - margin.bottom;
-        const canvas = new Canvas(fullWidth, fullHeight);
+        const canvas = new Canvas.createCanvas(fullWidth, fullHeight);
         const context = canvas.getContext('2d');
-        context.addFont(this.loadFont('Akkurat'));
+        context.font = this.loadFont('Akkurat');
         context.fillStyle = 'white';
         context.fillRect(0, 0, fullWidth, fullHeight);
         context.translate(margin.left, margin.top);
@@ -219,7 +222,7 @@ export class Chart {
     }
 
     createLineChartLegend(feature: Feature, index: number): string {
-        const canvas = new Canvas(37, 4);
+        const canvas = new Canvas.createCanvas(37, 4);
         const context = canvas.getContext('2d');
 
         context.strokeStyle = "#" + this.getColor(feature, index);
@@ -254,9 +257,9 @@ export class Chart {
             width = sectionWidth;
         }
         const height = 96 * 2;
-        const canvas = new Canvas(width, height);
+        const canvas = new Canvas.createCanvas(width, height);
         const context = canvas.getContext('2d');
-        context.addFont(this.loadFont('Akkurat'));
+        context.font = this.loadFont('Akkurat');
         context.fillStyle = 'rgba(255,255,255,0.8)';
         context.fillRect(0, 0, width, height);
 
@@ -366,7 +369,7 @@ export class Chart {
     }
 
     private loadFont(font: string) {
-        return new Canvas.Font(font, path.join(this.assetPath, `fonts/${font}.ttf`));
+      return new Canvas.registerFont(path.join(this.assetPath, `fonts/${font}.ttf`), { family: font });
     }
 
     private getColor(f: Feature, i: number): string {
