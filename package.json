@@ -25,7 +25,7 @@
     "@mapbox/geo-viewport": "^0.4.0",
     "@types/handlebars": "^4.1.0",
     "@types/node": "^13.1.8",
-    "aws-sdk": "^2.606.0",
+    "aws-sdk": "^2.605.0",
     "axios": "^0.19.1",
     "canvas": "^2.6.1",
     "canvas-aws-prebuilt": "^2.0.2",
