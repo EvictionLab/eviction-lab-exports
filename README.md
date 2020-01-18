@@ -17,7 +17,7 @@ npm run offline-zip
 npm run offline-pdf
 ```
 
-Add a `.env` file with the following: 
+Add a `.env` file with the following to both serverless.yml files (the one in `./src/pdf` too):
 
 ```
 SLS_DEBUG=*

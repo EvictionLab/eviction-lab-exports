@@ -97,5 +97,6 @@ export class ZipExport extends Export {
 }
 
 export async function fileHandler(event, context, callback): Promise<void> {
+    // console.log('zip handler');
     return await handler(ZipExport, event, context, callback);
 }

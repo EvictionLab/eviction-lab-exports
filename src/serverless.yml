@@ -7,7 +7,6 @@ provider:
   environment:
     export_bucket: eviction-lab-exports
     stage: ${opt:stage, self:provider.stage}
-    DEBUG: "*"
 
   iamRoleStatements:
     - Effect: "Allow"
