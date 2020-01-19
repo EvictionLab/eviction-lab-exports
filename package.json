@@ -4,9 +4,9 @@
   "description": "Generate exports for Eviction Lab in Serverless Lambda function",
   "main": "src/exports/xlsx.fileHandler",
   "scripts": {
-    "deploy-dev": "cp -r ./assets ./src/assets && SLS_DEBUG=* sls deploy --stage dev && cd src && SLS_DEBUG=* sls deploy --stage dev",
+    "deploy-dev": "cp -r ./assets ./src/assets && SLS_DEBUG=* sls package --stage dev && SLS_DEBUG=* sls deploy --stage dev && cd src && SLS_DEBUG=* sls package --stage dev && SLS_DEBUG=* sls deploy --stage dev",
     "deploy": "cp -r ./assets ./src/assets && sls deploy --stage prod && cd src && sls deploy --stage prod",
-    "offline-zip": "cp -r ./assets ./src/assets && sls offline --offline",
+    "offline-zip": "rm -rf ./src/assets && cp -r ./assets ./src/assets && sls offline --offline",
     "offline-pdf": "cp -r ./assets ./src/assets && cd src && sls offline --port 3001 --offline",
     "postinstall": "cd ./node_modules/pptxgenjs && npm install && cd ../.."
   },
@@ -20,11 +20,16 @@
     "url": "https://github.com/EvictionLab/eviction-lab-exports/issues"
   },
   "homepage": "https://github.com/EvictionLab/eviction-lab-exports#readme",
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/node": "^13.1.8",
+    "serverless": "^1.61.2",
+    "serverless-domain-manager": "^3.3.1",
+    "serverless-offline": "^5.12.1",
+    "serverless-plugin-typescript": "^1.1.7"
+  },
   "dependencies": {
     "@mapbox/geo-viewport": "^0.4.0",
     "@types/handlebars": "^4.1.0",
-    "@types/node": "^13.1.8",
     "aws-sdk": "^2.605.0",
     "axios": "^0.19.1",
     "canvas": "^2.6.1",
@@ -38,11 +43,7 @@
     "jszip": "^3.2.2",
     "pptxgenjs": "^3.0.1",
     "rookout": "^0.1.86",
-    "serverless": "^1.61.2",
-    "serverless-domain-manager": "^3.3.1",
-    "serverless-offline": "^5.12.1",
-    "serverless-plugin-typescript": "^1.1.7",
-    "typescript": "^3.7.5",
+    "typescript": "^2.9.2",
     "xlsx": "^0.15.4"
   }
 }

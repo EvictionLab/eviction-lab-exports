@@ -7,7 +7,7 @@ provider:
   stage: dev
   environment:
     export_bucket: eviction-lab-exports
-    # pdf_path: https://exports.evictionlab.org/pdf
+    pdf_path: https://exports.evictionlab.org/pdf
     # pdf_path: http://localhost:3001 # Run both `npm run offline-zip` and `npm run offline-pdf` to use.
     stage: ${opt:stage, self:provider.stage}
 
