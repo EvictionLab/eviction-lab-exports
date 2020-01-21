@@ -23,11 +23,17 @@ plugins:
   # - serverless-domain-manager
 
 package:
+  exclude:
+    - node_modules/**
   include:
     - assets
 
 functions:
   pdf:
+    package:
+      include:
+        - node_modules/aws-sdk/**
+        - node_modules/canvas/**
     memorySize: 2048
     timeout: 30
     handler: pdf/pdf.fileHandler

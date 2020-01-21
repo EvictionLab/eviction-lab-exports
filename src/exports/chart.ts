@@ -6,10 +6,11 @@ import { Feature } from '../data/feature';
 import { scaleLinear, scaleBand } from 'd3-scale';
 import { line } from 'd3-shape';
 import { PercentCols, DollarCols } from '../data/propData';
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config()
-}
-const Canvas = require(process.env['IS_OFFLINE'] === 'true' ? 'canvas' : 'canvas-aws-prebuilt');
+// if (process.env.NODE_ENV !== 'production') {
+//   require('dotenv').config()
+// }
+// const Canvas = require(process.env['IS_OFFLINE'] === 'true' ? 'canvas' : 'canvas-aws-prebuilt');
+const Canvas = require('canvas');
 
 export class Chart {
     constructor(

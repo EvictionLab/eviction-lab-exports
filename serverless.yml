@@ -31,6 +31,12 @@ package:
   include:
     - ./assets
     - node_modules/aws-sdk/**
+    - node_modules/jmespath/**
+    - node_modules/xml2js/**
+    - node_modules/xmlbuilder/**
+    - node_modules/sax/**
+    - node_modules/dotenv/**
+    - node_modules/set-immediate-shim/**
 
 functions:
   xlsx:
@@ -78,7 +84,7 @@ functions:
         - node_modules/isnumeric/**
         - node_modules/viewport-dimensions/**
         - node_modules/units-css/**
-        - node_modules/canvas-aws-prebuilt/**
+        - node_modules/canvas/**
         - node_modules/pptxgenjs/**
         - node_modules/ms/**
         - node_modules/debug/**
@@ -126,7 +132,7 @@ functions:
         - node_modules/isnumeric/**
         - node_modules/viewport-dimensions/**
         - node_modules/units-css/**
-        - node_modules/canvas-aws-prebuilt/**
+        - node_modules/canvas/**
         - node_modules/pptxgenjs/**
         - node_modules/ms/**
         - node_modules/debug/**
