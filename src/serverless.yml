@@ -1,4 +1,4 @@
-service: eviction-lab-exports-pdf
+service: el-new-export-pdf
 
 provider:
   name: aws
@@ -7,33 +7,32 @@ provider:
   environment:
     export_bucket: eviction-lab-exports
     stage: ${opt:stage, self:provider.stage}
+    DEBUG: "*"
 
   iamRoleStatements:
     - Effect: "Allow"
       Action: "s3:*"
-      Resource: "arn:aws:s3:::eviction-lab-exports/*"
-    - Effect: "Allow"
-      Action: "s3:*"
       Resource: "arn:aws:s3:::eviction-lab-exports-dev/*"
+
+  layers:
+    # Google Chrome for AWS Lambda as a layer
+    # Make sure you use the latest version depending on the region
+    # https://github.com/shelfio/chrome-aws-lambda-layer
+    - arn:aws:lambda:us-east-1:764866452798:layer:chrome-aws-lambda:10
+    # node canvas
+    - arn:aws:lambda:us-east-1:318011162599:layer:nodeCanvasLayer
+    - arn:aws:lambda:us-east-1:318011162599:layer:nodeCanvasLib64Layer
 
 plugins:
   - serverless-plugin-typescript
-  - serverless-plugin-chrome
   - serverless-offline
-  # - serverless-domain-manager
 
 package:
-  exclude:
-    - node_modules/**
   include:
     - assets
 
 functions:
   pdf:
-    package:
-      include:
-        - node_modules/aws-sdk/**
-        - node_modules/canvas/**
     memorySize: 2048
     timeout: 30
     handler: pdf/pdf.fileHandler
@@ -47,10 +46,23 @@ custom:
   optimize:
     includePaths:
       - ../assets
-# custom:
-#   customDomain:
-#     domainName: 'exports.evictionlab.org'
-#     certificateName: '*.evictionlab.org'
-#     basePath: 'pdf'
-#     stage: prod
-#     createRoute53Record: true
+
+# resources:
+#   Resources:
+#     S3BucketPhotos:
+#       Type: AWS::S3::Bucket
+#       Properties:
+#         BucketName: el-new-export
+#         CorsConfiguration:
+#           CorsRules:
+#             -
+#               AllowedOrigins:
+#                 - '*'
+#               AllowedHeaders:
+#                 - '*'
+#               AllowedMethods:
+#                 - GET
+#                 - POST
+#                 - HEAD
+#               MaxAge: 3000
+

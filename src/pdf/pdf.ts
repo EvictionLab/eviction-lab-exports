@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Chromeless } from 'chromeless';
+import chromeLambda from "chrome-aws-lambda";
 import * as Handlebars from 'handlebars';
 import { RequestData } from '../data/requestData';
 import { Feature } from '../data/feature';
@@ -36,8 +36,10 @@ export class PdfExport extends Export {
   };
 
   async createFile(): Promise<Buffer> {
-    const chromeless = new Chromeless({
-      viewport: {width: 1280, height: 1696}
+
+    const browser = await chromeLambda.puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
     });
 
     const htmlBody = fs.readFileSync(path.join(this.assetPath, this.templateKey)).toString();
@@ -111,23 +113,29 @@ export class PdfExport extends Export {
       marylandFiling: features.some(f => Object.keys(f.marylandFiling).length > 0)
     });
 
-    const pdfStr = await chromeless
-      .setHtml(compiledData)
-      .wait(500)
-      .html()
-      .pdf({
-        displayHeaderFooter: false,
-        printBackground: true,
-        scale: 2,
-        landscape: false,
-        marginTop: 0,
-        marginBottom: 0,
-        marginLeft: 0,
-        marginRight: 0
-      });
+    const page = await browser.newPage()
 
-    await chromeless.end();
-    return fs.readFileSync(pdfStr);
+    await page.emulateMediaType('print')
+
+    await page.emulate({
+      viewport: {
+        width: 1680,
+        height: 2096, 
+        deviceScaleFactor: 2
+      },
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36'
+    });
+
+    await page.setContent(compiledData);
+    // await page.waitForNavigation();
+    const pdf = await page.pdf({
+      format: 'Letter',
+      printBackground: true
+    })
+
+    await browser.close();
+
+    return pdf;
   }
 
   private processFeature(feature: Feature): Feature {
