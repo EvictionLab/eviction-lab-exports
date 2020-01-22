@@ -7,8 +7,12 @@
     "deploy-dev": "rm -rf ./src/assets && cp -r ./assets ./src/assets && SLS_DEBUG=* sls package --stage dev && SLS_DEBUG=* sls deploy --stage dev && cd src && SLS_DEBUG=* sls package --stage dev && SLS_DEBUG=* sls deploy --stage dev",
     "deploy": "rm -rf ./src/assets && cp -r ./assets ./src/assets && sls deploy --stage prod && cd src && sls deploy --stage prod",
     "offline-zip": "rm -rf ./src/assets && cp -r ./assets ./src/assets && sls offline --offline",
-    "offline-pdf": "cd src && sls offline --port 3001 --offline",
-    "postinstall": "cd ./node_modules/pptxgenjs && npm install && cd ../.."
+    "offline-pdf": "rm -rf ./src/assets && cp -r ./assets ./src/assets && cd src && sls offline --port 3001 --offline",
+    "postinstall": "cd ./node_modules/pptxgenjs && npm install && cd ../..",
+    "tsc": "tsc",
+    "create-pdf": "tsc && node ./build/creator.js pdf",
+    "create-pptx": "tsc && node ./build/creator.js pptx",
+    "create-xlsx": "tsc && node ./build/creator.js xlsx"
   },
   "repository": {
     "type": "git",
@@ -22,17 +26,21 @@
   "homepage": "https://github.com/EvictionLab/eviction-lab-exports#readme",
   "devDependencies": {
     "@types/node": "^13.1.8",
+    "@types/puppeteer": "^2.0.0",
+    "canvas": "^2.6.1",
+    "chrome-aws-lambda": "^2.0.2",
+    "puppeteer": "^2.0.0",
     "serverless": "^1.61.3",
     "serverless-domain-manager": "^3.3.1",
     "serverless-offline": "^5.12.1",
-    "serverless-plugin-typescript": "^1.1.7"
+    "serverless-plugin-typescript": "^1.1.7",
+    "typescript": "^2.9.2"
   },
   "dependencies": {
     "@mapbox/geo-viewport": "^0.4.0",
     "@types/handlebars": "^4.1.0",
     "aws-sdk": "^2.607.0",
     "axios": "^0.19.1",
-    "canvas": "^2.6.1",
     "d3-scale": "^3.2.1",
     "d3-shape": "^1.3.7",
     "dotenv": "^8.2.0",
@@ -41,7 +49,6 @@
     "jszip": "^3.2.2",
     "pptxgenjs": "^3.0.1",
     "rookout": "^0.1.86",
-    "typescript": "^2.9.2",
     "xlsx": "^0.15.4"
   }
 }

@@ -1,6 +1,5 @@
 service: eviction-lab-exports
 app: evictionlabzip
-org: amygroshek
 provider:
   name: aws
   runtime: nodejs12.x
@@ -10,7 +9,10 @@ provider:
     pdf_path: https://exports.evictionlab.org/pdf
     # pdf_path: http://localhost:3001 # Run both `npm run offline-zip` and `npm run offline-pdf` to use.
     stage: ${opt:stage, self:provider.stage}
-
+  layers:
+    # node canvas
+    - arn:aws:lambda:us-east-1:318011162599:layer:nodeCanvasLayer
+    - arn:aws:lambda:us-east-1:318011162599:layer:nodeCanvasLib64Layer
   iamRoleStatements:
     - Effect: "Allow"
       Action: "s3:*"
