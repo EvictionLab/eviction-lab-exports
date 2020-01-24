@@ -37,13 +37,7 @@ export class PdfExport extends Export {
     );
   };
 
-  async createFile(): Promise<Buffer> {
-
-    const browser = await chromeLambda.puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-    });
-
+  async createHtml(): Promise<string> {
     const htmlBody = fs.readFileSync(path.join(this.assetPath, this.templateKey)).toString();
 
     // Get screenshots for each feature
@@ -85,7 +79,7 @@ export class PdfExport extends Export {
     const footerNoteKey = this.bubbleProp === 'er' ?
       'FEATURE_EVICTION_RATE_DESCRIPTION' : 'FEATURE_EVICTION_FILING_RATE_DESCRIPTION';
     const template = Handlebars.compile(htmlBody);
-    const compiledData = template({
+    return template({
       date: new Date().toISOString().slice(0, 10),
       year: this.year,
       oneFeature: this.features.length === 1,
@@ -114,36 +108,32 @@ export class PdfExport extends Export {
       highFlag: features.some(f => Object.keys(f.highFlags).length > 0),
       marylandFiling: features.some(f => Object.keys(f.marylandFiling).length > 0)
     });
+  }
+
+  async createFile(): Promise<Buffer> {
+
+    const browser = await chromeLambda.puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+    });
 
     const page = await browser.newPage()
 
-    await page.emulateMediaType('print')
-
-    await page.emulate({
-      // Original
-      // viewport: {
-      //   width: 1680,
-      //   height: 2096, 
-      //   deviceScaleFactor: 2
-      // },
-      // Used in seda-export
-      viewport: {
-        width: 612, // 1275,
-        height: 792, // 1650,
-        deviceScaleFactor: 0.5 // 1.5625
-      },
-      // viewport: {
-      //   width: 1275,
-      //   height: 1650,
-      //   deviceScaleFactor: 1.5625
-      // },
-      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36'
+    await page.setViewport({
+      width: 612,
+      height: 792,
+      deviceScaleFactor: 1
     });
+    await page.emulateMediaType('screen');
+
+    const compiledData = await this.createHtml();
 
     await page.setContent(compiledData);
-    // await page.waitForNavigation();
+
     const pdf = await page.pdf({
-      format: 'Letter',
+      width: '612px',
+      height: '792px',
+      scale: 1.5,
       printBackground: true
     })
 
