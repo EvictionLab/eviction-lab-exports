@@ -20,7 +20,7 @@ class PdfStub extends Export {
         this.key = this.createKey(requestData);
     };
 
-    async createFile(): Promise<Buffer> { return new Buffer(''); };
+    async createFile(): Promise<Buffer> { return Buffer.from(''); };
 }
 
 const formatMap = {
@@ -33,9 +33,11 @@ export class ZipExport extends Export {
     fileExt = 'zip';
     formats = [];
     keyPrefix = 'eviction_lab_export';
+    displayCI = null;
 
     constructor(requestData: RequestData) {
         super(requestData);
+        this.displayCI = requestData.displayCI;
         this.key = this.createKey(requestData);
         this.formats = requestData.formats;
     };
@@ -50,7 +52,7 @@ export class ZipExport extends Export {
         const formatPath = requestData.formats.sort().join('/');
         return `${this.lang}/${this.year}/${this.years[0]}-${this.years[1]}/${
             this.dataProp}/${this.bubbleProp}/${this.showUsAverage ? 'us/' : ''
-        }${idPath}/${formatPath}/eviction_lab_export.${this.fileExt}`;
+        }${idPath}/${formatPath}/${this.displayCI ? 'ci' : 'no-ci'}/eviction_lab_export.${this.fileExt}`;
     }
 
     /**
@@ -62,10 +64,18 @@ export class ZipExport extends Export {
         const s3 = new S3();
         const zip = new JSZip();
 
+        // console.log('zip createFile()', this);
+
         const requestData: RequestData = {
-            lang: this.lang, year: this.year, years: this.years, features: this.features,
-            dataProp: this.dataProp, bubbleProp: this.bubbleProp, showUsAverage: this.showUsAverage,
-            usAverage: this.usAverage
+            lang: this.lang,
+            year: this.year,
+            years: this.years,
+            features: this.features,
+            dataProp: this.dataProp,
+            bubbleProp: this.bubbleProp,
+            showUsAverage: this.showUsAverage,
+            usAverage: this.usAverage,
+            displayCI: this.displayCI
         };
         const zipFolder = zip.folder('eviction_lab_export');
         for (let format of this.formats) {

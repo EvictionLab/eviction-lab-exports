@@ -100,7 +100,7 @@ export abstract class Export {
             `${feature.properties.layerId}/${this.dataProp}-${yearSuffix}/${this.bubbleProp}-${yearSuffix}/` +
             `${feature.properties.GEOID}/${index}${paramString}`;
         const img = await axios.get(screenshotUrl, { responseType: 'arraybuffer' }).catch(err => null);
-        return img !== null ? 'image/png;base64,' + new Buffer(img.data, 'binary').toString('base64') : null;
+        return img !== null ? 'image/png;base64,' + Buffer.from(img.data, 'binary').toString('base64') : null;
     }
 
     /**

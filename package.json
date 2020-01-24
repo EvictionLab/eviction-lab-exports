@@ -12,7 +12,9 @@
     "tsc": "tsc",
     "create-pdf": "tsc && node ./build/creator.js pdf",
     "create-pptx": "tsc && node ./build/creator.js pptx",
-    "create-xlsx": "tsc && node ./build/creator.js xlsx"
+    "create-xlsx": "tsc && node ./build/creator.js xlsx",
+    "dev-pdf": "nodemon -e ts,html --ignore ./src/assets --watch ./assets --watch ./src --watch ./src/pdf -x \"tsc && rm -rf ./src/assets && cp -r ./assets ./src/assets && node ./build/creator.js pdf\"",
+    "dev-pptx": "nodemon -e ts,html --ignore ./src/assets --watch ./assets --watch ./src --watch ./src/pptx -x \"tsc && rm -rf ./src/assets && cp -r ./assets ./src/assets && node ./build/creator.js pdf\""
   },
   "repository": {
     "type": "git",
@@ -29,6 +31,7 @@
     "@types/puppeteer": "^2.0.0",
     "canvas": "^2.6.1",
     "chrome-aws-lambda": "^2.0.2",
+    "nodemon": "^2.0.2",
     "puppeteer": "^2.0.0",
     "serverless": "^1.61.3",
     "serverless-domain-manager": "^3.3.1",
@@ -48,7 +51,6 @@
     "jmespath": "^0.15.0",
     "jszip": "^3.2.2",
     "pptxgenjs": "^3.0.1",
-    "rookout": "^0.1.86",
     "xlsx": "^0.15.4"
   }
 }

@@ -40,6 +40,7 @@ export class PptxExport extends Export {
   demDataProps: Object;
   translate: Object;
   chart: Chart;
+  displayCI: boolean;
 
   constructor(requestData: RequestData) {
     super(requestData);
@@ -52,8 +53,9 @@ export class PptxExport extends Export {
     this.translate = Translations[this.lang]['EXPORT'];
     this.dataProps = Translations[this.lang]['DATA_PROPS'];
     this.demDataProps = Translations[this.lang]['DEM_DATA_PROPS'];
+    this.displayCI = requestData.displayCI ? requestData.displayCI : false;
     this.chart = new Chart(
-      this.assetPath, 945, 795, this.year, this.makeYearArr(this.years), this.bubbleProp, this.colors, this.translate
+      this.assetPath, 945, 795, this.year, this.makeYearArr(this.years), this.bubbleProp, this.colors, this.translate, this.displayCI
     );
   };
 

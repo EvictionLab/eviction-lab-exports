@@ -18,6 +18,7 @@ export class PdfExport extends Export {
   dataProps: Object;
   demDataProps: Object;
   translate;
+  displayCI: boolean;
   evictionRateText: string;
   evictionKind: string;
   evictionKindPlural: string;
@@ -29,9 +30,10 @@ export class PdfExport extends Export {
     this.translate = Translations[this.lang]['EXPORT'];
     this.dataProps = Translations[this.lang]['DATA_PROPS'];
     this.demDataProps = Translations[this.lang]['DEM_DATA_PROPS'];
+    this.displayCI = requestData.displayCI ? requestData.displayCI : false;
     this.chart = new Chart(
       this.assetPath, 975, 750, this.year, this.makeYearArr(this.years), this.bubbleProp,
-      ['e24000', '434878', '2c897f', '94aabd'], this.translate
+      ['e24000', '434878', '2c897f', '94aabd'], this.translate, this.displayCI
     );
   };
 
@@ -118,11 +120,23 @@ export class PdfExport extends Export {
     await page.emulateMediaType('print')
 
     await page.emulate({
+      // Original
+      // viewport: {
+      //   width: 1680,
+      //   height: 2096, 
+      //   deviceScaleFactor: 2
+      // },
+      // Used in seda-export
       viewport: {
-        width: 1680,
-        height: 2096, 
-        deviceScaleFactor: 2
+        width: 612, // 1275,
+        height: 792, // 1650,
+        deviceScaleFactor: 0.5 // 1.5625
       },
+      // viewport: {
+      //   width: 1275,
+      //   height: 1650,
+      //   deviceScaleFactor: 1.5625
+      // },
       userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36'
     });
 

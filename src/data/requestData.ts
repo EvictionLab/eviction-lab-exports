@@ -10,4 +10,5 @@ export interface RequestData {
     features: Array<Feature>;
     dataProp: string;
     bubbleProp: string;
+    displayCI: boolean
 }

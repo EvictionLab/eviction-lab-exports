@@ -10,3 +10,4 @@ src/assets/*
 assets/fonts/*.otf
 assets/fonts/*.ttf
 !assets/fonts/Akkurat.ttf
+output/*

@@ -26,9 +26,28 @@
         .page {
             margin: 0;
             display: block;
-            width: 612px;
-            height: 792px;
+            /* width: 1632px; */
+            /* height: 2112px; */
+            /* width: 612px; */
+            /* height: 792px; */
+            /*width: 1275px;*/
+            /*height: 1650px;*/
             margin: 0;
+            border: 1px solid black;
+        }
+        .page {
+          /* height: 1056px; */
+          height: 1056px;
+          display: block;
+          width: 100%; /* 612px; */
+          margin: 0;
+          padding: 0;
+          overflow: hidden;
+        }
+        .pagebreak {
+          page-break-before: always;
+          width: 100%;
+          display: block;
         }
         p {
             font-family: 'Akkurat', serif;
@@ -178,11 +197,14 @@
 
         /* CHARTS PAGE */
         .page.charts { position: relative; }
+        .page.charts .rotate {
+          /*transform: rotate(90deg);*/
+        }
         .page.charts .title {
             position: absolute;
             font-size: 15px;
-            top: 46px;
-            left: 100px;
+            top: 446px;
+            left: 550px;
             width: 416px;
             text-align: center;
             text-transform: uppercase;
@@ -190,26 +212,47 @@
             font-weight: bold;
             color: #000000;
             z-index: 1;
+            transform: rotate(90deg);
+            border: 1px solid black;
         }
         .page.charts .chart {
-            width: 325px;
-            height: 250px;
-            left: 146px;
+            /* width: 325px;
+            height: 250px;*/
+            width: 700px;
+            height: 589px;
+            left: 70px;
+            top: 220px;
+            /* margin-top: 155px; */
             background-color: lightgrey;
             position: absolute;
             background-repeat: no-repeat;
             background-size: contain;
+            transform: rotate(90deg);
+            /* border: 1px solid black; */
         }
-        .page.charts .chart:first-of-type { top: 70px; }
-        .page.charts .chart:nth-of-type(3) { top: 420px; }
-        .page.charts .legend { position: absolute; left: 146px; width: 325px; }
+        .page.charts .chart#bar-chart {
+          left: 30px;
+        }
+        /* .page.charts .chart:first-of-type { top: 70px; } */
+        /* .page.charts .chart:nth-of-type(3) { left: 50px; } */
+        .page.charts .legend {
+          position: absolute;
+          left: -80px;
+          top: 390px;
+          width: 325px;
+          transform: rotate(90deg);
+          /* border: 1px solid black; */
+        }
+        .page.charts .bar.legend {
+          left: -60px;
+        }
         .page.charts .legend p {
             font-size: 14px;
             line-height: 22px;
             font-weight: bold;
         }
-        .page.charts .legend.line { top: 330px; }
-        .page.charts .legend.bar { top: 680px; }
+        /*.page.charts .legend.line { top: 0px;}
+        .page.charts .legend.bar { top: 0px;}*/
         .legend p:first-child { color: #E24000; }
         .legend p:nth-child(2) { color: #434878; }
         .legend p:nth-child(3) { color: #2C897F; }
@@ -457,9 +500,9 @@
         </g>
     </symbol>
 </svg>
-<div class="page">
+<div class="page pagebreak">
     <div id="title">
-        <div class="title-intro">Understanding eviction in TEST</div>
+        <div class="title-intro">Understanding eviction in new new</div>
         <div class="locations">
             {{#each features}}
             <h1>{{properties.name}}</h1>
@@ -472,7 +515,7 @@
     <svg id="logo"><use xlink:href="#eviction-lab-logo" width="82" height="79" viewBox="0 0 82 79" /></svg>
 </div>
 {{#if oneFeature }}
-<div class="page one-feature feature-details">
+<div class="page one-feature feature-details pagebreak">
     <div class="screenshot" {{#if features.0.screenshot}}style="background-image:url('data:{{features.0.screenshot}}')"{{/if}}>
         {{#if features.0.mapLegend}}<div class="map-legend {{#if dataProp}}data-prop{{/if}}" style="background-image:url('data:{{features.0.mapLegend}}')"></div>{{/if}}
     </div>
@@ -517,7 +560,7 @@
 </div>
 {{/if}}
 {{#if twoFeatures}}
-<div class="page two-features feature-details">
+<div class="page two-features feature-details pagebreak">
     {{#each features}}
     <div class="screenshot" {{#if screenshot}}style="background-image:url('data:{{screenshot}}')"{{/if}}>
         {{#if mapLegend}}<div class="map-legend {{#if @root.dataProp}}data-prop{{/if}}" style="background-image:url('data:{{mapLegend}}')"></div>{{/if}}
@@ -563,7 +606,7 @@
 </div>
 {{/if}}
 {{#if threeFeatures}}
-<div class="page three-features feature-details">
+<div class="page three-features feature-details pagebreak">
     {{#each features}}
     <div class="screenshot" {{#if screenshot}}style="background-image:url('data:{{screenshot}}')"{{/if}}></div>
     <div class="details">
@@ -608,7 +651,8 @@
     </div>
 </div>
 {{/if}}
-<div class="page charts">
+<div class="page charts pagebreak">
+  <div class="rotate">
     <p class="title">Comparison of {{evictionRateTextPlural}} Over Time</p>
     <div class="chart" id="line-chart" {{#if lineChart}}style="background-color: inherit; background-image:url('data:{{lineChart}}')"{{/if}}></div>
     <div class="line legend {{#if showUsAverage}}us-avg{{/if}}">
@@ -616,14 +660,18 @@
         <p><span {{#if lineLegend}}style="background-image:url('data:{{lineLegend}}')"{{/if}}></span> <span>{{properties.n}}</span></p>
         {{/each}}
     </div>
-    <div class="chart" id="bar-chart" {{#if barChart}}style="background-color: inherit; background-image:url('data:{{barChart}}')"{{/if}}></div>
-    <div class="bar legend {{#if showUsAverage}}us-avg{{/if}}">
-        {{#each chartFeatures}}
-        <p>{{properties.idx}} {{properties.n}}</p>
-        {{/each}}
-    </div>
+  </div>
 </div>
-<div class="page stats {{#if oneFeature}}one-feature{{/if}} {{#if twoFeatures}}two-features{{/if}} {{#if threeFeatures}}three-features{{/if}}">
+<div class="page charts pagebreak">
+  <p class="title">Comparison of {{evictionRateTextPlural}} Over Time</p>
+  <div class="chart" id="bar-chart" {{#if barChart}}style="background-color: inherit; background-image:url('data:{{barChart}}')"{{/if}}></div>
+  <div class="bar legend {{#if showUsAverage}}us-avg{{/if}}">
+      {{#each chartFeatures}}
+      <p>{{properties.idx}} {{properties.n}}</p>
+      {{/each}}
+  </div>
+</div>
+<div class="page stats {{#if oneFeature}}one-feature{{/if}} {{#if twoFeatures}}two-features{{/if}} {{#if threeFeatures}}three-features{{/if}} pagebreak">
     {{#each features}}
     <div class="stat-table">
         <h3>{{properties.n}}</h3>
@@ -665,7 +713,7 @@
     </div>
     {{/each}}
 </div>
-<div class="page report report-intro">
+<div class="page report report-intro pagebreak">
     <h1>Facts About Eviction</h1>
     <svg id="logo-top">
         <use xlink:href="#eviction-lab-logo" width="38" height="36" viewBox="0 0 38 36" />
@@ -687,7 +735,7 @@
         <p>Landlords initiate the process, and renters are served notice to appear in court. Almost everywhere in the United States, evictions take place in civil court, where renters have no right to an attorney. For this reason and others, most renters do not appear in eviction court. When this happens, they receive a default eviction judgement, provided that the landlord or a representative is present. Renters who do appear in court may also receive an eviction judgement ordering them to vacate their home by a specific date. Eviction cases can be resolved in other ways as well. For one, the case may be dismissed or ruled in favor of defendants, allowing renter to remain in their home. In addition, a mediated agreement can be established between a landlord and a renter, often called a “settlement” or “stipulation,” which comes with certain terms. If renters meet the terms, the eviction is dismissed; if they do not, an eviction judgment can be rendered. In the event that evicted renters do not leave their home by the specified date, their landlord may file a “writ of restitution,” which permits law enforcement officers to forcibly remove a family and often their belongings.</p>
     </div>
 </div>
-<div class="page report">
+<div class="page report pagebreak">
     <svg id="logo-top">
         <use xlink:href="#eviction-lab-logo" width="38" height="36" viewBox="0 0 38 36" />
     </svg>

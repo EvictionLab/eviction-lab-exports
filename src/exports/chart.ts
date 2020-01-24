@@ -21,10 +21,13 @@ export class Chart {
         public years: number[],
         public bubbleProp: string,
         public colors: string[],
-        public translate
+        public translate,
+        public displayCI: boolean
     ) { }
 
     createBarChart(features: Feature[]): string {
+      console.log('createBarChart(), displayCI = ', this.displayCI);
+      // console.log(features);
         const margin = { top: 20, left: 120, right: 20, bottom: 80 };
         const fullWidth = this.width;
         const fullHeight = this.height;
@@ -46,8 +49,26 @@ export class Chart {
 
         x.domain(features.map(f => f.properties.n));
         const valueProp = `${this.bubbleProp}-${this.year.toString().slice(2)}`;
-        const values = features.map(f => f.properties.hasOwnProperty(valueProp) ? f.properties[valueProp] : -1);
+        let valueCiH;
+        let valueCiL;
+        if (!!this.displayCI) {
+          valueCiH = `${this.bubbleProp}h-${this.year.toString().slice(2)}`;
+          valueCiL = `${this.bubbleProp}l-${this.year.toString().slice(2)}`;
+          console.log('valueCiH = ', valueCiH);
+          console.log('valueCiL = ', valueCiL);
+        }
+        let values = [];
+        const getValPlusCiH = (val, ciH) => {
+          return (ciH && ciH >= 0) ? val + ciH : val;
+        }
+        if (!!this.displayCI) {
+          values = features.map(f => f.properties.hasOwnProperty(valueProp) ? getValPlusCiH(f.properties[valueProp], f.properties[valueCiH]) : -1);
+        } else {
+          values = features.map(f => f.properties.hasOwnProperty(valueProp) ? f.properties[valueProp] : -1);
+        }
+        console.log('values = ', values);
         let maxY = Math.max(...values);
+        console.log('maxY = ' + maxY);
         // Minimum value of 1/1.1
         maxY = Math.max(maxY, 1 / 1.1);
         y.domain([0, Math.min(100, maxY)]);
@@ -92,13 +113,35 @@ export class Chart {
             // Set minimum bar height if null
             // TODO: Does this still apply for static image?
             const val = f.properties[valueProp];
+            let ciH;
+            let ciL;
+            if (!!this.displayCI) {
+              ciH = f.properties[valueCiH];
+              ciL = f.properties[valueCiL];
+              console.log('ciH = ', ciH);
+              console.log('ciL = ', ciL);
+            }
             const barDisplayVal = val >= 0.1 ? val : y.domain()[y.domain().length - 1] * 0.005;
+            // Bar
             context.fillRect(
                 x(f.properties.n),
                 y(barDisplayVal),
                 x.bandwidth(),
                 height - y(barDisplayVal)
             );
+            // Bar CI
+            if (!!this.displayCI) {
+              // console.log('writing ci to bar');
+              // context.fillStyle = '';
+              // context.fill = 'black';
+              // context.fillRect(
+              //     x(f.properties.n),
+              //     y(barDisplayVal) - y(ciH),
+              //     x.bandwidth(),
+              //     y(ciH) + y(ciL)
+              // );
+              // context.fillRect(10, 10, 100, 100);
+            }
         });
 
         return canvas.toDataURL();
