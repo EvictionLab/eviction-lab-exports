@@ -6,6 +6,8 @@ jspm_packages
 .serverless
 .build
 
+.DS_Store
+build
 src/assets/*
 assets/fonts/*.otf
 assets/fonts/*.ttf

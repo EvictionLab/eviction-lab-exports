@@ -12,7 +12,8 @@
     "tsc": "tsc",
     "create-pdf": "tsc && node ./build/creator.js pdf",
     "create-pptx": "tsc && node ./build/creator.js pptx",
-    "create-xlsx": "tsc && node ./build/creator.js xlsx"
+    "create-xlsx": "tsc && node ./build/creator.js xlsx",
+    "dev": "tsc && node ./build/server.js"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,7 @@
     "@types/puppeteer": "^2.0.0",
     "canvas": "^2.6.1",
     "chrome-aws-lambda": "^2.0.2",
+    "express": "^4.17.1",
     "puppeteer": "^2.0.0",
     "serverless": "^1.61.3",
     "serverless-domain-manager": "^3.3.1",
