@@ -58,11 +58,11 @@ export class Chart {
           console.log('valueCiL = ', valueCiL);
         }
         let values = [];
-        const getValPlusCiH = (val, ciH) => {
-          return (ciH && ciH >= 0) ? val + ciH : val;
-        }
+        // const getValPlusCiH = (val, ciH) => {
+        //   return (ciH && ciH >= 0) ? val + ciH : val;
+        // }
         if (!!this.displayCI) {
-          values = features.map(f => f.properties.hasOwnProperty(valueProp) ? getValPlusCiH(f.properties[valueProp], f.properties[valueCiH]) : -1);
+          values = features.map(f => f.properties.hasOwnProperty(valueCiH) ? f.properties[valueCiH] : -1);
         } else {
           values = features.map(f => f.properties.hasOwnProperty(valueProp) ? f.properties[valueProp] : -1);
         }
@@ -130,17 +130,23 @@ export class Chart {
                 height - y(barDisplayVal)
             );
             // Bar CI
-            if (!!this.displayCI) {
+            if (!!this.displayCI && !!ciH && !!ciH) {
               // console.log('writing ci to bar');
-              // context.fillStyle = '';
-              // context.fill = 'black';
-              // context.fillRect(
-              //     x(f.properties.n),
-              //     y(barDisplayVal) - y(ciH),
-              //     x.bandwidth(),
-              //     y(ciH) + y(ciL)
-              // );
-              // context.fillRect(10, 10, 100, 100);
+              const img = new Canvas.Image;
+              img.width = 48;
+              img.height = 48;
+              img.onload = function(){
+                // console.log('image loaded, ' + img.src);
+                const pat = context.createPattern(img, 'repeat');
+                context.fillStyle = pat;
+                context.fillRect(
+                    x(f.properties.n),
+                    y(ciL),
+                    x.bandwidth(),
+                    y(ciH) - y(ciL)
+                );
+              }
+              img.src = './src/assets/ci-' + i + '.png';
             }
         });
 

@@ -26,23 +26,10 @@
         .page {
             margin: 0;
             display: block;
-            /* width: 1632px; */
-            /* height: 2112px; */
-            /* width: 612px; */
-            /* height: 792px; */
-            /*width: 1275px;*/
-            /*height: 1650px;*/
+            width: 612px;
+            height: 792px;
             margin: 0;
-            border: 1px solid black;
-        }
-        .page {
-          /* height: 1056px; */
-          height: 1056px;
-          display: block;
-          width: 100%; /* 612px; */
-          margin: 0;
-          padding: 0;
-          overflow: hidden;
+            /* border: 1px solid black; */
         }
         .pagebreak {
           page-break-before: always;
@@ -201,10 +188,12 @@
           /*transform: rotate(90deg);*/
         }
         .page.charts .title {
-            position: absolute;
+            /* position: absolute; */
             font-size: 15px;
-            top: 446px;
-            left: 550px;
+            /* top: 46px; */
+            /* left: 50px; */
+            display: block;
+            margin: 40px auto auto auto;
             width: 416px;
             text-align: center;
             text-transform: uppercase;
@@ -212,44 +201,57 @@
             font-weight: bold;
             color: #000000;
             z-index: 1;
-            transform: rotate(90deg);
-            border: 1px solid black;
+            /* transform: rotate(90deg); */
+            /* border: 1px solid black; */
         }
         .page.charts .chart {
             /* width: 325px;
-            height: 250px;*/
-            width: 700px;
-            height: 589px;
-            left: 70px;
-            top: 220px;
+            height: 250px; */
+            width: 500px;
+            height: 385px;
+            display: block;
+            margin: 30px auto 20px auto;
+            /* left: 70px; */
+            /* top: 220px; */
             /* margin-top: 155px; */
             background-color: lightgrey;
-            position: absolute;
+            /* position: absolute; */
             background-repeat: no-repeat;
             background-size: contain;
-            transform: rotate(90deg);
+            /* transform: rotate(90deg); */
             /* border: 1px solid black; */
         }
+        .page.charts .bar.chart {
+          /* margin: 40px auto 10px auto; */
+        }
         .page.charts .chart#bar-chart {
-          left: 30px;
+          /* left: 30px; */
         }
         /* .page.charts .chart:first-of-type { top: 70px; } */
         /* .page.charts .chart:nth-of-type(3) { left: 50px; } */
         .page.charts .legend {
-          position: absolute;
-          left: -80px;
-          top: 390px;
-          width: 325px;
-          transform: rotate(90deg);
+          /* position: absolute; */
+          /* left: -80px; */
+          /* top: 390px; */
+          /* min-width: 325px; */
+          display: block;
+          margin: auto auto;
+          text-align: left;
+          width: max-content;
+          /* transform: rotate(90deg); */
           /* border: 1px solid black; */
         }
         .page.charts .bar.legend {
-          left: -60px;
+          /* left: -60px; */
+          /* text-align: left;
+          width: min-content; */
         }
         .page.charts .legend p {
             font-size: 14px;
             line-height: 22px;
             font-weight: bold;
+            text-align: left;
+            width: max-content;
         }
         /*.page.charts .legend.line { top: 0px;}
         .page.charts .legend.bar { top: 0px;}*/
@@ -266,6 +268,17 @@
             height: 14px;
             width: 30px;
             margin-right: 16px;
+        }
+        .page.charts .rotate {
+          width: 792px;
+          height: 612px;
+          display: block;
+          transform: rotate(90deg);
+          position: absolute;
+          left: -91px;
+          top: 89px;
+          text-align: center;
+          /* border: 1px solid blue; */
         }
 
         /* STATS TABLES */
@@ -434,6 +447,15 @@
         }
         .low-flag { fill: #737373; }
         .high-flag { fill: #e24000; }
+        /* #pattern-0 path {
+          stroke: #e24000;
+        }
+        #pattern-1 path {
+          stroke: #434878;
+        }
+        #pattern-2 path {
+          stroke: #2c897f;
+        } */
     </style>
 </head>
 <body>
@@ -499,6 +521,19 @@
             </g>
         </g>
     </symbol>
+    <pattern id="pattern-0" x="0" y="0" width="12" height="12" patternContentUnits="userSpaceOnUse" shapeRendering="crispEdges">
+      <rect x="0" y="0" width="12" height="12" />
+      <path stroke="#e24000" d="M-3,3 l6,-6M0,12 l12,-12M9,15 l6,-6" stroke-width="4" />
+    </pattern>
+    <pattern id="pattern-1" x="0" y="0" width="12" height="12" patternContentUnits="userSpaceOnUse" shapeRendering="crispEdges">
+      <rect x="0" y="0" width="12" height="12" />
+      <path stroke="#434878" d="M-3,3 l6,-6M0,12 l12,-12M9,15 l6,-6" stroke-width="4" />
+    </pattern>
+    <pattern id="pattern-2" x="0" y="0" width="12" height="12" patternContentUnits="userSpaceOnUse" shapeRendering="crispEdges">
+      <rect x="0" y="0" width="12" height="12" />
+      <path stroke="#2c897f" d="M-3,3 l6,-6M0,12 l12,-12M9,15 l6,-6" stroke-width="4" />
+    </pattern>
+  </defs>
 </svg>
 <div class="page pagebreak">
     <div id="title">
@@ -663,12 +698,20 @@
   </div>
 </div>
 <div class="page charts pagebreak">
-  <p class="title">Comparison of {{evictionRateTextPlural}} Over Time</p>
-  <div class="chart" id="bar-chart" {{#if barChart}}style="background-color: inherit; background-image:url('data:{{barChart}}')"{{/if}}></div>
-  <div class="bar legend {{#if showUsAverage}}us-avg{{/if}}">
-      {{#each chartFeatures}}
-      <p>{{properties.idx}} {{properties.n}}</p>
-      {{/each}}
+  <div class="rotate">
+    <p class="title">Comparison of {{evictionRateTextPlural}} Over Time</p>
+    <div class="chart" id="bar-chart" {{#if barChart}}style="background-color: inherit; background-image:url('data:{{barChart}}')"{{/if}}></div>
+    <div class="footer">
+      <div class="bar legend {{#if showUsAverage}}us-avg{{/if}}">
+          {{#each chartFeatures}}
+          <p>{{properties.idx}} {{properties.n}}</p>
+          {{/each}}
+      </div>
+      <div class="bar legend-ci">
+        <svg></svg>
+        <p>Confidence interval</p>
+      </div>
+    </div>
   </div>
 </div>
 <div class="page stats {{#if oneFeature}}one-feature{{/if}} {{#if twoFeatures}}two-features{{/if}} {{#if threeFeatures}}three-features{{/if}} pagebreak">
