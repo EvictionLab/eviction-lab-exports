@@ -29,7 +29,10 @@ export const Translations: Object = {
             'FLAG_LOW': () => 'This area\'s estimated eviction/filing rate is too low. Please see our FAQ section to better understand why https://evictionlab.org/help-faq/',
             'FLAG_MARYLAND_FILING': () => 'Because of the way Maryland records eviction notices, it has a much higher filing rate than everywhere else. Please see our FAQ section to better understand why https://evictionlab.org/help-faq/',
             'TRACT_SINGULAR': () => 'Census Tract',
-            'BLOCK_GROUP_SINGULAR': () => 'Block Group'
+            'BLOCK_GROUP_SINGULAR': () => 'Block Group',
+            'MAX_ABBREV': () => 'Max',
+            'MIN_ABBREV': () => 'Min',
+            'CONFIDENCE_INTERVAL': () => 'Confidence Interval'
         },
         'DATA_PROPS': {
             'e': 'Evictions',
@@ -181,7 +184,10 @@ export const Translations: Object = {
             'FLAG_LOW': () => 'La estimación de la tasa de desalojo/presentaciones de esta área es demasiado baja. Por favor, consulte nuestra sección de preguntas frecuentes para comprender mejor por qué https://evictionlab.org/en/help-faq/',
             'FLAG_MARYLAND_FILING': () => 'Debido a la forma en que Maryland registra los avisos de desalojo, tiene una tasa de presentación mucho más alta que en cualquier otro lugar. Por favor, consulte nuestra sección de preguntas frecuentes para comprender mejor por qué https://evictionlab.org/en/help-faq/',
             'TRACT_SINGULAR': () => 'Sección Censal',
-            'BLOCK_GROUP_SINGULAR': () => 'Grupo de Cuadras'
+            'BLOCK_GROUP_SINGULAR': () => 'Grupo de Cuadras',
+            'MAX_ABBREV': () => 'MÁX',
+            'MIN_ABBREV': () => 'MÍN',
+            'CONFIDENCE_INTERVAL': () => 'Intervalo de Confianza'
         },
         'DATA_PROPS': {
             'e': 'Desalojos',

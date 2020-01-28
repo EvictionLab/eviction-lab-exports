@@ -188,10 +188,7 @@
           /*transform: rotate(90deg);*/
         }
         .page.charts .title {
-            /* position: absolute; */
             font-size: 15px;
-            /* top: 46px; */
-            /* left: 50px; */
             display: block;
             margin: 40px auto auto auto;
             width: 416px;
@@ -201,7 +198,6 @@
             font-weight: bold;
             color: #000000;
             z-index: 1;
-            /* transform: rotate(90deg); */
             /* border: 1px solid black; */
         }
         .page.charts .chart {
@@ -210,7 +206,7 @@
             width: 500px;
             height: 385px;
             display: block;
-            margin: 30px auto 20px auto;
+            margin: 30px auto 5px auto;
             /* left: 70px; */
             /* top: 220px; */
             /* margin-top: 155px; */
@@ -221,37 +217,105 @@
             /* transform: rotate(90deg); */
             /* border: 1px solid black; */
         }
-        .page.charts .bar.chart {
-          /* margin: 40px auto 10px auto; */
-        }
-        .page.charts .chart#bar-chart {
-          /* left: 30px; */
-        }
-        /* .page.charts .chart:first-of-type { top: 70px; } */
-        /* .page.charts .chart:nth-of-type(3) { left: 50px; } */
-        .page.charts .legend {
-          /* position: absolute; */
-          /* left: -80px; */
-          /* top: 390px; */
-          /* min-width: 325px; */
+        .page.charts .legend-parent {
+          width: 500px;
+          margin-left: auto;
+          margin-right: auto;
           display: block;
-          margin: auto auto;
-          text-align: left;
-          width: max-content;
-          /* transform: rotate(90deg); */
+          position: relative;
+          /* border: 1px solid blue; */
+        }
+        .page.charts .legend {
+          position: absolute;
+          top: 0;
+          left: 48px;
+          width: 32%;
+          font-family: 'GT Eesti Display', Helvetica, sans-serif;
           /* border: 1px solid black; */
         }
-        .page.charts .bar.legend {
-          /* left: -60px; */
-          /* text-align: left;
-          width: min-content; */
+        .page.charts .legend-ci {
+          display: block;
+          min-height: 64px;
+          width: auto;
+          position: absolute;
+          left: 345px;
+          top: 0;
+          padding-top: 5px;
+          /* border: 1px solid blue; */
+        }
+        .page.charts .legend-ci .ci-key {
+          width: 34px;
+          height: 64px;
+          display: inline-block;
+          margin-right: 0;
+          /* border: 1px solid black; */
+        }
+        .page.charts .legend-ci .ci-key .ci-max,
+        .page.charts .legend-ci .ci-key .ci-min {
+          height: 12px;
+          font-size: 10px;
+          text-transform: uppercase;
+          font-family: 'Akkurat', Helvetica, sans-serif;
+        }
+        .page.charts .legend-ci .ci-key .ci-max {
+          margin-bottom: -2px;
+          vertical-align: bottom;
+          /* border: 1px solid blue; */
+        }
+        .page.charts .legend-ci .ci-key .ci-min {
+          margin-top: 1px;
+        }
+        .page.charts .legend-ci .ci-key .ci-max,
+        .page.charts .legend-ci .ci-key .ci-min,
+        .page.charts .legend-ci .ci-key .ci-split,
+        .page.charts .legend-ci .ci-key .ci-barber,
+        .page.scharts .legend-ci .ci-key .ci-base {
+          font-family: 'GT Eesti Display', Helvetica, sans-serif;
+          display: block;
+          width: 34px;
+          height: 16px;
+        }
+        .page.charts .legend-ci .ci-key .ci-split {
+          height: 32px;
+          position: relative;
+        }
+        .page.charts .legend-ci .ci-key .ci-barber {
+          display: block;
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 34px;
+          height: 32px;
+          background-size: 6px 6px;
+          background-repeat: repeat;
+          background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAl0lEQVQYlY3PQQqCQBjF8X+Tq2BgTOE7QqfpDkLHmEUIGt0iobsNWQYftmjbQhTTAt/y8YPHW90e7d7aDX1CaPDHCm1eQ5ekFrMElUVG9IV8heoIiaXMD4jEHQyhxvvrXwQQdeiC6nuEHOcyI03ioVvX9+1ujEQcpwlSbTFTVORz5H2FmSGZoxCe3RkRR/FjrkcAZgkC+AAs8Vw6rr1xVAAAAABJRU5ErkJggg==');
+        }
+        .page.charts .legend-ci .ci-key .ci-base {
+          background-color: rgba(0, 0, 0, 0.32); /* rgba(255, 255, 255, 0.75); */
+          z-indez: 3000;
+          width: 34px;
+          height: 16px;
+          position: absolute;
+          bottom: 0;
+          left: 0;
+        }
+        .page.charts .legend-ci .ci-label {
+          height: 64px;
+          display: inline-block;
+          margin-right: 0;
+          vertical-align: middle;
+          font-weight: bold;
+          text-align: left;
+          font-size: 12px;
+          font-family: 'GT Eesti Display', Helvetica, sans-serif;
+          /* border: 1px solid blue; */
         }
         .page.charts .legend p {
             font-size: 14px;
             line-height: 22px;
             font-weight: bold;
             text-align: left;
-            width: max-content;
+            font-family: 'GT Eesti Display', Helvetica, sans-serif;
         }
         /*.page.charts .legend.line { top: 0px;}
         .page.charts .legend.bar { top: 0px;}*/
@@ -447,15 +511,6 @@
         }
         .low-flag { fill: #737373; }
         .high-flag { fill: #e24000; }
-        /* #pattern-0 path {
-          stroke: #e24000;
-        }
-        #pattern-1 path {
-          stroke: #434878;
-        }
-        #pattern-2 path {
-          stroke: #2c897f;
-        } */
     </style>
 </head>
 <body>
@@ -521,19 +576,6 @@
             </g>
         </g>
     </symbol>
-    <pattern id="pattern-0" x="0" y="0" width="12" height="12" patternContentUnits="userSpaceOnUse" shapeRendering="crispEdges">
-      <rect x="0" y="0" width="12" height="12" />
-      <path stroke="#e24000" d="M-3,3 l6,-6M0,12 l12,-12M9,15 l6,-6" stroke-width="4" />
-    </pattern>
-    <pattern id="pattern-1" x="0" y="0" width="12" height="12" patternContentUnits="userSpaceOnUse" shapeRendering="crispEdges">
-      <rect x="0" y="0" width="12" height="12" />
-      <path stroke="#434878" d="M-3,3 l6,-6M0,12 l12,-12M9,15 l6,-6" stroke-width="4" />
-    </pattern>
-    <pattern id="pattern-2" x="0" y="0" width="12" height="12" patternContentUnits="userSpaceOnUse" shapeRendering="crispEdges">
-      <rect x="0" y="0" width="12" height="12" />
-      <path stroke="#2c897f" d="M-3,3 l6,-6M0,12 l12,-12M9,15 l6,-6" stroke-width="4" />
-    </pattern>
-  </defs>
 </svg>
 <div class="page pagebreak">
     <div id="title">
@@ -701,15 +743,22 @@
   <div class="rotate">
     <p class="title">Comparison of {{evictionRateTextPlural}} Over Time</p>
     <div class="chart" id="bar-chart" {{#if barChart}}style="background-color: inherit; background-image:url('data:{{barChart}}')"{{/if}}></div>
-    <div class="footer">
+    <div class="legend-parent">
       <div class="bar legend {{#if showUsAverage}}us-avg{{/if}}">
           {{#each chartFeatures}}
           <p>{{properties.idx}} {{properties.n}}</p>
           {{/each}}
       </div>
       <div class="bar legend-ci">
-        <svg></svg>
-        <p>Confidence interval</p>
+        <div class="ci-key">
+          <div class="ci-max">{{maxAbbrev}}</div>
+          <div class="ci-split">
+            <div class="ci-barber"></div>
+            <div class="ci-base"></div>
+          </div>
+          <div class="ci-min">{{minAbbrev}}</div>
+        </div>
+        <div class="ci-label">{{confidenceInterval}}</div>
       </div>
     </div>
   </div>

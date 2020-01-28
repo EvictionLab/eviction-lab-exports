@@ -58,17 +58,12 @@ export class Chart {
           console.log('valueCiL = ', valueCiL);
         }
         let values = [];
-        // const getValPlusCiH = (val, ciH) => {
-        //   return (ciH && ciH >= 0) ? val + ciH : val;
-        // }
         if (!!this.displayCI) {
           values = features.map(f => f.properties.hasOwnProperty(valueCiH) ? f.properties[valueCiH] : -1);
         } else {
           values = features.map(f => f.properties.hasOwnProperty(valueProp) ? f.properties[valueProp] : -1);
         }
-        console.log('values = ', values);
         let maxY = Math.max(...values);
-        console.log('maxY = ' + maxY);
         // Minimum value of 1/1.1
         maxY = Math.max(maxY, 1 / 1.1);
         y.domain([0, Math.min(100, maxY)]);
@@ -111,15 +106,12 @@ export class Chart {
         features.forEach((f, i) => {
             context.fillStyle = '#' + this.getColor(f, i);
             // Set minimum bar height if null
-            // TODO: Does this still apply for static image?
             const val = f.properties[valueProp];
             let ciH;
             let ciL;
             if (!!this.displayCI) {
               ciH = f.properties[valueCiH];
               ciL = f.properties[valueCiL];
-              console.log('ciH = ', ciH);
-              console.log('ciL = ', ciL);
             }
             const barDisplayVal = val >= 0.1 ? val : y.domain()[y.domain().length - 1] * 0.005;
             // Bar
@@ -133,12 +125,12 @@ export class Chart {
             if (!!this.displayCI && !!ciH && !!ciH) {
               // console.log('writing ci to bar');
               const img = new Canvas.Image;
-              img.width = 48;
-              img.height = 48;
+              img.width = 12;
+              img.height = 12;
               img.onload = function(){
                 // console.log('image loaded, ' + img.src);
                 const pat = context.createPattern(img, 'repeat');
-                context.fillStyle = pat;
+                context.fillStyle = pat; // 'rgba(255, 0, 0, 0.5)';
                 context.fillRect(
                     x(f.properties.n),
                     y(ciL),

@@ -22,6 +22,9 @@ export class PdfExport extends Export {
   evictionRateText: string;
   evictionKind: string;
   evictionKindPlural: string;
+  maxAbbrev: string;
+  minAbbrev: string;
+  confidenceInterval: string;
   get templateKey() { return `${this.lang}/report.html`; }
 
   constructor(requestData: RequestData) {
@@ -53,6 +56,9 @@ export class PdfExport extends Export {
       this.evictionKindPlural = this.translate['EVICTION_FILINGS']();
       this.evictionRateText = this.translate['EVICTION_FILING_RATE']();
     }
+    this.maxAbbrev = this.translate['MAX_ABBREV']();
+    this.minAbbrev = this.translate['MIN_ABBREV']();
+    this.confidenceInterval = this.translate['CONFIDENCE_INTERVAL']();
     const features = this.features.map(f => this.processFeature(f));
     let params = { width: 520, height: 520 };
     if (features.length === 2) {
@@ -92,6 +98,9 @@ export class PdfExport extends Export {
       }),
       showUsAverage: this.showUsAverage,
       evictionRateText: this.evictionRateText,
+      maxAbbrev: this.maxAbbrev,
+      minAbbrev: this.minAbbrev,
+      confidenceInterval: this.confidenceInterval,
       evictionRateTextPlural: this.translate[ratePluralKey](),
       footerNote: this.translate[footerNoteKey](),
       evictionKind: this.evictionKind.toLowerCase(),
