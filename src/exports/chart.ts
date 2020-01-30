@@ -4,7 +4,7 @@ import * as geoViewport from '@mapbox/geo-viewport';
 import { scales } from '../data/scales';
 import { Feature } from '../data/feature';
 import { scaleLinear, scaleBand } from 'd3-scale';
-import { line } from 'd3-shape';
+import { line, area } from 'd3-shape';
 import { PercentCols, DollarCols } from '../data/propData';
 // if (process.env.NODE_ENV !== 'production') {
 //   require('dotenv').config()
@@ -26,7 +26,7 @@ export class Chart {
     ) { }
 
     createBarChart(features: Feature[]): string {
-      console.log('createBarChart(), displayCI = ', this.displayCI);
+      // console.log('createBarChart(), displayCI = ', this.displayCI);
       // console.log(features);
         const margin = { top: 20, left: 120, right: 20, bottom: 80 };
         const fullWidth = this.width;
@@ -54,8 +54,6 @@ export class Chart {
         if (!!this.displayCI) {
           valueCiH = `${this.bubbleProp}h-${this.year.toString().slice(2)}`;
           valueCiL = `${this.bubbleProp}l-${this.year.toString().slice(2)}`;
-          console.log('valueCiH = ', valueCiH);
-          console.log('valueCiL = ', valueCiL);
         }
         let values = [];
         if (!!this.displayCI) {
@@ -146,6 +144,7 @@ export class Chart {
     }
 
     createLineChart(features: Feature[]): string {
+      // console.log('createLineChart()');
         const yearArr = this.years;
         const margin = { top: 20, left: 120, right: 50, bottom: 80 };
         const fullWidth = 945;
@@ -228,10 +227,28 @@ export class Chart {
             .defined(d => d.val >= 0)
             .context(context);
 
+        const ciArea = area()
+          .x(d => x(d.year))
+          .y0((d) => y(d.ciH))
+          .y1((d) => y(d.ciL))
+          .defined(d => d.val >= 0)
+          .context(context);
+
         features.forEach((f, i) => {
+          // console.log('features.forEach(), ' + i);
+          // console.log(f.properties);
             context.beginPath();
             const data = yearArr.map(y => {
-                return { year: y, val: f.properties[`${this.bubbleProp}-${y.toString().slice(2)}`] };
+                return {
+                  year: y,
+                  val: f.properties[`${this.bubbleProp}-${y.toString().slice(2)}`],
+                  ciH: f.properties[`${this.bubbleProp}h-${y.toString().slice(2)}`] ?
+                      f.properties[`${this.bubbleProp}h-${y.toString().slice(2)}`] :
+                      f.properties[`${this.bubbleProp}-${y.toString().slice(2)}`],
+                  ciL: f.properties[`${this.bubbleProp}l-${y.toString().slice(2)}`] ?
+                      f.properties[`${this.bubbleProp}l-${y.toString().slice(2)}`] :
+                      f.properties[`${this.bubbleProp}-${y.toString().slice(2)}`]
+                };
             });
             lineChart(data);
             context.lineWidth = 6;
@@ -251,6 +268,7 @@ export class Chart {
             context.stroke();
             context.globalCompositeOperation = 'source-over';
 
+            // Draws dots for each data point.
             const radius = 7.5;
             data.filter(d => d.val > -1)
                 .forEach(d => {
@@ -258,6 +276,15 @@ export class Chart {
                     context.arc(x(d.year), y(d.val), radius, 0, 2 * Math.PI);
                     context.fill();
                 });
+
+            if (!!this.displayCI) {
+              // console.log(' adding ciArea');
+              ciArea(data);
+              context.globalAlpha = 0.3;
+              context.fillStyle = '#' + this.getColor(f, i);
+              context.fill();
+              context.globalAlpha = 1;
+            }
         });
 
         return canvas.toDataURL();

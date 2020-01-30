@@ -286,18 +286,28 @@
           left: 0;
           width: 34px;
           height: 32px;
+          background-color: rgba(256,64,0,0.3);
+          /* border: 1px solid blue; */
+        }
+        .page.charts .bar.legend-ci .ci-key .ci-barber {
+          background-color: transparent;
           background-size: 6px 6px;
           background-repeat: repeat;
           background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAl0lEQVQYlY3PQQqCQBjF8X+Tq2BgTOE7QqfpDkLHmEUIGt0iobsNWQYftmjbQhTTAt/y8YPHW90e7d7aDX1CaPDHCm1eQ5ekFrMElUVG9IV8heoIiaXMD4jEHQyhxvvrXwQQdeiC6nuEHOcyI03ioVvX9+1ujEQcpwlSbTFTVORz5H2FmSGZoxCe3RkRR/FjrkcAZgkC+AAs8Vw6rr1xVAAAAABJRU5ErkJggg==');
         }
         .page.charts .legend-ci .ci-key .ci-base {
-          background-color: rgba(0, 0, 0, 0.32); /* rgba(255, 255, 255, 0.75); */
+          background-color: rgba(0, 0, 0, 0.32);
           z-indez: 3000;
           width: 34px;
           height: 16px;
           position: absolute;
           bottom: 0;
           left: 0;
+        }
+        .page.charts .line.legend-ci .ci-key .ci-base {
+          height: 3px;
+          bottom: 15px;
+          background-color: rgba(256,64,0,100);
         }
         .page.charts .legend-ci .ci-label {
           height: 64px;
@@ -738,7 +748,7 @@
           <p><span {{#if lineLegend}}style="background-image:url('data:{{lineLegend}}')"{{/if}}></span> <span>{{properties.n}}</span></p>
           {{/each}}
       </div>
-      <div class="bar legend-ci">
+      <div class="line legend-ci">
         <div class="ci-key">
           <div class="ci-max">{{maxAbbrev}}</div>
           <div class="ci-split">

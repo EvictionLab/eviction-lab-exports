@@ -463,16 +463,16 @@
 </svg>
 <div class="page">
     <div id="title">
-        <div class="title-intro">Comprender el desalojo en</div>
+        <div class="title-intro">{{ titleIntro }}</div>
         <div class="locations">
             {{#each features}}
             <h1>{{properties.name}}</h1>
             {{/each}}
         </div>
-        <div class="attribution">Una presentación de PowerPoint generada por The Eviction Lab en la Universidad de Princeton</div>
+        <div class="attribution">{{ titleSource }}</div>
     </div>
-    <p id="date">Datos extraídos el {{date}}</div>
-    <p id="info">Para más información, visite evictionlab.org</p>
+    <p id="date">{{ titleExtractDate }}</div>
+    <p id="info">{{ titleWebLink }}</p>
     <svg id="logo"><use xlink:href="#eviction-lab-logo" width="82" height="79" viewBox="0 0 82 79" /></svg>
 </div>
 {{#if oneFeature }}
@@ -483,9 +483,9 @@
     <div class="details">
         <h3>{{title}}</h3>
         <ul>
-            <li><span>Número de desalojos por día:</span> <span>{{features.0.properties.epd}}</span></li>
+            <li><span>{{@root.evictionsPerDayPreface}}</span> <span>{{features.0.properties.epd}}</span></li>
             <li>
-                <span>{{evictionRateText}}:</span> <span>{{features.0.properties.bubbleProp}}</span>
+                <span>{{@root.evictionRateText}}:</span> <span>{{features.0.properties.bubbleProp}}</span>
                 {{#if (lookup features.0.lowFlags bubbleProp)}}
                 <svg class="low-flag"><use xlink:href="#flag" width="16" height="16" viewBox="0 0 16 16"></use></svg>
                 {{else if (lookup features.0.marylandFiling bubbleProp)}}
@@ -503,19 +503,19 @@
         <p>{{@root.footerNote}}</p>
         <p>
             <svg class="low-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
-            La tasa de desalojo/presentaciones de esta área es demasiado baja.
+            {{ tooLow }}
         </p>
         <p>
             <svg class="high-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
-            La tasa de desalojo/presentaciones en el 1% superior.
+            {{ top1Perc }}
         </p>
         {{#if marylandFiling}}
         <p>
             <svg class="low-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
-            Debido a la forma en que Maryland registra los avisos de desalojo, tiene una tasa de presentación mucho más alta que en cualquier otro lugar.
+            {{flagMarylandExpl}}
         </p>
         {{/if}}
-        <p>Por favor, consulte nuestra sección de preguntas frecuentes para comprender mejor por qué https://evictionlab.org/es/help-faq/</p>
+        <p>{{flagMarylandSee}}</p>
     </div>
 </div>
 {{/if}}
@@ -528,7 +528,7 @@
     <div class="details">
         <h3>{{title}}</h3>
         <ul>
-            <li><span>Número de desalojos por día:</span> <span>{{properties.epd}}</span></li>
+            <li><span>{{ @root.evictionsPerDayPreface }}</span> <span>{{properties.epd}}</span></li>
             <li>
                 <span>{{@root.evictionRateText}}:</span> <span>{{properties.bubbleProp}}</span>
                 {{#if (lookup lowFlags @root.bubbleProp)}}
@@ -549,19 +549,19 @@
         <p>{{@root.footerNote}}</p>
         <p>
             <svg class="low-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
-            La tasa de desalojo/presentaciones de esta área es demasiado baja.
+            {{tooLow}}
         </p>
         <p>
             <svg class="high-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
-            La tasa de desalojo/presentaciones en el 1% superior.
+            {{top1Perc}}
         </p>
         {{#if marylandFiling}}
         <p>
             <svg class="low-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
-            Debido a la forma en que Maryland registra los avisos de desalojo, tiene una tasa de presentación mucho más alta que en cualquier otro lugar.
+            {{flagMarylandExpl}}
         </p>
         {{/if}}
-        <p>Por favor, consulte nuestra sección de preguntas frecuentes para comprender mejor por qué https://evictionlab.org/es/help-faq/</p>
+        <p>{{flagMarylandSee}}</p>
     </div>
 </div>
 {{/if}}
@@ -572,7 +572,7 @@
     <div class="details">
         <h3>{{title}}</h3>
         <ul>
-            <li><span>Número de desalojos por día:</span> <span>{{properties.epd}}</span></li>
+            <li><span>{{@root.evictionsPerDayPreface}}</span> <span>{{properties.epd}}</span></li>
             <li>
                 <span>{{@root.evictionRateText}}:</span> <span>{{properties.bubbleProp}}</span>
                 {{#if (lookup lowFlags @root.bubbleProp)}}
@@ -594,24 +594,24 @@
         <p>{{@root.footerNote}}</p>
         <p>
             <svg class="low-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
-            La tasa de desalojo/presentaciones de esta área es demasiado baja.
+            {{tooLow}}
         </p>
         <p>
             <svg class="high-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
-            La tasa de desalojo/presentaciones en el 1% superior.
+            {{top1Perc}}
         </p>
         {{#if marylandFiling}}
         <p>
             <svg class="low-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
-            Debido a la forma en que Maryland registra los avisos de desalojo, tiene una tasa de presentación mucho más alta que en cualquier otro lugar.
+            {{flagMarylandExpl}}
         </p>
         {{/if}}
-        <p>Por favor, consulte nuestra sección de preguntas frecuentes para comprender mejor por qué https://evictionlab.org/es/help-faq/</p>
+        <p>{{flagMarylandSee}}</p>
     </div>
 </div>
 {{/if}}
 <div class="page charts">
-    <p class="title">Comparación de las {{evictionRateTextPlural}} a lo largo del tiempo</p>
+    <p class="title">{{titleComparisonOf}} {{evictionRateTextPlural}} {{titleOverTime}}</p>
     <div class="chart" id="line-chart" {{#if lineChart}}style="background-color: inherit; background-image:url('data:{{lineChart}}')"{{/if}}></div>
     <div class="line legend {{#if showUsAverage}}us-avg{{/if}}">
         {{#each chartFeatures}}
@@ -632,12 +632,12 @@
         <p class="year">{{@root.year}}</p>
         <div class="epd {{#if (lookup unavailable 'e')}}unavailable{{/if}}">
             <p>{{properties.epd}}</p>
-            <p>Desalojos por día</p>
+            <p>{{@root.titleEvictionsPerDay}}</p>
         </div>
         <div class="er {{#if (lookup unavailable 'er')}}unavailable{{/if}}">
             <p>{{properties.er}}</p>
             <p>
-                Tasa de desalojo
+                {{@root.titleEvictionRate}}
                 {{#if (lookup lowFlags 'er')}}
                 <svg class="low-flag"><use xlink:href="#flag" width="16" height="16" viewBox="0 0 16 16"></use></svg>
                 {{else if (lookup highFlags 'er')}}
@@ -660,7 +660,7 @@
             <p>{{val}}</p>
         </div>
         {{/each}}
-        <p class="divider">Desglose Demográfico</p>
+        <p class="divider">{{@root.demographicBreakdown}}</p>
         {{#each demDataProps}}
         <div class="data-props {{#if (lookup ../unavailable key)}}unavailable{{/if}}"><p>{{@key}}</p><p>{{val}}</p></div>
         {{/each}}
@@ -668,11 +668,12 @@
     {{/each}}
 </div>
 <div class="page report report-intro">
-    <h1>Hechos sobre el desalojo</h1>
+    <h1>{{titleFactsAbout}}</h1>
     <svg id="logo-top">
         <use xlink:href="#eviction-lab-logo" width="38" height="36" viewBox="0 0 38 36" />
     </svg>
-    <div class="section">
+    {{{reportProsePage1}}}
+    <!-- <div class="section">
         <p>¿Qué es un desalojo?</p>
         <p>Un desalojo ocurre cuando un propietario expulsa a las personas de la propiedad que posee. Los desalojos son movimientos involuntarios iniciados por el propietario que suceden a inquilinos, mientras que las ejecuciones hipotecarias son movimientos involuntarios que suceden a los propietarios cuando un banco u otra agencia de préstamos recupera un hogar.</p>
     </div>
@@ -687,13 +688,14 @@
     <div class="section">
         <p>¿Cómo es el proceso de desalojo?</p>
         <p>Los propietarios inician el proceso y se notifican a los inquilinos para que se presenten ante el tribunal. Casi en todas partes en los Estados Unidos, los desalojos tienen lugar en un tribunal civil, donde los inquilinos no tienen derecho a un abogado. Por esta razón y otras, la mayoría de los inquilinos no aparecen en el tribunal de desalojo. Cuando esto sucede, reciben un juicio de desalojo por defecto, siempre que el propietario o un representante esté presente. Los inquilinos que comparecen ante el tribunal también pueden recibir una sentencia de desalojo que les ordena abandonar su hogar antes de una fecha específica. Los casos de desalojo se pueden resolver de otras maneras también. Por un lado, el caso puede desestimarse o fallar a favor de los acusados, lo que permite que el arrendatario permanezca en su hogar.</p>
-    </div>
+    </div> -->
 </div>
 <div class="page report">
     <svg id="logo-top">
         <use xlink:href="#eviction-lab-logo" width="38" height="36" viewBox="0 0 38 36" />
     </svg>
-    <div class="section">
+    {{{ reportProsePage2 }}}
+    <!-- <div class="section">
         <p></p><br>
         <p>Además, se puede establecer un acuerdo mediado entre un propietario y un arrendatario, a menudo llamado "acuerdo" o "estipulación", que viene con ciertos términos. Si los inquilinos cumplen con los términos, se desestima el desalojo; si no lo hacen, se puede emitir un juicio de desalojo. En caso de que los inquilinos desalojados no salgan de su hogar antes de la fecha especificada, el propietario puede presentar un "recurso de restitución" que permite a los agentes policiales expulsar por la fuerza a una familia y, a menudo, a sus pertenencias.</p>
     </div>
@@ -705,7 +707,7 @@
         <p>¿Cómo afecta un desalojo a la vida de alguien?</p>
         <p>El desalojo hace que una familia pierda su hogar. A menudo también son expulsados de su comunidad y sus hijos tienen que cambiar de escuela. Las familias también pierden regularmente sus pertenencias, que se amontonan en la acera o se almacenan, solo para ser recuperadas después de pagar una tarifa. Un desalojo legal viene con un registro judicial, que puede evitar que las familias se reubiquen en viviendas dignas en un vecindario seguro, ya que muchos propietarios filtran los recientes desalojos. Los estudios también muestran que el desalojo causa la pérdida de empleo, ya que el proceso estresante y prolongado de ser expulsado por la fuerza de un hogar hace que las personas cometan errores en el trabajo y pierdan su trabajo. También se ha demostrado que el desalojo afecta la salud mental de las personas: un estudio encontró que las madres que experimentaron el desalojo reportaron tasas más altas de depresión dos años después de su mudanza. La evidencia indica claramente que el desalojo no es solo una condición de pobreza, sino que es una causa de ello.</p>
     </div>
-    <p class="info">Para más información, visite evictionlab.org</p>
+    <p class="info">Para más información, visite evictionlab.org</p> -->
 </div>
 </body>
 </html>

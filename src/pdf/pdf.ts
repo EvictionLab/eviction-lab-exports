@@ -25,7 +25,25 @@ export class PdfExport extends Export {
   maxAbbrev: string;
   minAbbrev: string;
   confidenceInterval: string;
-  get templateKey() { return `${this.lang}/report.html`; }
+  reportProsePage1: string;
+  reportProsePage2: string;
+  titleIntro: string;
+  titleSource: string;
+  titleExtractDate: string;
+  titleWebLink: string;
+  evictionsPerDayPreface: string;
+  tooLow: string;
+  top1Perc: string;
+  flagMarylandExpl: string;
+  flagMarylandSee: string;
+  titleComparisonOf: string;
+  titleOverTime: string;
+  titleEvictionsPerDay: string;
+  titleEvictionRate: string;
+  demographicBreakdown: string;
+  titleFactsAbout: string;
+  // get templateKey() { return `${this.lang}/report.html`; }
+  get templateKey() { return `report.html`; }
 
   constructor(requestData: RequestData) {
     super(requestData);
@@ -59,6 +77,23 @@ export class PdfExport extends Export {
     this.maxAbbrev = this.translate['MAX_ABBREV']();
     this.minAbbrev = this.translate['MIN_ABBREV']();
     this.confidenceInterval = this.translate['CONFIDENCE_INTERVAL']();
+    this.reportProsePage1 = this.translate['REPORT_PROSE_1']();
+    this.reportProsePage2 = this.translate['REPORT_PROSE_2']();
+    this.titleIntro = this.translate['TITLE_INTRO']();
+    this.titleSource = this.translate['TITLE_SOURCE_PDF']();
+    this.titleExtractDate = this.translate['TITLE_EXTRACT_DATE']();
+    this.titleWebLink = this.translate['TITLE_WEB_LINK']();
+    this.evictionsPerDayPreface = this.translate['FEATURE_BULLET_ONE_PDF']();
+    this.tooLow = this.translate['TOO_LOW']();
+    this.top1Perc = this.translate['TOP_1_PERC']();
+    this.flagMarylandExpl = this.translate['FLAG_MARYLAND_EXPL']();
+    this.flagMarylandSee = this.translate['FLAG_MARYLAND_SEE']();
+    this.titleComparisonOf = this.translate['TITLE_COMPARISON_OF']();
+    this.titleOverTime = this.translate['TITLE_OVER_TIME']();
+    this.titleEvictionsPerDay = this.translate['TITLE_EVICTIONS_PER_DAY']();
+    this.titleEvictionRate = this.translate['TITLE_EVICTION_RATE']();
+    this.demographicBreakdown = this.translate['DEMOGRAPHIC_BREAKDOWN']();
+    this.titleFactsAbout = this.translate['TITLE_FACTS_ABOUT']();
     const features = this.features.map(f => this.processFeature(f));
     let params = { width: 520, height: 520 };
     if (features.length === 2) {
@@ -88,6 +123,7 @@ export class PdfExport extends Export {
     return template({
       date: new Date().toISOString().slice(0, 10),
       year: this.year,
+      lang: this.lang,
       oneFeature: this.features.length === 1,
       twoFeatures: this.features.length === 2,
       threeFeatures: this.features.length === 3,
@@ -101,6 +137,23 @@ export class PdfExport extends Export {
       maxAbbrev: this.maxAbbrev,
       minAbbrev: this.minAbbrev,
       confidenceInterval: this.confidenceInterval,
+      reportProsePage1: this.reportProsePage1,
+      reportProsePage2: this.reportProsePage2,
+      titleIntro: this.titleIntro,
+      titleSource: this.titleSource,
+      titleExtractDate: this.titleExtractDate,
+      titleWebLink: this.titleWebLink,
+      evictionsPerDayPreface: this.evictionsPerDayPreface,
+      tooLow: this.tooLow,
+      top1Perc: this.top1Perc,
+      flagMarylandExpl: this.flagMarylandExpl,
+      flagMarylandSee: this.flagMarylandSee,
+      titleComparisonOf: this.titleComparisonOf,
+      titleOverTime: this.titleOverTime,
+      titleEvictionsPerDay: this.titleEvictionsPerDay,
+      titleEvictionRate: this.titleEvictionRate,
+      demographicBreakdown: this.demographicBreakdown,
+      titleFactsAbout: this.titleFactsAbout,
       evictionRateTextPlural: this.translate[ratePluralKey](),
       footerNote: this.translate[footerNoteKey](),
       evictionKind: this.evictionKind.toLowerCase(),
