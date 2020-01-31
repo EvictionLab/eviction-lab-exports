@@ -29,8 +29,8 @@ export class Chart {
       // console.log('createBarChart(), displayCI = ', this.displayCI);
       // console.log(features);
         const margin = { top: 20, left: 120, right: 20, bottom: 80 };
-        const fullWidth = this.width;
-        const fullHeight = this.height;
+        const fullWidth = 945; // this.width;
+        const fullHeight = 532; // this.height;
         const width = fullWidth - margin.left - margin.right;
         const height = fullHeight - margin.top - margin.bottom;
         const canvas = new Canvas.createCanvas(fullWidth, fullHeight);
@@ -84,7 +84,7 @@ export class Chart {
 
         context.textAlign = "right";
         context.textBaseline = "middle";
-        context.font = "20px Akkurat";
+        context.font = "16px Akkurat"; // "20px Akkurat";
         yTicks.forEach(function (d) {
             context.fillText(d, -15, y(d));
         });
@@ -97,7 +97,7 @@ export class Chart {
         context.rotate(-Math.PI / 2);
         context.textAlign = "center";
         context.textBaseline = "top";
-        context.font = "24px Akkurat";
+        context.font = "20px Akkurat"; // "24px Akkurat";
         context.fillText(`${axisText} (%)`, -(height / 2), -70);
         context.restore();
 
@@ -148,7 +148,7 @@ export class Chart {
         const yearArr = this.years;
         const margin = { top: 20, left: 120, right: 50, bottom: 80 };
         const fullWidth = 945;
-        const fullHeight = 795;
+        const fullHeight = 532; // 506; // 795;
         const width = fullWidth - margin.left - margin.right;
         const height = fullHeight - margin.top - margin.bottom;
         const canvas = new Canvas.createCanvas(fullWidth, fullHeight);
@@ -188,7 +188,7 @@ export class Chart {
 
         context.textAlign = "center";
         context.textBaseline = "top";
-        context.font = "22px Akkurat";
+        context.font = "16px Akkurat"; // "22px Akkurat";
         context.fillStyle = "#666666";
         xTicks.forEach(d => {
             context.fillText(d, x(d), height + tickSize + 10);
@@ -204,7 +204,7 @@ export class Chart {
 
         context.textAlign = "right";
         context.textBaseline = "middle";
-        context.font = "20px Akkurat";
+        context.font = "16px Akkurat"; // "20px Akkurat";
         yTicks.forEach(d => {
             context.fillText(d, -15, y(d));
         });
@@ -217,7 +217,7 @@ export class Chart {
         context.rotate(-Math.PI / 2);
         context.textAlign = "center";
         context.textBaseline = "top";
-        context.font = "24px Akkurat";
+        context.font = "20px Akkurat"; // "24px Akkurat";
         context.fillText(`${axisText} (%)`, -(height / 2), -70);
         context.restore();
 
@@ -269,7 +269,7 @@ export class Chart {
             context.globalCompositeOperation = 'source-over';
 
             // Draws dots for each data point.
-            const radius = 7.5;
+            const radius = 0.5;
             data.filter(d => d.val > -1)
                 .forEach(d => {
                     context.beginPath();

@@ -44,6 +44,7 @@ export const Translations: Object = {
             'TITLE_OVER_TIME': () => 'Over Time',
             'TITLE_EVICTIONS_PER_DAY': () => 'Evictions per Day',
             'TITLE_EVICTION_RATE': () => 'Eviction Rate',
+            'LABEL_US_AVG': () => 'U.S. average',
             'REPORT_PROSE_1': () => { return '<div class="section">' +
                 '<p>What is an eviction?</p>' +
                 '<p>An eviction happens when a landlord expels people from property they own. Evictions are landlord-initiated involuntary moves that happen to renters, whereas foreclosures are involuntary moves that happen to homeowners when a bank or other lending agency repossesses a home.</p>' +
@@ -238,6 +239,7 @@ export const Translations: Object = {
             'TITLE_OVER_TIME': () => 'a lo largo del tiempo',
             'TITLE_EVICTIONS_PER_DAY': () => 'Desalojos por Día',
             'TITLE_EVICTION_RATE': () => 'Tasa de desalojo',
+            'LABEL_US_AVG': () => 'Promedio de EE. UU.',
             'REPORT_PROSE_1': () => {
               return '<div class="section">' +
                   '<p>¿Qué es un desalojo?</p>' +

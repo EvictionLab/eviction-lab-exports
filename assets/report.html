@@ -188,9 +188,9 @@
           /*transform: rotate(90deg);*/
         }
         .page.charts .title {
-            font-size: 15px;
+            font-size: 18px;
             display: block;
-            margin: 40px auto auto auto;
+            margin: 50px auto auto auto;
             width: 416px;
             text-align: center;
             text-transform: uppercase;
@@ -203,22 +203,19 @@
         .page.charts .chart {
             /* width: 325px;
             height: 250px; */
-            width: 500px;
-            height: 385px;
+            /* width: 500px;
+            height: 385px; */
+            width: 600px;
+            height: 338px;
             display: block;
-            margin: 30px auto 5px auto;
-            /* left: 70px; */
-            /* top: 220px; */
-            /* margin-top: 155px; */
+            margin: 60px auto 5px auto;
             background-color: lightgrey;
-            /* position: absolute; */
             background-repeat: no-repeat;
             background-size: contain;
-            /* transform: rotate(90deg); */
             /* border: 1px solid black; */
         }
         .page.charts .legend-parent {
-          width: 500px;
+          width: 600px;
           margin-left: auto;
           margin-right: auto;
           display: block;
@@ -228,7 +225,7 @@
         .page.charts .legend {
           position: absolute;
           top: 0;
-          left: 48px;
+          left: 65px;
           width: 32%;
           font-family: 'GT Eesti Display', Helvetica, sans-serif;
           /* border: 1px solid black; */
@@ -238,10 +235,13 @@
           min-height: 64px;
           width: auto;
           position: absolute;
-          left: 345px;
+          left: 425px;
           top: 0;
           padding-top: 5px;
           /* border: 1px solid blue; */
+        }
+        :lang(es) .page.charts .legend-ci {
+          left: 400px;
         }
         .page.charts .legend-ci .ci-key {
           width: 34px;
@@ -253,12 +253,15 @@
         .page.charts .legend-ci .ci-key .ci-max,
         .page.charts .legend-ci .ci-key .ci-min {
           height: 12px;
-          font-size: 10px;
+          font-size: 12px;
+          padding-top: 2px;
+          padding-bottom: 2px;
           text-transform: uppercase;
+          font-weight: 400;
           font-family: 'Akkurat', Helvetica, sans-serif;
         }
         .page.charts .legend-ci .ci-key .ci-max {
-          margin-bottom: -2px;
+          margin-bottom: -5px;
           vertical-align: bottom;
           /* border: 1px solid blue; */
         }
@@ -270,7 +273,7 @@
         .page.charts .legend-ci .ci-key .ci-split,
         .page.charts .legend-ci .ci-key .ci-barber,
         .page.scharts .legend-ci .ci-key .ci-base {
-          font-family: 'GT Eesti Display', Helvetica, sans-serif;
+          /* font-family: 'GT Eesti Display', Helvetica, sans-serif; */
           display: block;
           width: 34px;
           height: 16px;
@@ -313,11 +316,12 @@
           height: 64px;
           display: inline-block;
           margin-right: 0;
+          padding-top: 10px;
           vertical-align: middle;
           font-weight: bold;
           text-align: left;
-          font-size: 12px;
-          font-family: 'GT Eesti Display', Helvetica, sans-serif;
+          font-size: 14px;
+          font-family: 'Akkurat', Helvetica, sans-serif;
           /* border: 1px solid blue; */
         }
         .page.charts .legend p {
@@ -325,6 +329,7 @@
             line-height: 22px;
             font-weight: bold;
             text-align: left;
+            text-transform: uppercase;
             font-family: 'GT Eesti Display', Helvetica, sans-serif;
         }
         /*.page.charts .legend.line { top: 0px;}
@@ -361,7 +366,7 @@
             position: absolute;
             top: 46px;
             height: 716px;
-            border: 1px solid #C6CCCF;
+            /* border: 1px solid #C6CCCF; */
             display: inline-block;
         }
         .page.stats .stat-table h3 {
@@ -796,7 +801,15 @@
             <p>{{@root.titleEvictionsPerDay}}</p>
         </div>
         <div class="er {{#if (lookup unavailable 'er')}}unavailable{{/if}}">
-            <p>{{properties.er}}</p>
+            <div>
+              <span class="stats-er">{{properties.er}}</span>
+              {{#ifDefined properties.erh properties.erl}}
+                <div class="stats-er-ci">
+                  <span class="ci-h">{{@root.maxAbbrev}} {{properties.erh}}%</span>
+                  <span class="ci-l">{{@root.minAbbrev}} {{properties.erl}}%</span>
+                </div>
+              {{/ifDefined}}
+            </div>
             <p>
                 {{@root.titleEvictionRate}}
                 {{#if (lookup lowFlags 'er')}}
@@ -805,6 +818,7 @@
                 <svg class="high-flag"><use xlink:href="#flag" width="16" height="16" viewBox="0 0 16 16"></use></svg>
                 {{/if}}
             </p>
+            <p>{{properties.erDiffUSAvg}} {{@root.labelUSAvg}}</p>
         </div>
         {{#each dataProps}}
         <div class="data-props {{#if (lookup ../unavailable key)}}unavailable{{/if}}">
@@ -818,7 +832,17 @@
                 <svg class="high-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
                 {{/if}}
             </p>
-            <p>{{val}}</p>
+            <p>
+              {{val}}
+              {{#ifEquals @key 'Evictions'}}
+                {{#ifDefined ciH ciL}}
+                  <div class="stats-er-ci">
+                    <span class="ci-h">{{@root.maxAbbrev}} {{ciH}}</span>
+                    <span class="ci-l">{{@root.minAbbrev}} {{ciL}}</span>
+                  </div>
+                {{/ifDefined}}
+              {{/ifEquals}}
+            </p>
         </div>
         {{/each}}
         <p class="divider">{{@root.demographicBreakdown}}</p>
@@ -834,37 +858,12 @@
         <use xlink:href="#eviction-lab-logo" width="38" height="36" viewBox="0 0 38 36" />
     </svg>
     {{{ reportProsePage1 }}}
-    <!-- <div class="section">
-        <p>What is an eviction?</p>
-        <p>An eviction happens when a landlord expels people from property they own. Evictions are landlord-initiated involuntary moves that happen to renters, whereas foreclosures are involuntary moves that happen to homeowners when a bank or other lending agency repossesses a home.</p>
-    </div>
-    <div class="section">
-        <p>Why do people get evicted?</p>
-        <p>Most evictions happen because renters cannot or do not pay their rent. Landlords can evict renters for a number of other reasons, too, including taking on boarders, damaging property, causing a disturbance, or breaking the law. In most American cities and towns, landlords can evict renters even if they have not missed a rent payment or otherwise violated their lease agreement; these are called “no fault” evictions.</p>
-    </div>
-    <div class="section">
-        <p>What is the relationship between the affordable housing crisis and the eviction epidemic?</p>
-        <p>Today, most poor renting families spend at least half of their income on housing costs, with one in four of those families spending over 70 percent of their income just on rent and utilities. Incomes for Americans of modest means have flatlined while housing costs have soared. Only one in four families who qualifies for affordable housing programs gets any kind of help. Under those conditions, it has become harder for low-income families to keep up with rent and utility costs, and a growing number are living one misstep or emergency away from eviction.</p>
-    </div>
-    <div class="section">
-        <p>What is the eviction process like?</p>
-        <p>Landlords initiate the process, and renters are served notice to appear in court. Almost everywhere in the United States, evictions take place in civil court, where renters have no right to an attorney. For this reason and others, most renters do not appear in eviction court. When this happens, they receive a default eviction judgement, provided that the landlord or a representative is present. Renters who do appear in court may also receive an eviction judgement ordering them to vacate their home by a specific date. Eviction cases can be resolved in other ways as well. For one, the case may be dismissed or ruled in favor of defendants, allowing renter to remain in their home. In addition, a mediated agreement can be established between a landlord and a renter, often called a “settlement” or “stipulation,” which comes with certain terms. If renters meet the terms, the eviction is dismissed; if they do not, an eviction judgment can be rendered. In the event that evicted renters do not leave their home by the specified date, their landlord may file a “writ of restitution,” which permits law enforcement officers to forcibly remove a family and often their belongings.</p>
-    </div> -->
 </div>
 <div class="page report pagebreak">
     <svg id="logo-top">
         <use xlink:href="#eviction-lab-logo" width="38" height="36" viewBox="0 0 38 36" />
     </svg>
     {{{ reportProsePage2 }}}
-    <!-- <div class="section">
-        <p>Who is at most risk of eviction?</p>
-        <p>Low-income women, especially poor women of color, have a high risk of eviction. Research has shown domestic violence victims and families with children are also at particularly high risk for eviction.</p>
-    </div>
-    <div class="section">
-        <p>How does an eviction affect someone’s life?</p>
-        <p>Eviction causes a family to lose their home. They often are also expelled from their community and their children have to switch schools. Families regularly lose their possessions, too, which are piled on the sidewalk or placed in storage, only to be reclaimed after paying a fee. A legal eviction comes with a court record, which can prevent families from relocating to decent housing in a safe neighborhood, because many landlords screen for recent evictions. Studies also show that eviction causes job loss, as the stressful and drawn-out process of being forcibly expelled from a home causes people to make mistakes at work and lose their job. Eviction also has been shown to affect people's mental health: one study found that mothers who experienced eviction reported higher rates of depression two years after their move. The evidence strongly indicates that eviction is not just a condition of poverty, it is a cause of it.</p>
-    </div>
-    <p class="info">For further information, visit evictionlab.org</p> -->
 </div>
 </body>
 </html>

@@ -19,6 +19,7 @@ export class PdfExport extends Export {
   demDataProps: Object;
   translate;
   displayCI: boolean;
+  usAverages: Object;
   evictionRateText: string;
   evictionKind: string;
   evictionKindPlural: string;
@@ -42,6 +43,9 @@ export class PdfExport extends Export {
   titleEvictionRate: string;
   demographicBreakdown: string;
   titleFactsAbout: string;
+  titleEvictionFilingRate: string;
+  titleEvictionFilings: string;
+  labelUSAvg: string;
   // get templateKey() { return `${this.lang}/report.html`; }
   get templateKey() { return `report.html`; }
 
@@ -52,6 +56,7 @@ export class PdfExport extends Export {
     this.dataProps = Translations[this.lang]['DATA_PROPS'];
     this.demDataProps = Translations[this.lang]['DEM_DATA_PROPS'];
     this.displayCI = requestData.displayCI ? requestData.displayCI : false;
+    this.usAverages = requestData.usAverage ? requestData.usAverage : null;
     this.chart = new Chart(
       this.assetPath, 975, 750, this.year, this.makeYearArr(this.years), this.bubbleProp,
       ['e24000', '434878', '2c897f', '94aabd'], this.translate, this.displayCI
@@ -94,6 +99,7 @@ export class PdfExport extends Export {
     this.titleEvictionRate = this.translate['TITLE_EVICTION_RATE']();
     this.demographicBreakdown = this.translate['DEMOGRAPHIC_BREAKDOWN']();
     this.titleFactsAbout = this.translate['TITLE_FACTS_ABOUT']();
+    this.labelUSAvg = this.translate['LABEL_US_AVG']();
     const features = this.features.map(f => this.processFeature(f));
     let params = { width: 520, height: 520 };
     if (features.length === 2) {
@@ -119,6 +125,18 @@ export class PdfExport extends Export {
       'EVICTION_RATES' : 'EVICTION_FILING_RATES';
     const footerNoteKey = this.bubbleProp === 'er' ?
       'FEATURE_EVICTION_RATE_DESCRIPTION' : 'FEATURE_EVICTION_FILING_RATE_DESCRIPTION';
+    Handlebars.registerHelper('ifEquals', function(arg1, arg2, options) {
+      return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+    });
+    Handlebars.registerHelper('ifDefined', function() {
+      let defined = true;
+      var options = arguments[arguments.length - 1];
+      //Skip the last argument.
+      for(var i = 0; i < arguments.length - 1; ++i) {
+        if (!arguments[i] || arguments[i].length <= 0) { defined = false; }
+      }
+      return !!defined ? options.fn(this) : options.inverse(this);
+    });
     const template = Handlebars.compile(htmlBody);
     return template({
       date: new Date().toISOString().slice(0, 10),
@@ -150,6 +168,7 @@ export class PdfExport extends Export {
       flagMarylandSee: this.flagMarylandSee,
       titleComparisonOf: this.titleComparisonOf,
       titleOverTime: this.titleOverTime,
+      labelUSAvg: this.labelUSAvg,
       titleEvictionsPerDay: this.titleEvictionsPerDay,
       titleEvictionRate: this.titleEvictionRate,
       demographicBreakdown: this.demographicBreakdown,
@@ -212,13 +231,27 @@ export class PdfExport extends Export {
 
     feature.properties.name = this.titleName(feature, this.translate);
     // Object to check for unavailable properties
+    // console.log(feature);
     feature.unavailable = {};
     feature.lowFlags = {};
     feature.highFlags = {};
     feature.marylandFiling = {};
     dataCols.forEach(k => {
       let val = feature.properties[`${k}-${yearSuffix}`];
+      const ciH = feature.properties[`${k}h-${yearSuffix}`];
+      const ciL = feature.properties[`${k}l-${yearSuffix}`];
+      if (!!ciH) {feature.properties[`${k}h`] = ciH.toFixed(1)};
+      if (!!ciL) {feature.properties[`${k}l`] = ciL.toFixed(1)};
       const flagProp = `${k}-${yearSuffix}`;
+      if (k === 'er') {
+        console.log('k === er');
+        const usAverage = this.usAverages[`${k}-${yearSuffix}`];
+        console.log('usAverage, ', usAverage);
+        feature.properties['erDiffUSAvg'] = (usAverage - val) < 0 ?
+          (usAverage - val).toFixed(2) :
+          '+' + (usAverage - val).toFixed(2);
+        console.log(feature.properties['erDiffUSAvg']);
+      }
       if (this.isLowFlag(feature, flagProp)) { feature.lowFlags[k] = true; }
       if (this.isHighFlag(feature, flagProp)) { feature.highFlags[k] = true }
       if (this.isMarylandFiling(feature, flagProp)) { feature.marylandFiling[k] = true }
@@ -239,6 +272,7 @@ export class PdfExport extends Export {
         feature.properties[k] = unavailable;
         feature.unavailable[k] = true;
       }
+      // if ()
     });
     const daysInYear = this.year % 4 === 0 ? 366 : 365;
 
@@ -264,11 +298,17 @@ export class PdfExport extends Export {
     feature.dataProps = {};
     feature.demDataProps = {};
     Object.keys(this.dataProps).forEach(k => {
-      feature.dataProps[this.dataProps[k]] = { key: k, val: feature.properties[k] };
+      feature.dataProps[this.dataProps[k]] = {
+        key: k,
+        val: feature.properties[k],
+        ciH: !!feature.properties[`${k}h`] ? feature.properties[`${k}h`] : undefined,
+        ciL: !!feature.properties[`${k}l`] ? feature.properties[`${k}l`] : undefined
+      };
     });
     Object.keys(this.demDataProps).forEach(k => {
       feature.demDataProps[this.demDataProps[k]] = { key: k, val: feature.properties[k] };
     });
+    // console.log('dataProps, ', feature.dataProps);
     return feature;
   }
 }

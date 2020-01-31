@@ -14,7 +14,7 @@
     "create-pptx": "tsc && rm -rf ./src/assets && cp -r ./assets ./src/assets && node ./build/creator.js pptx",
     "create-xlsx": "tsc && rm -rf ./src/assets && cp -r ./assets ./src/assets && node ./build/creator.js xlsx",
     "dev-pdf": "nodemon -e ts,html,png --ignore ./src/assets --watch ./assets --watch ./src --watch ./src/pdf -x \"tsc && rm -rf ./src/assets && cp -r ./assets ./src/assets && node ./build/creator.js pdf\"",
-    "dev-pptx": "nodemon -e ts,html,png --ignore ./src/assets --watch ./assets --watch ./src --watch ./src/pptx -x \"tsc && rm -rf ./src/assets && cp -r ./assets ./src/assets && node ./build/creator.js pdf\"",
+    "dev-pptx": "nodemon -e ts,html,png --ignore ./src/assets --watch ./assets --watch ./src --watch ./src/pptx -x \"tsc && rm -rf ./src/assets && cp -r ./assets ./src/assets && node ./build/creator.js pptx\"",
     "dev-serve": "tsc && node ./build/server.js"
   },
   "repository": {
