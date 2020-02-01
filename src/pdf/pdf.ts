@@ -240,17 +240,23 @@ export class PdfExport extends Export {
       let val = feature.properties[`${k}-${yearSuffix}`];
       const ciH = feature.properties[`${k}h-${yearSuffix}`];
       const ciL = feature.properties[`${k}l-${yearSuffix}`];
-      if (!!ciH) {feature.properties[`${k}h`] = ciH.toFixed(1)};
-      if (!!ciL) {feature.properties[`${k}l`] = ciL.toFixed(1)};
+      if (k === 'e') {
+        if (!!ciH) {feature.properties[`${k}h`] =
+          Number(ciH.toFixed()).toLocaleString('en-US');};
+        if (!!ciL) {feature.properties[`${k}l`] =
+          Number(ciL.toFixed()).toLocaleString('en-US');};
+      } else {
+        if (!!ciH) {feature.properties[`${k}h`] = ciH.toFixed(1)};
+        if (!!ciL) {feature.properties[`${k}l`] = ciL.toFixed(1)};
+      }
       const flagProp = `${k}-${yearSuffix}`;
       if (k === 'er') {
-        console.log('k === er');
+        // console.log('k === er');
         const usAverage = this.usAverages[`${k}-${yearSuffix}`];
-        console.log('usAverage, ', usAverage);
-        feature.properties['erDiffUSAvg'] = (usAverage - val) < 0 ?
+        feature.properties['erDiffUSAvg'] =
+          (usAverage - val) < 0 ?
           (usAverage - val).toFixed(2) :
           '+' + (usAverage - val).toFixed(2);
-        console.log(feature.properties['erDiffUSAvg']);
       }
       if (this.isLowFlag(feature, flagProp)) { feature.lowFlags[k] = true; }
       if (this.isHighFlag(feature, flagProp)) { feature.highFlags[k] = true }
@@ -301,8 +307,12 @@ export class PdfExport extends Export {
       feature.dataProps[this.dataProps[k]] = {
         key: k,
         val: feature.properties[k],
-        ciH: !!feature.properties[`${k}h`] ? feature.properties[`${k}h`] : undefined,
-        ciL: !!feature.properties[`${k}l`] ? feature.properties[`${k}l`] : undefined
+        ciH: !!feature.properties[`${k}h`] ?
+          feature.properties[`${k}h`] :
+          undefined,
+        ciL: !!feature.properties[`${k}l`] ?
+          feature.properties[`${k}l`] :
+          undefined
       };
     });
     Object.keys(this.demDataProps).forEach(k => {

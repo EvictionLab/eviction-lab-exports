@@ -370,18 +370,26 @@
             display: inline-block;
         }
         .page.stats .stat-table h3 {
-            margin: 8px;
-            margin-top: 16px;
+            margin: 8px 8px 0 8px;
+            /* margin-top: 16px; */
             font-size: 15px;
+            text-transform: uppercase;
             font-family: 'GT Eesti Display', Helvetica, sans-serif;
             font-weight: bold;
         }
         .page.stats .stat-table p.year {
-            font-size: 12px;
-            font-weight: bold;
+            font-size: 8px;
+            font-weight: 400;
             font-family: 'Akkurat', Helvetica, sans-serif;
-            color: #000;
-            margin: 8px;
+            color: #737373;
+            margin: 0 0 0 8px;
+        }
+        .page.stats .stat-table .stats-minmax {
+          font-size: 8px;
+          font-weight: 400;
+          text-transform: uppercase;
+          font-family: 'Akkurat', Helvetica, sans-serif;
+          color: #000;
         }
         .page.stats .stat-table:first-child h3 { color: #E24000; }
         .page.stats .stat-table:nth-child(2) { color: #434878; }
@@ -414,14 +422,67 @@
         .page.stats.three-features .stat-table:nth-child(2) { left: 282px; }
         .page.stats.three-features .stat-table:nth-child(3) { left: 527px; }
         .er, .epd {
-            width: 40%;
-            margin: 24px 8px;
-            text-align: center;
+          width: 40%;
+          margin: 0;
+          text-align: left;
+          font-family: 'Akkurat', Helvetica, sans-serif;
+          border: 1px solid green;
         }
-        .er p, .epd p { color: #000; }
-        .er p:first-child, .epd p:first-child {
+        .stat-table .er {
+          width: 42%;
+          margin-left: 0;
+          border: 1px solid red;
+        }
+        .er,
+        .epd,
+        .er p,
+        .epd p,
+        .er .prop,
+        .er.label,
+        .epd .prop,
+        .epd .label {
+          color: #000;
+        }
+        .er p:first-child,
+        .epd p:first-child {
             font-size: 15px;
             font-weight: bold;
+        }
+        .stat-table .er .prop,
+        .stat-table .epd .prop {
+          font-size: 15px;
+          font-weight: bold;
+          padding-top: 16px;
+        }
+        .stat-table .er .label,
+        .stat-table .epd .label {
+          font-size: 10px;
+          font-weight: 500;
+          text-transform: uppercase;
+        }
+        .stat-table .er .us-avg,
+        .stat-table .epd .us-avg {
+          font-size: 8px;
+        }
+        .stat-table .er .display-ci {
+          display: flex;
+        }
+        .stat-table .er .display-ci .prop {
+          flex: 1 0 auto;
+          border: 1px solid yellow;
+        }
+        .stat-table .er .display-ci .stats-er-ci {
+          flex: 0 1 auto;
+          border: 1px solid blue;
+        }
+        .stat-table .er .display-ci .stats-er-ci .stats-minmax {
+          width: 100%;
+          display: inline;
+          vertical-align: middle;
+          height: 8px;
+          font-size: 8px;
+          margin: 0.5 auto 0.5 0;
+          border: 1px solid orange;
         }
         .epd { float: left; }
         .er { float: right; }
@@ -797,32 +858,32 @@
         <h3>{{properties.n}}</h3>
         <p class="year">{{@root.year}}</p>
         <div class="epd {{#if (lookup unavailable 'e')}}unavailable{{/if}}">
-            <p>{{properties.epd}}</p>
-            <p>{{@root.titleEvictionsPerDay}}</p>
+            <div class="prop">{{properties.epd}}</div>
+            <div class="label">{{@root.titleEvictionsPerDay}}</div>
         </div>
         <div class="er {{#if (lookup unavailable 'er')}}unavailable{{/if}}">
-            <div>
-              <span class="stats-er">{{properties.er}}</span>
+            <div class="prop-parent {{#ifDefined properties.erh properties.erl}}display-ci{{/ifDefined}}">
+              <div class="prop stats-er">{{properties.er}}</div>
               {{#ifDefined properties.erh properties.erl}}
                 <div class="stats-er-ci">
-                  <span class="ci-h">{{@root.maxAbbrev}} {{properties.erh}}%</span>
-                  <span class="ci-l">{{@root.minAbbrev}} {{properties.erl}}%</span>
+                  <span class="ci-h stats-minmax">{{@root.maxAbbrev}}: {{properties.erh}}%</span>
+                  <span class="ci-l stats-minmax">{{@root.minAbbrev}}: {{properties.erl}}%</span>
                 </div>
               {{/ifDefined}}
             </div>
-            <p>
+            <div class="label">
                 {{@root.titleEvictionRate}}
                 {{#if (lookup lowFlags 'er')}}
                 <svg class="low-flag"><use xlink:href="#flag" width="16" height="16" viewBox="0 0 16 16"></use></svg>
                 {{else if (lookup highFlags 'er')}}
                 <svg class="high-flag"><use xlink:href="#flag" width="16" height="16" viewBox="0 0 16 16"></use></svg>
                 {{/if}}
-            </p>
-            <p>{{properties.erDiffUSAvg}} {{@root.labelUSAvg}}</p>
+            </div>
+            <div class="us-avg">{{properties.erDiffUSAvg}} {{@root.labelUSAvg}}</div>
         </div>
         {{#each dataProps}}
         <div class="data-props {{#if (lookup ../unavailable key)}}unavailable{{/if}}">
-            <p>
+            <p class="data-prop-{{@key}}">
                 {{@key}}
                 {{#if (lookup ../lowFlags key)}}
                 <svg class="low-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
@@ -832,13 +893,13 @@
                 <svg class="high-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
                 {{/if}}
             </p>
-            <p>
+            <p class="data-prop-{{@key}}">
               {{val}}
               {{#ifEquals @key 'Evictions'}}
                 {{#ifDefined ciH ciL}}
                   <div class="stats-er-ci">
-                    <span class="ci-h">{{@root.maxAbbrev}} {{ciH}}</span>
-                    <span class="ci-l">{{@root.minAbbrev}} {{ciL}}</span>
+                    <span class="ci-h stats-minmax">{{@root.maxAbbrev}}: {{ciH}}</span>
+                    <span class="ci-l stats-minmax">{{@root.minAbbrev}}: {{ciL}}</span>
                   </div>
                 {{/ifDefined}}
               {{/ifEquals}}
