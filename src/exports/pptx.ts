@@ -22,17 +22,17 @@ export class PptxExport extends Export {
 
   fullSlideParams = { w: 10, h: 5.625, y: 0, x: 0 };
   titleParams = {
-    align: 'l', font_size: 20, font_face: 'Helvetica', isTextBox: true, w: 4.3, h: 1.1, x: 5, y: 0.36
+    align: 'l', fontSize: 20, fontFace: 'Helvetica', isTextBox: true, w: 4.3, h: 1.1, x: 5, y: 0.36
   };
   bulletParams = {
-    font_size: 12, color: '000000', w: 4.3, h: 0.56, x: 5, y: 2, font_face: 'Helvetica', lineSpacing: 22
+    fontSize: 12, color: '000000', w: 4.3, h: 0.56, x: 5, y: 2, fontFace: 'Helvetica', lineSpacing: 22
   };
   chartParams = {
     x: 1.25, y: 1.5, w: 7.5, h: 5, chartColors: this.colors,
     dataBorder: { pt: 2, color: 'FFFFFF' }, fill: 'ffffff'
   };
   statTitleParams = {
-    align: 'l', font_size: 11, w: 2.3, h: 0.5, x: 1.14, y: 0.25, font_face: 'Helvetica'
+    align: 'l', fontSize: 11, w: 2.3, h: 0.5, x: 1.14, y: 0.25, fontFace: 'Helvetica'
   };
   lowFlagColor = '737373';
   highFlagColor = 'e24000';
@@ -55,7 +55,8 @@ export class PptxExport extends Export {
     this.demDataProps = Translations[this.lang]['DEM_DATA_PROPS'];
     this.displayCI = requestData.displayCI ? requestData.displayCI : false;
     this.chart = new Chart(
-      this.assetPath, 945, 795, this.year, this.makeYearArr(this.years), this.bubbleProp, this.colors, this.translate, this.displayCI
+      // this.assetPath, 945, 795, this.year, this.makeYearArr(this.years), this.bubbleProp, this.colors, this.translate, this.displayCI
+      this.assetPath, 945, 532, this.year, this.makeYearArr(this.years), this.bubbleProp, this.colors, this.translate, this.displayCI
     );
   };
 
@@ -96,7 +97,7 @@ export class PptxExport extends Export {
 
     titleSlide.addText(this.translate['TITLE_INTRO'](), {
       ...introParams[features.length], align: 'l', x: 0.44, w: 8.99, h: 0.27, color: '000000',
-      isTextBox: true, font_face: 'Helvetica', font_size: 12, bold: true
+      isTextBox: true, fontFace: 'Helvetica', fontSize: 12, bold: true
     });
 
     titleSlide.addText(
@@ -104,7 +105,7 @@ export class PptxExport extends Export {
         return {
           text: this.titleName(f, this.translate),
           options: {
-            color: this.colors[i], font_size: 26, font_face: 'Helvetica', bold: true
+            color: this.colors[i], fontSize: 26, fontFace: 'Helvetica', bold: true
           }
         };
       }),
@@ -114,16 +115,16 @@ export class PptxExport extends Export {
     titleSlide.addText(
       [
         { text: this.translate['TITLE_SOURCE'](), 
-          options: { color: '000000', font_face: 'Helvetica', font_size: 15, breakLine: true } },
+          options: { color: '000000', fontFace: 'Helvetica', fontSize: 15, breakLine: true } },
         { text: this.translate['TITLE_EXTRACT_DATE'](), 
-          options: { color: '666666', font_face: 'Helvetica', font_size: 15 } }
+          options: { color: '666666', fontFace: 'Helvetica', fontSize: 15 } }
       ],
       { x: 0.44, y: 3.47, w: 8, h: 0.53, lineSpacing: 28 }
     );
 
     titleSlide.addText(
       this.translate['TITLE_WEB_LINK'](),
-      { x: 0.44, y: 4.87, w: 5.72, h: 0.24, color: '666666', font_face: 'Helvetica', font_size: 15 }
+      { x: 0.44, y: 4.87, w: 5.72, h: 0.24, color: '666666', fontFace: 'Helvetica', fontSize: 15 }
     );
 
     titleSlide.addImage({ data: this.logoImage, x: 8.33, y: 3.99, w: 1.26, h: 1.21 });
@@ -209,11 +210,11 @@ export class PptxExport extends Export {
       'FEATURE_EVICTION_RATE_DESCRIPTION' : 'FEATURE_EVICTION_FILING_RATE_DESCRIPTION';
     featSlide.addText(
       this.translate[rateDescTranslate](),
-      { w: 9.15, h: 0.16, isTextBox: true, x: 0.44, y: 5, font_size: 10, font_face: 'Helvetica', color: '666666' }
+      { w: 9.15, h: 0.16, isTextBox: true, x: 0.44, y: 5, fontSize: 10, fontFace: 'Helvetica', color: '666666' }
     );
 
-    let flagTextArr: any = [{ text: '! ', options: { font_face: 'Helvetica', bold: true, breakLine: false } }];
-    const flagTextOptions = {isTextBox: true, w: 9.15, h: 0.16, x: 0.44, y: 5.26, font_size: 10, font_face: 'Helvetica'};
+    let flagTextArr: any = [{ text: '! ', options: { fontFace: 'Helvetica', bold: true, breakLine: false } }];
+    const flagTextOptions = {isTextBox: true, w: 9.15, h: 0.16, x: 0.44, y: 5.26, fontSize: 10, fontFace: 'Helvetica'};
     const flagProp = `${this.bubbleProp}-${yearSuffix}`;
     if (this.isLowFlag(feature, flagProp)) {
       flagTextOptions['color'] = this.lowFlagColor;
@@ -251,7 +252,7 @@ export class PptxExport extends Export {
       },
       {
         text: '20' + yearSuffix,
-        options: { color: '666666', font_face: 'Helvetica', font_size: 9 }
+        options: { color: '666666', fontFace: 'Helvetica', fontSize: 9 }
       }],
       { ...this.statTitleParams, x: xVal }
     );
@@ -262,28 +263,28 @@ export class PptxExport extends Export {
         text: `${evictionsAvailable ?
           (+(feature.properties[`e-${yearSuffix}`] / daysInYear).toFixed(2)).toLocaleString('en-US') :
           unavailable}`,
-        options: { font_size: 12, bold: evictionsAvailable }
+        options: { fontSize: 12, bold: evictionsAvailable }
       },
       {
         text: this.translate['EVICTIONS_PER_DAY']().toUpperCase(),
-        options: { font_size: 6, bold: true }
+        options: { fontSize: 6, bold: true }
       }],
-      { align: 'c', x: xVal, y: 0.71, w: width / 2, h: 0.4, font_face: 'Helvetica' }
+      { align: 'c', x: xVal, y: 0.71, w: width / 2, h: 0.4, fontFace: 'Helvetica' }
     );
     slide.addText(
       [{
         text: `${evictionsAvailable ?
             `${this.capRateValue(feature.properties[`er-${yearSuffix}`])}%` : unavailable}`,
-        options: { font_size: 12, bold: evictionsAvailable }
+        options: { fontSize: 12, bold: evictionsAvailable }
       },
       this.getFlagText(
         feature, 'er', yearSuffix,
         {
           text: this.translate['EVICTION_RATE']().toUpperCase(),
-          options: { font_size: 6, bold: true }
+          options: { fontSize: 6, bold: true }
         }
       )],
-      { align: 'c', x: xVal + (width / 2), y: 0.71, w: width / 2, h: 0.4, font_face: 'Helvetica'}
+      { align: 'c', x: xVal + (width / 2), y: 0.71, w: width / 2, h: 0.4, fontFace: 'Helvetica'}
     );
 
     slide.addTable(
@@ -296,7 +297,7 @@ export class PptxExport extends Export {
       ]),
       { w: width, h: 2.26, x: xVal, y: 1.17, rowH: 0.08,
         colW: [width * 0.66, width * 0.33], valign: 'm', autoPage: false },
-      { font_face: 'Helvetica', font_size: 8, border: { pt: '0', color: 'ffffff' } }
+      { fontFace: 'Helvetica', fontSize: 8, border: { pt: '0', color: 'ffffff' } }
     );
     slide.addTable(
       Object.keys(this.demDataProps).map((k, i) => [
@@ -307,55 +308,57 @@ export class PptxExport extends Export {
       ]),
       { align: 'l', w: width, h: 1.8, x: xVal, y: 1.96, rowH: 0.08,
         colW: [width * 0.66, width * 0.33], autoPage: false, valign: 'm' },
-      { font_face: 'Helvetica', font_size: 8, border: { pt: '0', color: 'ffffff' } }
+      { fontFace: 'Helvetica', fontSize: 8, border: { pt: '0', color: 'ffffff' } }
     );
     slide.addText(this.translate['DEMOGRAPHIC_BREAKDOWN']().toUpperCase(), {
-      align: 'c', font_size: 6, h: 0.17, w: width, x: xVal, y: 1.86, bold: true, color: '666666'
+      align: 'c', fontSize: 6, h: 0.17, w: width, x: xVal, y: 1.86, bold: true, color: '666666'
     });
   }
 
   createDataSlides(features: Feature[]): void {
-    const chartSlide = this.pptx.addNewSlide();
-    chartSlide.addImage({ data: this.backgroundImage, ...this.fullSlideParams });
+    const barChartSlide = this.pptx.addNewSlide();
+    barChartSlide.addImage({ data: this.backgroundImage, ...this.fullSlideParams });
 
     const chartFeatures = this.getFeatures(features);
     const chartPad = (4 - chartFeatures.length) * 0.1;
     const chartTitleParams = {
-      w: 3.89, h: 0.27, y: 0.27 + chartPad, align: 'l', font_face: 'Helvetica', font_size: 12, bold: true
+      w: 6, h: 0.27, y: 0.27 + chartPad, align: 'center', fontFace: 'Helvetica', fontSize: 12, bold: true
     }
 
     const rateKey = this.bubbleProp === 'er' ? 'EVICTION_RATES' : 'EVICTION_FILING_RATES';
     const ratesText = this.translate[rateKey]();
     // Create comparison if more than one feature provided
-    chartSlide.addText(this.translate['BAR_CHART_TITLE'](ratesText.toLowerCase(), this.year), {
-      ...chartTitleParams, x: 0.86
+    barChartSlide.addText(this.translate['BAR_CHART_TITLE'](ratesText.toLowerCase(), this.year), {
+      ...chartTitleParams, x: 2
     });
 
     const barChartCanvas = this.chart.createBarChart(chartFeatures);
-    chartSlide.addImage({ data: barChartCanvas, x: 0.53, y: 0.67 + chartPad, w: 4.21, h: 3.54, valign: 'middle' });
+    barChartSlide.addImage({ data: barChartCanvas, x: 2, y: 0.67 + chartPad, w: 6.3, h: 3.54, valign: 'middle' });
 
     // Create line chart
-    chartSlide.addText(this.translate['LINE_CHART_TITLE'](ratesText.toLowerCase()), {
-      ...chartTitleParams, x: 5.57
+    const lineChartSlide = this.pptx.addNewSlide();
+    lineChartSlide.addImage({ data: this.backgroundImage, ...this.fullSlideParams });
+    lineChartSlide.addText(this.translate['LINE_CHART_TITLE'](ratesText.toLowerCase()), {
+      ...chartTitleParams, x: 2
     });
 
     const years = this.makeYearArr(this.years).map(y => y.toString());
 
     const lineChartCanvas = this.chart.createLineChart(chartFeatures);
-    chartSlide.addImage({ data: lineChartCanvas, x: 5.22, y: 0.67 + chartPad, w: 4.21, h: 3.54, valign: 'middle' });
+    lineChartSlide.addImage({ data: lineChartCanvas, x: 2, y: 0.67 + chartPad, w: 6.3, h: 3.54, valign: 'middle' });
 
     chartFeatures.forEach((f, i) => {
       const yVal = (4.38 + (0.3 * i)) + chartPad;
 
       // Add bar chart legend
-      chartSlide.addText(i + 1, { x: 0.53, w: 0.4, align: 'c', y: yVal, h: 0.1, color: this.getColor(i), font_size: 12, bold: true });
-      chartSlide.addText(f.properties.n, { x: 0.93, y: yVal, w: 4, h: 0.1, color: this.getColor(i), font_size: 12, bold: true });
+      barChartSlide.addText(i + 1, { x: 0.53, w: 0.4, align: 'c', y: yVal, h: 0.1, color: this.getColor(i), fontSize: 12, bold: true });
+      barChartSlide.addText((f.properties.n).toUpperCase(), { x: 0.93, y: yVal, w: 4, h: 0.1, color: this.getColor(i), fontSize: 12, bold: true, fontFace: 'Helvetica' });
 
       // Add line chart legend
-      chartSlide.addImage({
-        data: this.chart.createLineChartLegend(f, i), x: 5.22, y: yVal, w: 0.5, h: 0.06
+      lineChartSlide.addImage({
+        data: this.chart.createLineChartLegend(f, i), x: 2.68, y: yVal, w: 0.5, h: 0.04
       });
-      chartSlide.addText(f.properties.n, { x: 5.89, y: yVal, w: 4, h: 0.1, color: this.getColor(i), font_size: 12, bold: true });
+      lineChartSlide.addText((f.properties.n).toUpperCase(), { x: 3.2, y: yVal, w: 4, h: 0.05, color: this.getColor(i), fontSize: 12, bold: true, fontFace: 'Helvetica' });
     });
 
     // Create general stats slide
@@ -381,7 +384,7 @@ export class PptxExport extends Export {
   }
 
   private getFlagText(feature: Feature, prop: string, yearSuffix: string, textObj: Object | Array<any>): Object | Object[] {
-    const flagText = { text: ' !', options: { font_face: 'Helvetica', bold: true } };
+    const flagText = { text: ' !', options: { fontFace: 'Helvetica', bold: true } };
     let outputObj = textObj;
 
     const flagProp = `${prop}-${yearSuffix}`;

@@ -58,7 +58,9 @@ export class PdfExport extends Export {
     this.displayCI = requestData.displayCI ? requestData.displayCI : false;
     this.usAverages = requestData.usAverage ? requestData.usAverage : null;
     this.chart = new Chart(
-      this.assetPath, 975, 750, this.year, this.makeYearArr(this.years), this.bubbleProp,
+      // this.assetPath, 975, 750, this.year, this.makeYearArr(this.years), this.bubbleProp,
+      // ['e24000', '434878', '2c897f', '94aabd'], this.translate, this.displayCI
+      this.assetPath, 945, 532, this.year, this.makeYearArr(this.years), this.bubbleProp,
       ['e24000', '434878', '2c897f', '94aabd'], this.translate, this.displayCI
     );
   };

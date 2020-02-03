@@ -29,8 +29,8 @@ export class Chart {
       // console.log('createBarChart(), displayCI = ', this.displayCI);
       // console.log(features);
         const margin = { top: 20, left: 120, right: 20, bottom: 80 };
-        const fullWidth = 945; // this.width;
-        const fullHeight = 532; // this.height;
+        const fullWidth =  this.width; // 945;
+        const fullHeight =  this.height; // 532;
         const width = fullWidth - margin.left - margin.right;
         const height = fullHeight - margin.top - margin.bottom;
         const canvas = new Canvas.createCanvas(fullWidth, fullHeight);
