@@ -245,7 +245,8 @@ export class PdfExport extends Export {
           Number(ciH.toFixed()).toLocaleString('en-US');};
         if (!!ciL) {feature.properties[`${k}l`] =
           Number(ciL.toFixed()).toLocaleString('en-US');};
-      } else {
+      }
+      if (k === 'er') {
         if (!!ciH) {feature.properties[`${k}h`] = ciH.toFixed(1)};
         if (!!ciL) {feature.properties[`${k}l`] = ciL.toFixed(1)};
       }

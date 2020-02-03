@@ -426,12 +426,12 @@
           margin: 0;
           text-align: left;
           font-family: 'Akkurat', Helvetica, sans-serif;
-          border: 1px solid green;
+          /* border: 1px solid green; */
         }
         .stat-table .er {
           width: 42%;
           margin-left: 0;
-          border: 1px solid red;
+          /* border: 1px solid red; */
         }
         .er,
         .epd,
@@ -452,13 +452,15 @@
         .stat-table .epd .prop {
           font-size: 15px;
           font-weight: bold;
-          padding-top: 16px;
+          padding-top: 2px;
         }
         .stat-table .er .label,
         .stat-table .epd .label {
-          font-size: 10px;
+          font-size: 9px;
           font-weight: 500;
           text-transform: uppercase;
+          margin-top: 1px;
+          margin-bottom: 1px;
         }
         .stat-table .er .us-avg,
         .stat-table .epd .us-avg {
@@ -469,20 +471,21 @@
         }
         .stat-table .er .display-ci .prop {
           flex: 1 0 auto;
-          border: 1px solid yellow;
+          /* border: 1px solid yellow; */
         }
         .stat-table .er .display-ci .stats-er-ci {
           flex: 0 1 auto;
-          border: 1px solid blue;
+          height: 10px;
+          /* border: 1px solid blue; */
         }
         .stat-table .er .display-ci .stats-er-ci .stats-minmax {
           width: 100%;
-          display: inline;
-          vertical-align: middle;
-          height: 8px;
+          display: block;
+          vertical-align: top;
+          height: auto;
           font-size: 8px;
-          margin: 0.5 auto 0.5 0;
-          border: 1px solid orange;
+          margin: 0;
+          /* border: 1px solid orange; */
         }
         .epd { float: left; }
         .er { float: right; }
@@ -492,11 +495,48 @@
             height: 20px;
             clear: both;
         }
-        .data-props p { margin: 6px; color: #000; }
+        .data-props p {
+          margin: 6px;
+          color: #000;
+          padding-top: 3px;
+        }
         .data-props p:first-child { float: left; }
-        .data-props p:nth-child(2) { float: right; font-weight: bold; }
+        .data-props p:nth-child(2) { float: right; font-weight: bold; text-align: right; }
         .data-props:nth-child(even) { background-color: #ddd; }
-
+        .data-props.display-ci {
+          display: flex;
+          align-items: stretch;
+          height: 20px !important;
+          padding: 0;
+        }
+        .data-props.display-ci p {
+          float: none;
+          flex: 1 1 auto;
+          padding-top: 4px;
+          /* border: 1px solid orange; */
+        }
+        .data-props.display-ci p:first-child {
+          float: none;
+          padding-left: 2px;
+          flex: 1 1 auto;
+        }
+        .data-props.display-ci p:nth-child(2) {
+          float: none;
+          flex: 0 1 auto;
+          padding-right: 1px;
+        }
+        .data-props.display-ci p:nth-child(3) {
+          float: none;
+          flex: 1 0 auto;
+          padding-top: 0;
+          /* border: 1px solid purple; */
+        }
+        .data-props.display-ci p span,
+        .data-props.display-ci p .stats-minmax {
+          width: 100%;
+          display: block;
+          padding: 0;
+        }
         /* STYLES FOR UNAVAILABLE */
         .page.stats > .stat-table > .epd.unavailable p:first-child,
         .page.stats > .stat-table > .er.unavailable p:first-child,
@@ -882,8 +922,8 @@
             <div class="us-avg">{{properties.erDiffUSAvg}} {{@root.labelUSAvg}}</div>
         </div>
         {{#each dataProps}}
-        <div class="data-props {{#if (lookup ../unavailable key)}}unavailable{{/if}}">
-            <p class="data-prop-{{@key}}">
+        <div class="data-props {{#if (lookup ../unavailable key)}}unavailable{{/if}} {{#ifDefined ciH ciL}}display-ci{{/ifDefined}}">
+            <p class="data-prop-{{@key}} label">
                 {{@key}}
                 {{#if (lookup ../lowFlags key)}}
                 <svg class="low-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
@@ -893,17 +933,17 @@
                 <svg class="high-flag"><use xlink:href="#flag" width="10" height="10" viewBox="0 0 10 10"></use></svg>
                 {{/if}}
             </p>
-            <p class="data-prop-{{@key}}">
+            <p class="data-prop-{{@key}} values">
               {{val}}
-              {{#ifEquals @key 'Evictions'}}
-                {{#ifDefined ciH ciL}}
-                  <div class="stats-er-ci">
-                    <span class="ci-h stats-minmax">{{@root.maxAbbrev}}: {{ciH}}</span>
-                    <span class="ci-l stats-minmax">{{@root.minAbbrev}}: {{ciL}}</span>
-                  </div>
-                {{/ifDefined}}
-              {{/ifEquals}}
             </p>
+            {{#ifEquals @key 'Evictions'}}
+              {{#ifDefined ciH ciL}}
+                <p class="stats-er-ci">
+                  <span class="ci-h stats-minmax">{{@root.maxAbbrev}}: {{ciH}}</span>
+                  <span class="ci-l stats-minmax">{{@root.minAbbrev}}: {{ciL}}</span>
+                </p>
+              {{/ifDefined}}
+            {{/ifEquals}}
         </div>
         {{/each}}
         <p class="divider">{{@root.demographicBreakdown}}</p>
