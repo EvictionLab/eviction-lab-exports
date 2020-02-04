@@ -41,6 +41,8 @@ export class PptxExport extends Export {
   translate: Object;
   chart: Chart;
   displayCI: boolean;
+  usAverages: Object;
+  showUsAverage: boolean;
 
   constructor(requestData: RequestData) {
     super(requestData);
@@ -54,6 +56,8 @@ export class PptxExport extends Export {
     this.dataProps = Translations[this.lang]['DATA_PROPS'];
     this.demDataProps = Translations[this.lang]['DEM_DATA_PROPS'];
     this.displayCI = requestData.displayCI ? requestData.displayCI : false;
+    this.usAverages = requestData.usAverage ? requestData.usAverage : null;
+    this.showUsAverage = requestData.showUsAverage ? requestData.showUsAverage : false;
     this.chart = new Chart(
       // this.assetPath, 945, 795, this.year, this.makeYearArr(this.years), this.bubbleProp, this.colors, this.translate, this.displayCI
       this.assetPath, 945, 532, this.year, this.makeYearArr(this.years), this.bubbleProp, this.colors, this.translate, this.displayCI
@@ -242,9 +246,7 @@ export class PptxExport extends Export {
     const daysInYear = +yearSuffix % 4 === 0 ? 366 : 365;
     const unavailable = this.translate['UNAVAILABLE']();
 
-    slide.addShape(this.pptx.shapes.RECTANGLE, {
-      x: xVal - (shapePadding / 2), y: 0.26, w: width + shapePadding, h: 5.2, fill: 'ffffff'
-    });
+    // Adds location name and year.
     slide.addText(
       [{
         text: feature.properties.n,
@@ -257,6 +259,7 @@ export class PptxExport extends Export {
       { ...this.statTitleParams, x: xVal }
     );
 
+    // Adds top-level eviction rate data
     const evictionsAvailable = feature.properties[`e-${yearSuffix}`] >= 0;
     slide.addText(
       [{
@@ -271,21 +274,58 @@ export class PptxExport extends Export {
       }],
       { align: 'c', x: xVal, y: 0.71, w: width / 2, h: 0.4, fontFace: 'Helvetica' }
     );
+    let erSlides = [{
+      text: `${evictionsAvailable ?
+          `${this.capRateValue(feature.properties[`er-${yearSuffix}`])}%` : unavailable}`,
+      options: { fontSize: 12, bold: evictionsAvailable }
+    },
+    this.getFlagText(
+      feature, 'er', yearSuffix,
+      {
+        text: this.translate['EVICTION_RATE']().toUpperCase(),
+        options: { fontSize: 6, bold: true }
+      }
+    )];
+    // If display CI & us avg, then add additional line with difference from US Avg
+    if (!!this.showUsAverage) {
+      const usAverage = this.usAverages['er-' + yearSuffix];
+      const val = feature.properties['er-' + yearSuffix];
+      const erDiffUSAvg =
+        (usAverage - val) < 0 ?
+        (usAverage - val).toFixed(2) :
+        '+' + (usAverage - val).toFixed(2);
+      erSlides.push({
+        text: erDiffUSAvg + ' ' + this.translate['LABEL_US_AVG'](),
+        options: { fontSize: 6, bold: false }
+      })
+    }
     slide.addText(
-      [{
-        text: `${evictionsAvailable ?
-            `${this.capRateValue(feature.properties[`er-${yearSuffix}`])}%` : unavailable}`,
-        options: { fontSize: 12, bold: evictionsAvailable }
-      },
-      this.getFlagText(
-        feature, 'er', yearSuffix,
-        {
-          text: this.translate['EVICTION_RATE']().toUpperCase(),
-          options: { fontSize: 6, bold: true }
-        }
-      )],
+      erSlides,
       { align: 'c', x: xVal + (width / 2), y: 0.71, w: width / 2, h: 0.4, fontFace: 'Helvetica'}
     );
+    // If display CI, add min and max ci
+    if (!!this.displayCI) {
+      // CI For eviction rate
+      const ciH = feature.properties['erh-' + yearSuffix] ?
+          (feature.properties['erh-' + yearSuffix]).toFixed(1) : '---';
+      const ciL = feature.properties['erl-' + yearSuffix] ?
+          (feature.properties['erl-' + yearSuffix]).toFixed(1) : '---';
+      let ciSlides = [];
+      // Add max
+      ciSlides.push({
+        text: this.translate['MIN_ABBREV']().toUpperCase() + ': ' + ciH + '%',
+        options: { fontSize: 5, bold: true }
+      });
+      // Add min
+      ciSlides.push({
+        text: this.translate['MAX_ABBREV']().toUpperCase()  + ': ' + ciL + '%',
+        options: { fontSize: 5, bold: true}
+      });
+      slide.addText(
+        ciSlides,
+        { align: 'c', x: xVal + (width * 0.70), y: 0.61, w: width / 2, h: 0.4, fontFace: 'Helvetica'}
+      );
+    }
 
     slide.addTable(
       Object.keys(this.dataProps).map((k, i) => [
@@ -293,31 +333,53 @@ export class PptxExport extends Export {
           options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff' } },
         { text: feature.properties[`${k}-${yearSuffix}`] >= 0 ?
             this.getPropString(k, feature.properties[`${k}-${yearSuffix}`]) : unavailable,
-          options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff', align: 'r' } }
+          options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff', align: (k === 'e') ? 'left' : 'right' } }
       ]),
       { w: width, h: 2.26, x: xVal, y: 1.17, rowH: 0.08,
-        colW: [width * 0.66, width * 0.33], valign: 'm', autoPage: false },
-      { fontFace: 'Helvetica', fontSize: 8, border: { pt: '0', color: 'ffffff' } }
+        colW: [width * 0.66, width * 0.33], valign: 'middle', autoPage: false, fontFace: 'Helvetica', fontSize: 8, border: { pt: '0', color: '000' }
+      }
     );
+    // CI for evictions total
+    if (!!this.dataProps['e']) {
+      // console.log('exists');
+      const eCiH = feature.properties['erh-' + yearSuffix] ?
+          (feature.properties['eh-' + yearSuffix]).toFixed(0).toLocaleString('en-US') : '---';
+      const eCiL = feature.properties['erl-' + yearSuffix] ?
+          (feature.properties['el-' + yearSuffix]).toFixed(0).toLocaleString('en-US') : '---';
+      let eCiSlides = [];
+      // Add max
+      eCiSlides.push({
+        text: this.translate['MIN_ABBREV']().toUpperCase() + ': ' + eCiH,
+        options: { fontSize: 5 }
+      });
+      // Add min
+      eCiSlides.push({
+        text: this.translate['MAX_ABBREV']().toUpperCase()  + ': ' + eCiL,
+        options: { fontSize: 5 }
+      });
+      slide.addText(
+        eCiSlides,
+        { align: 'c', x: xVal + 2.45, y: 0.9, w: 1, h: 0.75, fontFace: 'Helvetica'}
+      );
+    }
     slide.addTable(
       Object.keys(this.demDataProps).map((k, i) => [
         { text: this.demDataProps[k], options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff' } },
         { text: feature.properties[`${k}-${yearSuffix}`] >= 0 ?
             this.getPropString(k, feature.properties[`${k}-${yearSuffix}`]) : unavailable,
-          options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff', align: 'r' } }
+          options: { fill: i % 2 === 1 ? 'efefef' : 'ffffff', align: 'right' } }
       ]),
       { align: 'l', w: width, h: 1.8, x: xVal, y: 1.96, rowH: 0.08,
-        colW: [width * 0.66, width * 0.33], autoPage: false, valign: 'm' },
-      { fontFace: 'Helvetica', fontSize: 8, border: { pt: '0', color: 'ffffff' } }
+        colW: [width * 0.66, width * 0.33], autoPage: false, valign: 'middle', fontFace: 'Helvetica', fontSize: 8, border: { pt: '0', color: 'ffffff' } }
     );
     slide.addText(this.translate['DEMOGRAPHIC_BREAKDOWN']().toUpperCase(), {
-      align: 'c', fontSize: 6, h: 0.17, w: width, x: xVal, y: 1.86, bold: true, color: '666666'
+      align: 'center', fontSize: 7, fontFace: 'Helvetica', h: 0.17, w: width, x: xVal, y: 1.83, bold: true, color: '666666'
     });
   }
 
   createDataSlides(features: Feature[]): void {
     const barChartSlide = this.pptx.addNewSlide();
-    barChartSlide.addImage({ data: this.backgroundImage, ...this.fullSlideParams });
+    // barChartSlide.addImage({ data: this.backgroundImage, ...this.fullSlideParams });
 
     const chartFeatures = this.getFeatures(features);
     const chartPad = (4 - chartFeatures.length) * 0.1;
@@ -337,7 +399,7 @@ export class PptxExport extends Export {
 
     // Create line chart
     const lineChartSlide = this.pptx.addNewSlide();
-    lineChartSlide.addImage({ data: this.backgroundImage, ...this.fullSlideParams });
+    // lineChartSlide.addImage({ data: this.backgroundImage, ...this.fullSlideParams });
     lineChartSlide.addText(this.translate['LINE_CHART_TITLE'](ratesText.toLowerCase()), {
       ...chartTitleParams, x: 2
     });
@@ -348,22 +410,67 @@ export class PptxExport extends Export {
     lineChartSlide.addImage({ data: lineChartCanvas, x: 2, y: 0.67 + chartPad, w: 6.3, h: 3.54, valign: 'middle' });
 
     chartFeatures.forEach((f, i) => {
-      const yVal = (4.38 + (0.3 * i)) + chartPad;
+      const yVal = (4.38 + (0.25 * i)) + chartPad;
 
       // Add bar chart legend
-      barChartSlide.addText(i + 1, { x: 0.53, w: 0.4, align: 'c', y: yVal, h: 0.1, color: this.getColor(i), fontSize: 12, bold: true });
-      barChartSlide.addText((f.properties.n).toUpperCase(), { x: 0.93, y: yVal, w: 4, h: 0.1, color: this.getColor(i), fontSize: 12, bold: true, fontFace: 'Helvetica' });
+      barChartSlide.addText(i + 1, { x: 2.55, w: 0.4, align: 'c', y: yVal, h: 0.1, color: this.getColor(i), fontSize: 12, bold: true, fontFace: 'Helvetica' });
+      barChartSlide.addText((f.properties.n), { x: 2.75, y: yVal, w: 4, h: 0.1, color: this.getColor(i), fontSize: 12, bold: true, fontFace: 'Helvetica' });
 
       // Add line chart legend
       lineChartSlide.addImage({
         data: this.chart.createLineChartLegend(f, i), x: 2.68, y: yVal, w: 0.5, h: 0.04
       });
-      lineChartSlide.addText((f.properties.n).toUpperCase(), { x: 3.2, y: yVal, w: 4, h: 0.05, color: this.getColor(i), fontSize: 12, bold: true, fontFace: 'Helvetica' });
+      lineChartSlide.addText((f.properties.n), { x: 3.2, y: yVal, w: 4, h: 0.05, color: this.getColor(i), fontSize: 12, bold: true, fontFace: 'Helvetica' });
     });
-
+    // Add confidence interval to slides if enabled
+    // Add confidence interval legend to bar chart slide
+    if (!!this.displayCI) {
+      const yVal = 4.38 + 0.3 + chartPad;
+      const labelColor = "000000";
+      const minMaxWidth = 0.5;
+      const legendX = 6.4;
+      const legendHeight = 0.23;
+      const legendWidth = 0.23;
+      const ciLabelHeight = 0.45;
+      const minMaxFontSize = 8;
+      const minMaxHeight = 0.25;
+      barChartSlide.addImage({
+        data: this.chart.createBarChartCILegend(chartFeatures[0].properties.color),
+        x: legendX - legendWidth/2, y: yVal, w: legendWidth, h: legendHeight
+      })
+      // Max
+      barChartSlide.addText((this.translate['MAX_ABBREV']()).toUpperCase(), { x: legendX - minMaxWidth/2, y: yVal - minMaxHeight + 0.04, w: minMaxWidth, h: minMaxHeight, color: labelColor, fontSize: minMaxFontSize, fontFace: 'Helvetica', align: 'center' });
+      // Min
+      barChartSlide.addText((this.translate['MIN_ABBREV']()).toUpperCase(), { x: legendX - minMaxWidth/2, y: yVal + legendHeight - 0.04, w: minMaxWidth, h: minMaxHeight, color: labelColor, fontSize: minMaxFontSize, fontFace: 'Helvetica', align: 'center' });
+      // Confidence interval label
+      barChartSlide.addText(this.translate['CONFIDENCE_INTERVAL'](), { x: legendX + legendWidth/2 + 0.05, y: yVal + legendHeight/2 - ciLabelHeight/2, w: 1.45, h: ciLabelHeight, color: labelColor, fontSize: 10, fontFace: 'Helvetica', autoFit: true, valign: 'middle', inset: 0, margin: 0 });
+      // line:{ pt:'2', color:'A9A9A9' }
+    }
+    // Add confidence interval to line chart slide
+    if (!!this.displayCI) {
+      const yVal = 4.38 + 0.3 + chartPad;
+      const labelColor = "000000";
+      const minMaxWidth = 0.5;
+      const legendX = 6.4;
+      const legendHeight = 0.15;
+      const legendWidth = 0.27;
+      const ciLabelHeight = 0.45;
+      const minMaxHeight = 8;
+      lineChartSlide.addImage({
+        data: this.chart.createLineChartCILegend(chartFeatures[0].properties.color),
+        x: legendX - legendWidth/2, y: yVal, w: legendWidth, h: legendHeight
+      })
+      // Max
+      lineChartSlide.addText((this.translate['MAX_ABBREV']()).toUpperCase(), { x: legendX - minMaxWidth/2, y: yVal - 0.205, w: minMaxWidth, h: 0.25, color: labelColor, fontSize: minMaxHeight, fontFace: 'Helvetica', align: 'center' });
+      // Min
+      lineChartSlide.addText((this.translate['MIN_ABBREV']()).toUpperCase(), { x: legendX - minMaxWidth/2, y: yVal + 0.105, w: minMaxWidth, h: 0.25, color: labelColor, fontSize: minMaxHeight, fontFace: 'Helvetica', align: 'center' });
+      // Confidence interval label
+      lineChartSlide.addText(this.translate['CONFIDENCE_INTERVAL'](), { x: legendX + legendWidth/2 + 0.05, y: yVal + legendHeight/2 - ciLabelHeight/2, w: 1.45, h: ciLabelHeight, color: labelColor, fontSize: 10, fontFace: 'Helvetica', autoFit: true, valign: 'middle', inset: 0, margin: 0 });
+      // line:{ pt:'2', color:'A9A9A9' }
+    }
     // Create general stats slide
     const statSlide = this.pptx.addNewSlide();
-    statSlide.addImage({ data: this.backgroundImage, ...this.fullSlideParams });
+    // statSlide.addImage({ data: this.backgroundImage, ...this.fullSlideParams });
     const yearSuffix = this.year.toString().slice(2);
     features.forEach((f, i) => this.createDataTable(statSlide, yearSuffix, f, features.length, i));
   }

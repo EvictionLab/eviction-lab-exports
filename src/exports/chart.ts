@@ -315,6 +315,57 @@ export class Chart {
         return canvas.toDataURL();
     }
 
+    createBarChartCILegend(color: string):string {
+      // console.log('createLineChartCILegend()');
+      const canvas = new Canvas.createCanvas(34, 34);
+      const context = canvas.getContext('2d');
+      // Draw background shading
+      context.strokeStyle = color;
+      context.lineWidth = 17;
+      // context.globalAlpha = 0.5;
+      context.moveTo(0, 25.5);
+      context.lineTo(34, 25.5);
+      context.stroke();
+      // Draw image
+      const img = new Canvas.Image;
+      img.width = 12;
+      img.height = 12;
+      img.onload = function(){
+        // console.log('image loaded, ' + img.src);
+        const pat = context.createPattern(img, 'repeat');
+        context.fillStyle = pat;
+        context.fillRect(
+            0,
+            0,
+            34,
+            34
+        );
+      }
+      // Always use red hatching
+      img.src = './src/assets/ci-0.png';
+      return canvas.toDataURL();
+    }
+
+    createLineChartCILegend(color: string):string {
+      // console.log('createLineChartCILegend()');
+      const canvas = new Canvas.createCanvas(40, 22);
+      const context = canvas.getContext('2d');
+      // Draw background shading
+      context.strokeStyle = color;
+      context.lineWidth = 22;
+      context.globalAlpha = 0.5;
+      context.moveTo(0, 11);
+      context.lineTo(40,11);
+      context.stroke();
+      // Draw line chart rate line
+      context.lineWidth = 4;
+      context.globalAlpha = 1;
+      context.moveTo(0, 11);
+      context.lineTo(40,11);
+      context.stroke();
+      return canvas.toDataURL();
+    }
+
     createMapLegend(
         feat: Feature, mapWidth: number, mapHeight: number,
         dataProp: string, bubbleProp: string, dataText: string
